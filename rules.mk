@@ -19,6 +19,9 @@
 ## along with this library.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+
+all: bin size
+
 # Be silent per default, but 'make V=1' will show all compiler calls.
 ifneq ($(V),1)
 Q			:= @
@@ -40,7 +43,7 @@ endif
 
 PROJECT		?= main
 INC 		+= src
-OBJ_DIR 	?= obj
+BUILD_DIR 	?= build
 CSTD		?= -std=c99
 
 ###############################################################################
@@ -57,60 +60,17 @@ OBJDUMP		:= $(PREFIX)-objdump
 GDB		:= $(PREFIX)-gdb
 SIZE		:= $(PREFIX)-size
 STFLASH		= $(shell which st-flash)
-STYLECHECK	:= /checkpatch.pl
-STYLECHECKFLAGS	:= --no-tree -f --terse --mailback
-STYLECHECKFILES	:= $(shell find . -name '*.[ch]')
 
 ###############################################################################
 # Source files
 
 SRC += $(shell find src -name "*.c")
 #SRC += $(shell find src -name "*.cpp")
-OBJS := $(SRC:%.c=$(OBJ_DIR)/%.o)
-#OBJS += $(SRC:%.cpp=$(OBJ_DIR)/%.o)
+OBJS := $(SRC:%.c=$(BUILD_DIR)/%.o)
+#OBJS += $(SRC:%.cpp=$(BUILD_DIR)/%.o)
 
 
-ifeq ($(strip $(OPENCM3_DIR)),)
-# user has not specified the library path, so we try to detect it
 
-# where we search for the library
-LIBPATHS := ./libopencm3 ../../../../libopencm3 ../../../../../libopencm3
-
-OPENCM3_DIR := $(wildcard $(LIBPATHS:=/locm3.sublime-project))
-OPENCM3_DIR := $(firstword $(dir $(OPENCM3_DIR)))
-
-ifeq ($(strip $(OPENCM3_DIR)),)
-$(warning Cannot find libopencm3 library in the standard search paths.)
-$(error Please specify it through OPENCM3_DIR variable!)
-endif
-endif
-
-ifeq ($(V),1)
-$(info Using $(OPENCM3_DIR) path to library)
-endif
-
-define ERR_DEVICE_LDSCRIPT_CONFLICT
-You can either specify DEVICE=blah, and have the LDSCRIPT generated,
-or you can provide LDSCRIPT, and ensure CPPFLAGS, LDFLAGS and LDLIBS
-all contain the correct values for the target you wish to use.
-You cannot provide both!
-endef
-
-ifeq ($(strip $(DEVICE)),)
-# Old style, assume LDSCRIPT exists
-DEFS		+= -I$(OPENCM3_DIR)/include
-LDFLAGS		+= -L$(OPENCM3_DIR)/lib
-LDLIBS		+= -l$(LIBNAME)
-LDSCRIPT	?= $(PROJECT).ld
-else
-# New style, assume device is provided, and we're generating the rest.
-ifneq ($(strip $(LDSCRIPT)),)
-$(error $(ERR_DEVICE_LDSCRIPT_CONFLICT))
-endif
-include $(OPENCM3_DIR)/mk/genlink-config.mk
-endif
-
-OPENCM3_SCRIPT_DIR = $(OPENCM3_DIR)/scripts
 
 ###############################################################################
 # C flags
@@ -130,6 +90,11 @@ TGT_CXXFLAGS	+= -Wextra -Wshadow -Wredundant-decls  -Weffc++
 TGT_CXXFLAGS	+= -fno-common -ffunction-sections -fdata-sections
 
 ###############################################################################
+# Assembler flags
+
+TGT_ASFLAGS += $(OPT) $(ARCH_FLAGS) -ggdb3
+
+###############################################################################
 # C & C++ preprocessor common flags
 
 TGT_CPPFLAGS	+= -MD
@@ -143,6 +108,7 @@ TGT_CPPFLAGS	+= $(addprefix -I, $(INC))
 TGT_LDFLAGS		+= --static -nostartfiles
 TGT_LDFLAGS		+= -T$(LDSCRIPT)
 TGT_LDFLAGS		+= $(ARCH_FLAGS) $(DEBUG)
+TGT_LDFLAGS 	+= -specs=nano.specs
 TGT_LDFLAGS		+= -Wl,-Map=$(*).map -Wl,--cref
 TGT_LDFLAGS		+= -Wl,--gc-sections
 ifeq ($(V),99)
@@ -162,8 +128,6 @@ LDLIBS		+= -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group
 .SECONDEXPANSION:
 .SECONDARY:
 
-all: bin size
-
 size: $(PROJECT).size
 elf: $(PROJECT).elf
 bin: $(PROJECT).bin
@@ -175,24 +139,8 @@ GENERATED_BINARIES=$(PROJECT).elf $(PROJECT).bin $(PROJECT).hex $(PROJECT).srec 
 images: $(PROJECT).images
 flash: $(PROJECT).flash
 
-# Either verify the user provided LDSCRIPT exists, or generate it.
-ifeq ($(strip $(DEVICE)),)
-$(LDSCRIPT):
-    ifeq (,$(wildcard $(LDSCRIPT)))
-        $(error Unable to find specified linker script: $(LDSCRIPT))
-    endif
-else
-include $(OPENCM3_DIR)/mk/genlink-rules.mk
-endif
-
-$(OPENCM3_DIR)/lib/lib$(LIBNAME).a:
-ifeq (,$(wildcard $@))
-	$(warning $(LIBNAME).a not found, attempting to rebuild in $(OPENCM3_DIR))
-	$(MAKE) -C $(OPENCM3_DIR)
-endif
-
 # Define a helper macro for debugging make errors online
-# you can type "make print-OPENCM3_DIR" and it will show you
+# you can type "make print-SRC" and it will show you
 # how that ended up being resolved by all of the included
 # makefiles.
 print-%:
@@ -217,7 +165,7 @@ print-%:
 	@printf "  OBJDUMP $(*).list\n"
 	$(Q)$(OBJDUMP) -S $(*).elf > $(*).list
 
-%.elf %.map: $(OBJS) $(LDSCRIPT) $(OPENCM3_DIR)/lib/lib$(LIBNAME).a
+%.elf %.map: $(OBJS) $(LDSCRIPT) $(LIBS_A)
 	@printf "  LD      $(*).elf\n"
 	$(Q)$(LD) $(TGT_LDFLAGS) $(LDFLAGS) $(OBJS) $(LDLIBS) -o $(*).elf
 
@@ -234,12 +182,17 @@ print-%:
 	{printf("%10s %8s\n", $$1, human($$2))} \
 '
 
-$(OBJ_DIR)/%.o: %.c
+$(BUILD_DIR)/%.o: %.S
+	@printf "  AS\t$<\n"
+	@mkdir -p $(dir $@)
+	$(Q)$(CC) $(TGT_ASFLAGS) $(ASFLAGS) $(TGT_CPPFLAGS) $(CPPFLAGS) -o $@ -c $<
+
+$(BUILD_DIR)/%.o: %.c
 	@printf "  CC      $(*).c\n"
 	@mkdir -p $(dir $@)
 	$(Q)$(CC) $(TGT_CFLAGS) $(CFLAGS) $(TGT_CPPFLAGS) $(CPPFLAGS) -o $@ -c $<
 
-$(OBJ_DIR)/%.o: %.cpp
+$(BUILD_DIR)/%.o: %.cpp
 	@printf "  CXX     $(*).cpp\n"
 	@mkdir -p $(dir $@)
 	$(Q)$(CXX) $(TGT_CXXFLAGS) $(CXXFLAGS) $(TGT_CPPFLAGS) $(CPPFLAGS) -o $@ -c $<
@@ -247,22 +200,7 @@ $(OBJ_DIR)/%.o: %.cpp
 clean:
 	@printf "  CLEAN\n"
 	$(Q)$(RM) $(GENERATED_BINARIES) generated.* $(OBJS) $(OBJS:%.o=%.d)
-	$(Q)$(RM) -r $(OBJ_DIR)
-
-stylecheck: $(STYLECHECKFILES:=.stylecheck)
-styleclean: $(STYLECHECKFILES:=.styleclean)
-
-# the cat is due to multithreaded nature - we like to have consistent chunks of text on the output
-%.stylecheck: %
-	$(Q)$(OPENCM3_SCRIPT_DIR)$(STYLECHECK) $(STYLECHECKFLAGS) $* > $*.stylecheck; \
-		if [ -s $*.stylecheck ]; then \
-			cat $*.stylecheck; \
-		else \
-			rm -f $*.stylecheck; \
-		fi;
-
-%.styleclean:
-	$(Q)rm -f $*.stylecheck;
+	$(Q)$(RM) -r $(BUILD_DIR)
 
 
 %.stlink-flash: %.bin
@@ -284,6 +222,6 @@ else
 		$(NULL)
 endif
 
-.PHONY: images clean stylecheck styleclean elf bin hex srec list size
+.PHONY: images clean elf bin hex srec list size
 
 -include $(OBJS:.o=.d)

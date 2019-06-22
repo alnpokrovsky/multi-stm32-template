@@ -14,5 +14,7 @@ INC += src/third-party/freertos/include
 # freertos-addons
 INC += src/third-party/freertos-addons/c/Source/include src/third-party/freertos-addons/c++/Source/include
 
+
 LDSCRIPT := make/stm32/f1/stm32f103xB.ld
-include make/stm32/f1.include
+include libs/libopencm3.include
+include make/stm32/f1.mk
