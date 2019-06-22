@@ -39,8 +39,7 @@ endif
 # Optional
 
 PROJECT		?= main
-INCLUDES 	+= $(SRC_DIR)
-SRC_DIR 	?= src
+INC 		+= src
 OBJ_DIR 	?= obj
 CSTD		?= -std=c99
 
@@ -65,10 +64,10 @@ STYLECHECKFILES	:= $(shell find . -name '*.[ch]')
 ###############################################################################
 # Source files
 
-SRC := $(shell find $(SRC_DIR) -name *.c)
-#SRC += $(shell find $(SRC_DIR) -name *.cpp)
-OBJS := $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
-#OBJS += $(SRC:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
+SRC += $(shell find src -name "*.c")
+#SRC += $(shell find src -name "*.cpp")
+OBJS := $(SRC:%.c=$(OBJ_DIR)/%.o)
+#OBJS += $(SRC:%.cpp=$(OBJ_DIR)/%.o)
 
 
 ifeq ($(strip $(OPENCM3_DIR)),)
@@ -136,7 +135,7 @@ TGT_CXXFLAGS	+= -fno-common -ffunction-sections -fdata-sections
 TGT_CPPFLAGS	+= -MD
 TGT_CPPFLAGS	+= -Wall -Wundef
 TGT_CPPFLAGS	+= $(DEFS)
-TGT_CPPFLAGS	+= $(addprefix -I, $(INCLUDES))
+TGT_CPPFLAGS	+= $(addprefix -I, $(INC))
 
 ###############################################################################
 # Linker flags
@@ -235,12 +234,12 @@ print-%:
 	{printf("%10s %8s\n", $$1, human($$2))} \
 '
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+$(OBJ_DIR)/%.o: %.c
 	@printf "  CC      $(*).c\n"
 	@mkdir -p $(dir $@)
 	$(Q)$(CC) $(TGT_CFLAGS) $(CFLAGS) $(TGT_CPPFLAGS) $(CPPFLAGS) -o $@ -c $<
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+$(OBJ_DIR)/%.o: %.cpp
 	@printf "  CXX     $(*).cpp\n"
 	@mkdir -p $(dir $@)
 	$(Q)$(CXX) $(TGT_CXXFLAGS) $(CXXFLAGS) $(TGT_CPPFLAGS) $(CPPFLAGS) -o $@ -c $<
