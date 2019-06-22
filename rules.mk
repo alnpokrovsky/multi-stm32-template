@@ -108,7 +108,7 @@ TGT_CPPFLAGS	+= $(addprefix -I, $(INC))
 TGT_LDFLAGS		+= --static -nostartfiles
 TGT_LDFLAGS		+= -T$(LDSCRIPT)
 TGT_LDFLAGS		+= $(ARCH_FLAGS) $(DEBUG)
-TGT_LDFLAGS 	+= -specs=nano.specs
+TGT_LDFLAGS 	+= -specs=nano.specs -specs=nosys.specs
 TGT_LDFLAGS		+= -Wl,-Map=$(*).map -Wl,--cref
 TGT_LDFLAGS		+= -Wl,--gc-sections
 ifeq ($(V),99)
