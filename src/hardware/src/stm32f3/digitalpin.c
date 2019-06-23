@@ -8,9 +8,9 @@ typedef struct {
     uint32_t port;
     uint16_t rcc;
     uint32_t pin;
-} DIGITAL_PIN;
+} digitalpin_descript;
 
-static const DIGITAL_PIN DIGITAL_PINS[] = {
+static const digitalpin_descript DIGITALPINS[] = {
     {GPIOA, RCC_GPIOA, GPIO0},
     {GPIOA, RCC_GPIOA, GPIO1},
     {GPIOA, RCC_GPIOA, GPIO2},
@@ -81,33 +81,33 @@ static const DIGITAL_PIN DIGITAL_PINS[] = {
 };
 
 void digitalpin_mode(DIGITALPIN_NAME pn, DIGITALPIN_MODE pmode) {
-    rcc_periph_clock_enable(DIGITAL_PINS[pn].rcc);
+    rcc_periph_clock_enable(DIGITALPINS[pn].rcc);
     switch (pmode)
     {
         case DIGITALPIN_INPUT:
-            gpio_mode_setup(DIGITAL_PINS[pn].port, GPIO_MODE_INPUT, GPIO_PUPD_NONE, DIGITAL_PINS[pn].pin);
+            gpio_mode_setup(DIGITALPINS[pn].port, GPIO_MODE_INPUT, GPIO_PUPD_NONE, DIGITALPINS[pn].pin);
             break;
         case DIGITALPIN_OUTPUT:
-            gpio_mode_setup(DIGITAL_PINS[pn].port, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, DIGITAL_PINS[pn].pin);
-            gpio_set_output_options(DIGITAL_PINS[pn].port, GPIO_OTYPE_PP, GPIO_OSPEED_100MHZ, DIGITAL_PINS[pn].pin);
+            gpio_mode_setup(DIGITALPINS[pn].port, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, DIGITALPINS[pn].pin);
+            gpio_set_output_options(DIGITALPINS[pn].port, GPIO_OTYPE_PP, GPIO_OSPEED_100MHZ, DIGITALPINS[pn].pin);
             break;
     }
 }
 
 void digitalpin_set(DIGITALPIN_NAME pn, uint16_t state) {
     if (state != 0) {
-        gpio_set(DIGITAL_PINS[pn].port, DIGITAL_PINS[pn].pin);
+        gpio_set(DIGITALPINS[pn].port, DIGITALPINS[pn].pin);
     } else {
-        gpio_clear(DIGITAL_PINS[pn].port, DIGITAL_PINS[pn].pin);
+        gpio_clear(DIGITALPINS[pn].port, DIGITALPINS[pn].pin);
     }
 }
 
 void digitalpin_toggle(DIGITALPIN_NAME pn) {
-    gpio_toggle(DIGITAL_PINS[pn].port, DIGITAL_PINS[pn].pin);
+    gpio_toggle(DIGITALPINS[pn].port, DIGITALPINS[pn].pin);
 }
 
 uint16_t digitalpin_get(DIGITALPIN_NAME pn) {
-    return gpio_get(DIGITAL_PINS[pn].port, DIGITAL_PINS[pn].pin);
+    return gpio_get(DIGITALPINS[pn].port, DIGITALPINS[pn].pin);
 }
 
 

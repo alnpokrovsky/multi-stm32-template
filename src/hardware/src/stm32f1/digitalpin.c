@@ -8,9 +8,9 @@ typedef struct {
     uint32_t port;
     uint16_t rcc;
     uint32_t pin;
-} DIGITAL_PIN;
+} digitalpin_descript;
 
-static const DIGITAL_PIN DIGITAL_PINS[] = {
+static const digitalpin_descript DIGITALPINS[] = {
     {GPIOA, RCC_GPIOA, GPIO0},
     {GPIOA, RCC_GPIOA, GPIO1},
     {GPIOA, RCC_GPIOA, GPIO2},
@@ -64,11 +64,11 @@ static const DIGITAL_PIN DIGITAL_PINS[] = {
 };
 
 void digitalpin_mode(DIGITALPIN_NAME pn, DIGITALPIN_MODE pmode) {
-    rcc_periph_clock_enable(DIGITAL_PINS[pn].rcc);
+    rcc_periph_clock_enable(DIGITALPINS[pn].rcc);
     switch (pmode)
     {
         case DIGITALPIN_INPUT:
-            gpio_set_mode(DIGITAL_PINS[pn].port, GPIO_MODE_INPUT, GPIO_CNF_INPUT_PULL_UPDOWN, DIGITAL_PINS[pn].pin);
+            gpio_set_mode(DIGITALPINS[pn].port, GPIO_MODE_INPUT, GPIO_CNF_INPUT_PULL_UPDOWN, DIGITALPINS[pn].pin);
             digitalpin_set(pn, false);
             break;
         case DIGITALPIN_OUTPUT:
@@ -76,25 +76,25 @@ void digitalpin_mode(DIGITALPIN_NAME pn, DIGITALPIN_MODE pmode) {
                 rcc_periph_clock_enable(RCC_AFIO);
                 gpio_primary_remap(AFIO_MAPR_SWJ_CFG_JTAG_OFF_SW_ON, 0);
             }
-            gpio_set_mode(DIGITAL_PINS[pn].port, GPIO_MODE_OUTPUT_10_MHZ, GPIO_CNF_OUTPUT_PUSHPULL, DIGITAL_PINS[pn].pin);
+            gpio_set_mode(DIGITALPINS[pn].port, GPIO_MODE_OUTPUT_10_MHZ, GPIO_CNF_OUTPUT_PUSHPULL, DIGITALPINS[pn].pin);
             break;
     }
 }
 
 void digitalpin_set(DIGITALPIN_NAME pn, uint16_t state) {
     if (state != 0) {
-        gpio_set(DIGITAL_PINS[pn].port, DIGITAL_PINS[pn].pin);
+        gpio_set(DIGITALPINS[pn].port, DIGITALPINS[pn].pin);
     } else {
-        gpio_clear(DIGITAL_PINS[pn].port, DIGITAL_PINS[pn].pin);
+        gpio_clear(DIGITALPINS[pn].port, DIGITALPINS[pn].pin);
     }
 }
 
 void digitalpin_toggle(DIGITALPIN_NAME pn) {
-    gpio_toggle(DIGITAL_PINS[pn].port, DIGITAL_PINS[pn].pin);
+    gpio_toggle(DIGITALPINS[pn].port, DIGITALPINS[pn].pin);
 }
 
 uint16_t digitalpin_get(DIGITALPIN_NAME pn) {
-    return gpio_get(DIGITAL_PINS[pn].port, DIGITAL_PINS[pn].pin);
+    return gpio_get(DIGITALPINS[pn].port, DIGITALPINS[pn].pin);
 }
 
 

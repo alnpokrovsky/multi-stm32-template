@@ -1,0 +1,8 @@
+# freertos-addons
+
+INC += \
+    libs/freertos-addons/c/Source/include \
+    libs/freertos-addons/c++/Source/include
+
+SRC += $(shell find libs/freertos-addons/c/Source -name "*.c")
+SRC += $(shell find libs/freertos-addons/c++/Source -name "*.cpp")

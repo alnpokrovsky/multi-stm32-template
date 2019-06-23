@@ -3,6 +3,7 @@
 #include "digitalpin.h"
 #include "ugui.h"
 #include <assert.h>
+#include <string.h>
 
 #define WIDTH 128
 #define HEIGHT 64
@@ -11,7 +12,7 @@ static UG_GUI gui;
 static uint8_t buffer[WIDTH / sizeof(uint8_t)][HEIGHT];
 static struct {
     SPI_PORT spi;
-    DIGITAL_PIN dc; /* DC-pin switches data/command mode */ 
+    DIGITALPIN_NAME dc; /* DC-pin switches data/command mode */ 
 } SSD1306;
 
 static void set_bit_color(
@@ -49,10 +50,10 @@ static void data(uint8_t b) {
     spi_xtransfer(SSD1306.spi, b);
 }
 
-void ssd1306_init(SPI_PORT port, DIGITAL_PIN dc) {
+void ssd1306_init(SPI_PORT port, DIGITALPIN_NAME dc) {
     SSD1306.spi = port;
     SSD1306.dc = dc;
-    digitalpin_mode(DC, DIGITALPIN_OUTPUT);
+    digitalpin_mode(dc, DIGITALPIN_OUTPUT);
     UG_Init(&gui, draw_point, WIDTH, HEIGHT);
     UG_SetBackcolor(C_BLACK);
     UG_SetForecolor(C_WHITE);
@@ -65,4 +66,6 @@ void ssd1306_clear(void) {
 }
 
 void ssd1306_redraw(void) {
+    command(0);
+    data(0);
 }

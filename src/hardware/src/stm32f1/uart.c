@@ -27,17 +27,16 @@ typedef struct {
     uint32_t gpio_port;
     uint16_t gpio_port_rcc;
     uint32_t gpio_pins;
-    uint8_t gpio_pins_af;
 } Uart_descript;
 
 static const Uart_descript UARTS[] = {
     {
-        USART1, RCC_USART1, NVIC_USART1_EXTI25_IRQ,
-        GPIOB, RCC_GPIOB, GPIO6|GPIO7, GPIO_AF7,
+        USART1, RCC_USART1, NVIC_USART1_IRQ,
+        GPIOB, RCC_GPIOB, GPIO6|GPIO7,
     },
     {
-        USART2, RCC_USART2, NVIC_USART2_EXTI26_IRQ,
-        GPIOB, RCC_GPIOB, GPIO3|GPIO4, GPIO_AF7,
+        USART2, RCC_USART2, NVIC_USART2_IRQ,
+        GPIOB, RCC_GPIOB, GPIO3|GPIO4,
     },
 };
 
@@ -122,7 +121,7 @@ void uart_rx_tx_interrupt(UART_PORT port, bool rx_en, bool tx_en) {
     }
 }
 
-void usart1_exti25_isr() {
+void usart1_isr() {
     /* Check if we were called because of RXNE. */
     if (((USART_CR1(USART1) & USART_CR1_RXNEIE) != 0) && usart_get_flag(USART1, USART_FLAG_RXNE))
     {
@@ -147,7 +146,7 @@ void usart1_exti25_isr() {
     }
 }
 
-void usart2_exti26_isr() {
+void usart2_isr() {
     /* Check if we were called because of RXNE. */
     if (((USART_CR1(USART2) & USART_CR1_RXNEIE) != 0) && usart_get_flag(USART2, USART_FLAG_RXNE))
     {

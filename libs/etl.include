@@ -1,0 +1,5 @@
+# etl lib
+
+INC += libs/etl
+
+SRC += $(shell find libs/etl -name "*.cpp")

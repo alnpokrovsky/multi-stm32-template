@@ -25,16 +25,16 @@ static const Spi_descript SPIES[] = {
      * MOSI = PA7
      */
     {
-        SPIES[port].spi_base, RCC_SPI1,
+        SPI1, RCC_SPI1,
         GPIOA, RCC_GPIOA, GPIO4|GPIO5|GPIO7, GPIO6,
         DMA_CH3,
     },
-}
+};
 
 static const uint32_t DFFS[] = {
     SPI_CR1_DFF_8BIT,
     SPI_CR1_DFF_16BIT,
-}
+};
 
 void spi_init(SPI_PORT port, SPI_DFF dff) {
     rcc_periph_clock_enable(SPIES[port].gpio_port_rcc);
@@ -70,6 +70,7 @@ void spi_dma_start_once(SPI_PORT port, uint16_t len) {
 
 uint8_t spi_xtransfer(SPI_PORT port, uint8_t b) {
     spi_xfer(SPIES[port].spi_base, b);
+    return 0;
 }
 
 

@@ -7,7 +7,11 @@
 #include "spi.h"
 #include "digitalpin.h"
 
-void ssd1306_init(SPI_PORT port, DIGITAL_PIN dc);
 
+void ssd1306_init(SPI_PORT port, DIGITALPIN_NAME dc);
+
+void ssd1306_clear(void);
+
+void ssd1306_redraw(void);
 
 #endif

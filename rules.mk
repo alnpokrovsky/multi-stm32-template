@@ -61,16 +61,6 @@ GDB		:= $(PREFIX)-gdb
 SIZE		:= $(PREFIX)-size
 STFLASH		= $(shell which st-flash)
 
-###############################################################################
-# Source files
-
-SRC += $(shell find src -name "*.c")
-#SRC += $(shell find src -name "*.cpp")
-OBJS := $(SRC:%.c=$(BUILD_DIR)/%.o)
-#OBJS += $(SRC:%.cpp=$(BUILD_DIR)/%.o)
-
-
-
 
 ###############################################################################
 # C flags
@@ -123,6 +113,16 @@ LDLIBS		+= -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group
 ###############################################################################
 ###############################################################################
 ###############################################################################
+
+# Look objectives from source files
+SRC_AS := $(filter %.S, $(SRC))
+SRC_C := $(filter %.c, $(SRC))
+SRC_CXX := $(filter %.cpp, $(SRC))
+OBJS_AS := $(SRC_AS:%.S=$(BUILD_DIR)/%.o)
+OBJS_C := $(SRC_C:%.c=$(BUILD_DIR)/%.o)
+OBJS_CXX := $(SRC_CXX:%.cpp=$(BUILD_DIR)/%.o)
+OBJS := $(OBJS_AS) $(OBJS_C) $(OBJS_CXX)
+
 
 .SUFFIXES: .elf .bin .hex .srec .list .map .images
 .SECONDEXPANSION:
@@ -182,18 +182,22 @@ print-%:
 	{printf("%10s %8s\n", $$1, human($$2))} \
 '
 
+
+# assembler rule
 $(BUILD_DIR)/%.o: %.S
-	@printf "  AS\t$<\n"
+	@printf "  AS \t$<\n"
 	@mkdir -p $(dir $@)
 	$(Q)$(CC) $(TGT_ASFLAGS) $(ASFLAGS) $(TGT_CPPFLAGS) $(CPPFLAGS) -o $@ -c $<
 
+# c rule
 $(BUILD_DIR)/%.o: %.c
-	@printf "  CC      $(*).c\n"
+	@printf "  CC \t$(*).c\n"
 	@mkdir -p $(dir $@)
 	$(Q)$(CC) $(TGT_CFLAGS) $(CFLAGS) $(TGT_CPPFLAGS) $(CPPFLAGS) -o $@ -c $<
 
+# cxx rule
 $(BUILD_DIR)/%.o: %.cpp
-	@printf "  CXX     $(*).cpp\n"
+	@printf "  CXX \t$(*).cpp\n"
 	@mkdir -p $(dir $@)
 	$(Q)$(CXX) $(TGT_CXXFLAGS) $(CXXFLAGS) $(TGT_CPPFLAGS) $(CPPFLAGS) -o $@ -c $<
 
