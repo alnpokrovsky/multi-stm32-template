@@ -20,7 +20,7 @@
 ##
 
 
-all: bin size
+all: bin
 
 # Be silent per default, but 'make V=1' will show all compiler calls.
 ifneq ($(V),1)
@@ -55,11 +55,10 @@ CXX		:= $(PREFIX)-g++
 LD		:= $(PREFIX)-gcc
 AR		:= $(PREFIX)-ar
 AS		:= $(PREFIX)-as
-OBJCOPY		:= $(PREFIX)-objcopy
-OBJDUMP		:= $(PREFIX)-objdump
+OBJCOPY	:= $(PREFIX)-objcopy
+OBJDUMP	:= $(PREFIX)-objdump
 GDB		:= $(PREFIX)-gdb
-SIZE		:= $(PREFIX)-size
-STFLASH		= $(shell which st-flash)
+STFLASH	:= $(shell which st-flash)
 
 
 ###############################################################################
@@ -98,7 +97,9 @@ TGT_CPPFLAGS	+= $(addprefix -I, $(INC))
 TGT_LDFLAGS		+= --static -nostartfiles
 TGT_LDFLAGS		+= -T$(LDSCRIPT)
 TGT_LDFLAGS		+= $(ARCH_FLAGS) $(DEBUG)
-TGT_LDFLAGS 	+= -specs=nano.specs -specs=nosys.specs
+TGT_LDFLAGS 	+= -specs=nano.specs
+TGT_LDFLAGS 	+= -specs=nosys.specs
+TGT_LDFLAGS 	+= -Wl,--print-memory-usage
 TGT_LDFLAGS		+= -Wl,-Map=$(*).map -Wl,--cref
 TGT_LDFLAGS		+= -Wl,--gc-sections
 ifeq ($(V),99)
@@ -128,23 +129,18 @@ OBJS := $(OBJS_AS) $(OBJS_C) $(OBJS_CXX)
 .SECONDEXPANSION:
 .SECONDARY:
 
-size: $(PROJECT).size
 elf: $(PROJECT).elf
 bin: $(PROJECT).bin
 hex: $(PROJECT).hex
 srec: $(PROJECT).srec
 list: $(PROJECT).list
-GENERATED_BINARIES=$(PROJECT).elf $(PROJECT).bin $(PROJECT).hex $(PROJECT).srec $(PROJECT).list $(PROJECT).map
-
 images: $(PROJECT).images
 flash: $(PROJECT).flash
 
-# Define a helper macro for debugging make errors online
-# you can type "make print-SRC" and it will show you
-# how that ended up being resolved by all of the included
-# makefiles.
-print-%:
-	@echo $*=$($*)
+
+%.elf %.map: $(OBJS) $(LDSCRIPT) $(LIBS_A)
+	@printf "  LD \t$(*).elf\n"
+	$(Q)$(LD) $(TGT_LDFLAGS) $(LDFLAGS) $(OBJS) $(LDLIBS) -o $(*).elf
 
 %.images: %.bin %.hex %.srec %.list %.map
 	@printf "*** $* images generated ***\n"
@@ -165,23 +161,12 @@ print-%:
 	@printf "  OBJDUMP $(*).list\n"
 	$(Q)$(OBJDUMP) -S $(*).elf > $(*).list
 
-%.elf %.map: $(OBJS) $(LDSCRIPT) $(LIBS_A)
-	@printf "  LD      $(*).elf\n"
-	$(Q)$(LD) $(TGT_LDFLAGS) $(LDFLAGS) $(OBJS) $(LDLIBS) -o $(*).elf
-
-%.size: %.elf
-	@echo "Output code size:"
-	@$(SIZE) -A -d $(*).elf | egrep 'text|data|bss' | awk ' \
-    function human(x) { \
-        if (x<1000) {return x} else {x/=1024} \
-        s="kMGTEPZY"; \
-        while (x>=1000 && length(s)>1) \
-            {x/=1024; s=substr(s,2)} \
-        return int(x+0.5) substr(s,1,1) \
-    } \
-	{printf("%10s %8s\n", $$1, human($$2))} \
-'
-
+# Define a helper macro for debugging make errors online
+# you can type "make print-SRC" and it will show you
+# how that ended up being resolved by all of the included
+# makefiles.
+print-%:
+	@echo $*=$($*)
 
 # assembler rule
 $(BUILD_DIR)/%.o: %.S
@@ -203,7 +188,7 @@ $(BUILD_DIR)/%.o: %.cpp
 
 clean:
 	@printf "  CLEAN\n"
-	$(Q)$(RM) $(GENERATED_BINARIES) generated.* $(OBJS) $(OBJS:%.o=%.d)
+	$(Q)$(RM) $(PROJECT).elf $(PROJECT).bin $(PROJECT).hex $(PROJECT).srec $(PROJECT).list $(PROJECT).map generated.* $(OBJS) $(OBJS:%.o=%.d)
 	$(Q)$(RM) -r $(BUILD_DIR)
 
 
@@ -226,6 +211,6 @@ else
 		$(NULL)
 endif
 
-.PHONY: images clean elf bin hex srec list size
+.PHONY: images clean elf bin hex srec list
 
 -include $(OBJS:.o=.d)
