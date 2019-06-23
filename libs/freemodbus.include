@@ -1,0 +1,10 @@
+# freemodbus 1.5 lib
+
+DEFS += -DFREEMODBUS_LIB
+
+INC += \
+    src/third-party/modbus/include \
+    src/third-party/modbus/port \
+    src/third-party/modbus/rtu
+
+SRC += $(shell find libs/freemodbus -name "*.c")

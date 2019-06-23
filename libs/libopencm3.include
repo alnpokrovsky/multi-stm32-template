@@ -1,6 +1,0 @@
-# LIBOPENCM3
-
-DEFS		+= -I libs/libopencm3/include
-LDFLAGS		+= -L libs/libopencm3/lib
-LDLIBS		+= -l $(LIBNAME)
-LIBS_A 		+= libs/libopencm3/lib/lib$(LIBNAME).a

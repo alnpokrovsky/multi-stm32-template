@@ -1,3 +1,5 @@
+#ifdef FREEMODBUS_LIB
+
 #include "modbus.h"
 #include "mb.h"
 #include "mbutils.h"
@@ -159,3 +161,6 @@ eMBErrorCode eMBRegDiscreteCB(UCHAR * pucRegBuffer, USHORT usAddress,
 
 	return MB_ENOERR;
 }
+
+
+#endif

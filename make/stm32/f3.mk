@@ -21,4 +21,5 @@ BMP_PORT	?=
 #STLINK_PORT	?= :4242
 
 
+include core/libopencm3.include
 include rules.mk

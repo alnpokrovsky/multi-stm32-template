@@ -15,13 +15,12 @@ INC += src/hardware/include
 # uGUI lib
 INC += src/third-party/ugui
 
-# freemodbus 1.5 lib
-INC += src/third-party/modbus/include src/third-party/modbus/port src/third-party/modbus/rtu
 
 ########### LIBRARIES ###############
-include libs/libopencm3.include
+
 
 
 ########### BUILD DEVICE ##############
 LDSCRIPT := make/stm32/f1/stm32f103xB.ld
 include make/stm32/f1.mk
+#include make/mdr1986/ve9.mk
