@@ -1,7 +1,7 @@
 #ifndef __CONTROLS_LCD_H__
 #define __CONTROLS_LCD_H__
 
-#include "hardware/gpio.h"
+#include "digitalpin.h"
 
 /** @example
  * lcd1602_init(PA_4, PA_5, PA_0, PA_1, PA_2, PA_3);
@@ -12,12 +12,12 @@
  */
 
 void lcd1602_init(
-    PIN_NAMES rs,
-    PIN_NAMES en,
-    PIN_NAMES db4,
-    PIN_NAMES db5,
-    PIN_NAMES db6,
-    PIN_NAMES db7
+    DIGITALPIN_NAME rs,
+    DIGITALPIN_NAME en,
+    DIGITALPIN_NAME db4,
+    DIGITALPIN_NAME db5,
+    DIGITALPIN_NAME db6,
+    DIGITALPIN_NAME db7
 );
 
 void lcd1602_pos(uint8_t row, uint8_t col);

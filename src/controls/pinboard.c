@@ -1,15 +1,15 @@
 #include "pinboard.h"
-#include "hardware/gpio.h"
-#include "hardware/usb-hid/keyboard.h"
+#include "digitalpin.h"
+#include "usb/hid-keyboard.h"
 
 
 typedef uint8_t Rowmap[COLS_N];
 
-static const PIN_NAMES rows[ROWS_N] = {
+static const DIGITALPIN_NAME rows[ROWS_N] = {
     /*PB_0, PB_1,*/ PB_3, PB_11, PB_12, PB_13, PB_14, PB_15, PC_8, PC_9, PC_10, PC_11,
 };
 
-static const PIN_NAMES cols[COLS_N] = {
+static const DIGITALPIN_NAME cols[COLS_N] = {
     PC_0, PC_1,     PC_2, PC_3,/*PA_0,  PA_1,*/PA_2,  PA_3,  PA_4, PA_5,/*PA_6, PA_7*/
 };
 
@@ -51,43 +51,43 @@ static const Rowmap altkeymap[ROWS_N] = {
 static int rowCnt = 0;
 
 static void nextRow(void) {
-    gpio_pin_set(rows[rowCnt], 0);
+    digitalpin_set(rows[rowCnt], 0);
     if (++rowCnt >= ROWS_N) rowCnt = 0;
-    gpio_pin_set(rows[rowCnt], 1);
+    digitalpin_set(rows[rowCnt], 1);
 }
 
 void pinboard_init() {
     int i;
     /* set columns to pulldown input mode */
     for (i = 0; i < COLS_N; i++) {
-        gpio_pin_mode(cols[i], GPIO_INPUT);
+        digitalpin_mode(cols[i], DIGITALPIN_INPUT);
     }
     /* alt key special */
-    gpio_pin_mode(ALT, GPIO_INPUT);
+    digitalpin_mode(ALT, DIGITALPIN_INPUT);
     /* ctrl key special */
-    gpio_pin_mode(CTRL, GPIO_INPUT);
+    digitalpin_mode(CTRL, DIGITALPIN_INPUT);
 
 
     /* set rows to output mode */
     for (i = 0; i < ROWS_N; i++) {
-        gpio_pin_mode(rows[i], GPIO_OUTPUT);
+        digitalpin_mode(rows[i], DIGITALPIN_OUTPUT);
     }
     /* power to alt */
-    gpio_pin_mode(ALT_UP, GPIO_OUTPUT);
-    gpio_pin_set(ALT_UP, 1);
+    digitalpin_mode(ALT_UP, DIGITALPIN_OUTPUT);
+    digitalpin_set(ALT_UP, 1);
     /* power to ctrl */
-    gpio_pin_mode(CTRL_UP, GPIO_OUTPUT);
-    gpio_pin_set(CTRL_UP, 1);
+    digitalpin_mode(CTRL_UP, DIGITALPIN_OUTPUT);
+    digitalpin_set(CTRL_UP, 1);
 
 }
 
 
 uint8_t pinboard_next() {
     int i;
-    const Rowmap * km = gpio_pin_get(ALT) ? altkeymap : keymap;
+    const Rowmap * km = digitalpin_get(ALT) ? altkeymap : keymap;
     nextRow();
     for (i = 0; i < COLS_N; i++) {
-        if (gpio_pin_get(cols[i])) {
+        if (digitalpin_get(cols[i])) {
             return km[rowCnt][i];
         }
     }
@@ -95,5 +95,5 @@ uint8_t pinboard_next() {
 }
 
 uint8_t pinboard_modifiers() {
-    return gpio_pin_get(CTRL) ? KEY_CTRL : 0;
+    return digitalpin_get(CTRL) ? KEY_CTRL : 0;
 }

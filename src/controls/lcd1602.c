@@ -3,29 +3,29 @@
 #include "libopencm3/cm3/common.h"
 
 static struct {
-    PIN_NAMES rs;
-    PIN_NAMES en;
-    PIN_NAMES db4;
-    PIN_NAMES db5;
-    PIN_NAMES db6;
-    PIN_NAMES db7;
+    DIGITALPIN_NAME rs;
+    DIGITALPIN_NAME en;
+    DIGITALPIN_NAME db4;
+    DIGITALPIN_NAME db5;
+    DIGITALPIN_NAME db6;
+    DIGITALPIN_NAME db7;
 } lcd1602;
 
 static void pulse(void) {
-    gpio_pin_set(lcd1602.en, 1);
+    digitalpin_set(lcd1602.en, 1);
     delay_a_bit();
-    gpio_pin_set(lcd1602.en, 0);
+    digitalpin_set(lcd1602.en, 0);
 }
 
 static void set_half_data(uint8_t d) {
-    gpio_pin_set(lcd1602.db4, d & BIT0);
-    gpio_pin_set(lcd1602.db5, d & BIT1);
-    gpio_pin_set(lcd1602.db6, d & BIT2);
-    gpio_pin_set(lcd1602.db7, d & BIT3);
+    digitalpin_set(lcd1602.db4, d & BIT0);
+    digitalpin_set(lcd1602.db5, d & BIT1);
+    digitalpin_set(lcd1602.db6, d & BIT2);
+    digitalpin_set(lcd1602.db7, d & BIT3);
 }
 
 static void send(uint8_t isData, uint8_t b) {
-    gpio_pin_set(lcd1602.rs, isData);
+    digitalpin_set(lcd1602.rs, isData);
     set_half_data(b >> 4);
     pulse();
     set_half_data(b);
@@ -35,12 +35,12 @@ static void send(uint8_t isData, uint8_t b) {
 }
 
 static void gpio_init(void) {
-    gpio_pin_mode(lcd1602.rs, GPIO_OUTPUT);
-    gpio_pin_mode(lcd1602.en, GPIO_OUTPUT);
-    gpio_pin_mode(lcd1602.db4, GPIO_OUTPUT);
-    gpio_pin_mode(lcd1602.db5, GPIO_OUTPUT);
-    gpio_pin_mode(lcd1602.db6, GPIO_OUTPUT);
-    gpio_pin_mode(lcd1602.db7, GPIO_OUTPUT);
+    digitalpin_mode(lcd1602.rs, DIGITALPIN_OUTPUT);
+    digitalpin_mode(lcd1602.en, DIGITALPIN_OUTPUT);
+    digitalpin_mode(lcd1602.db4, DIGITALPIN_OUTPUT);
+    digitalpin_mode(lcd1602.db5, DIGITALPIN_OUTPUT);
+    digitalpin_mode(lcd1602.db6, DIGITALPIN_OUTPUT);
+    digitalpin_mode(lcd1602.db7, DIGITALPIN_OUTPUT);
 }
 
 void lcd1602_clear(void) {
@@ -78,12 +78,12 @@ void lcd1602_pos(uint8_t row, uint8_t col) {
 }
 
 void lcd1602_init(
-    PIN_NAMES rs,
-    PIN_NAMES en,
-    PIN_NAMES db4,
-    PIN_NAMES db5,
-    PIN_NAMES db6,
-    PIN_NAMES db7
+    DIGITALPIN_NAME rs,
+    DIGITALPIN_NAME en,
+    DIGITALPIN_NAME db4,
+    DIGITALPIN_NAME db5,
+    DIGITALPIN_NAME db6,
+    DIGITALPIN_NAME db7
 ) {
     lcd1602.rs = rs;
     lcd1602.en = en;

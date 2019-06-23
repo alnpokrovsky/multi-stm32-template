@@ -25,39 +25,59 @@
 #include "mb.h"
 #include "mbport.h"
 
-/* ----------------------- hardware STM32F includes -------------------------------*/
-#include "hardware/rs485_1.h"
+/* ----------------------- STM32F hardware ----------------------------------*/
+#include "uart.h"
+#include "digitalpin.h"
 
+/* --------------------------- Config ---------------------------------------*/
+#include "FreeModbusConfig.h"
 
 /* ----------------------- Start implementation -----------------------------*/
+
+
+static volatile bool txen = false;
+
 
 BOOL
 xMBPortSerialInit( UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits, eMBParity eParity )
 {
     (void)ucPORT;
-    BOOL bStatus;
 
-	rs485_1_init();
-	bStatus = rs485_1_setup(ulBaudRate, ucDataBits, eParity);
+    /* init uart */
+	uart_init(MODBUS_PORT, ulBaudRate, ucDataBits, eParity);
+    /* init txe pin */
+    digitalpin_mode(RS485_TXE_PIN, DIGITALPIN_OUTPUT);
+    digitalpin_set(RS485_TXE_PIN, 0);
 
-    return bStatus;
+    return TRUE;
 }
 
 
 void
 vMBPortSerialEnable( BOOL xRxEnable, BOOL xTxEnable )
 {
-    /* If xRXEnable enable serial receive interrupts. If xTxENable enable
-     * transmitter empty interrupts.
+    /*
+     * If xRXEnable enable serial receive interrupts.
+     * If xTxENable enable transmitter empty interrupts. 
      */
-    rs485_1_rx( xRxEnable );
-    rs485_1_tx( xTxEnable );
+    uart_rx_tx_interrupt(MODBUS_PORT, xRxEnable, xTxEnable);
+    
+    /* rs485 enable pin control */
+    if (xRxEnable) {
+        txen = false;
+    }
+    if (xTxEnable) {
+        txen = true;
+        digitalpin_set(RS485_TXE_PIN, 1);
+    } else {
+        txen = false;
+    }
 }
 
 BOOL
 xMBPortSerialGetByte( CHAR * pucByte )
 {
-    *pucByte = rs485_1_recv();
+    *pucByte = uart_recv(MODBUS_PORT);
     return TRUE;
 }
 
@@ -67,7 +87,7 @@ xMBPortSerialPutByte( CHAR ucByte )
     /* Put a byte in the UARTs transmit buffer. This function is called
      * by the protocol stack if pxMBFrameCBTransmitterEmpty( ) has been
      * called. */
-    rs485_1_send(ucByte);
+    uart_send(MODBUS_PORT, ucByte);
     return TRUE;
 }
 
@@ -79,10 +99,19 @@ xMBPortSerialPutByte( CHAR ucByte )
  * xMBPortSerialPutByte( ) to send the character.
  */
 /* Find out what interrupted and get or send data as appropriate */
-void rs485_1_rx_handler(void) {
-    pxMBFrameCBByteReceived();
+
+void uart2_rx_handler(void) {
+    pxMBFrameCBByteReceived();    
 }
 
-void rs485_1_tx_handler(void) {
+bool uart2_tx_handler(void) {
     pxMBFrameCBTransmitterEmpty();
+    /* returns true if we need to disable 
+       transmitter on tc event */
+    return !txen;
+}
+
+void uart2_tc_handler(void) {
+    /* Disable transmitter when complete */
+    digitalpin_set(RS485_TXE_PIN, 0);
 }

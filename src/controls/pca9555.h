@@ -2,7 +2,7 @@
 #define __CONTROLS_PCA9555_H__
 
 #include <stdint.h>
-#include "hardware/i2c.h"
+#include "i2c.h"
 
 struct PCA9555;
 
