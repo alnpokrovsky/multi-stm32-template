@@ -9,7 +9,7 @@ SRC += $(shell find src -name "*.c")
 # my configs
 INC += src/config
 # my macro utils
-INC += src/third-party/utils
+INC += src/utils
 # my hardware abstraction level
 INC += src/hardware/include
 # uGUI lib
