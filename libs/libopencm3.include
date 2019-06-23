@@ -1,22 +1,6 @@
-###############################################################################
-# LIBOPENCM3 files
+# LIBOPENCM3
 
-OPENCM3_DIR := libs/libopencm3
-
-
-# Check linker script
-ifeq ($(strip $(DEVICE)),)
-# Old style, assume LDSCRIPT exists
-DEFS		+= -I$(OPENCM3_DIR)/include
-LDFLAGS		+= -L$(OPENCM3_DIR)/lib
-LDLIBS		+= -l$(LIBNAME)
-LIBS_A 		+= $(OPENCM3_DIR)/lib/lib$(LIBNAME).a
-
-else
-# New style, assume device is provided, and we're generating the rest.
-ifneq ($(strip $(LDSCRIPT)),)
-$(error linker script conflict)
-endif
-include $(OPENCM3_DIR)/mk/genlink-config.mk
-
-endif
+DEFS		+= -I libs/libopencm3/include
+LDFLAGS		+= -L libs/libopencm3/lib
+LDLIBS		+= -l $(LIBNAME)
+LIBS_A 		+= libs/libopencm3/lib/lib$(LIBNAME).a

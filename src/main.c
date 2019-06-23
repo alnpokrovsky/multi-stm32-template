@@ -1,28 +1,23 @@
 #include "rcc.h"
 #include "digitalpin.h"
 #include "controls/modbus.h"
-#include "delay.h"
-#include "controls/stm32f3/hrpwm.h"
-
-uint16_t arr1[5] = {1, 2, 3, 4, 5};
-uint16_t arr2[5] = {0, 0, 0, 0, 0};
 
 
 int main(void)
 {
 	rcc_init();
 
-	digitalpin_mode(PC_0, DIGITALPIN_OUTPUT);
-	digitalpin_mode(PC_1, DIGITALPIN_OUTPUT);
-	digitalpin_mode(PC_2, DIGITALPIN_OUTPUT);
-	digitalpin_mode(PC_3, DIGITALPIN_OUTPUT);
+	// digitalpin_mode(PC_0, DIGITALPIN_OUTPUT);
+	// digitalpin_mode(PC_1, DIGITALPIN_OUTPUT);
+	// digitalpin_mode(PC_2, DIGITALPIN_OUTPUT);
+	// digitalpin_mode(PC_3, DIGITALPIN_OUTPUT);
 
-	hrpwm_init();
+	// hrpwm_init();
 
-	while(1) {
-		delay_some();
-		digitalpin_toggle(PC_0);
-	}
+	// while(1) {
+	// 	delay_some();
+	// 	digitalpin_toggle(PC_0);
+	// }
 	
 
 	// gpio_pin_mode(PC_13, GPIO_OUTPUT);
