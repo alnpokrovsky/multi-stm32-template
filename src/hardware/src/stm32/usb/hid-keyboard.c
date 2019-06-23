@@ -1,3 +1,5 @@
+#if defined(STM32F1)||defined(STM32F3)||defined(STM32F4)
+
 #include "usb/hid-keyboard.h"
 #include <stdint.h>
 #include <stdbool.h>
@@ -415,3 +417,4 @@ void hid_keyboard_release() {
 	hid_keyboard_send_report(report_buf, 9);
 }
 
+#endif

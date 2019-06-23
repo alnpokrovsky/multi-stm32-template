@@ -45,11 +45,11 @@
 // }
 
 
-#include "MDR32F9x.h"  //Подключаем заголовочный файл с регистрами
+#include "MDR32Fx.h"  //Подключаем заголовочный файл с регистрами
 #include "system_MDR32F9Qx.h" //Подключаем файл с инициализацией периферии
 long check = 0;
 
-void InitPortLED(void)//Инициализация портов микроконтроллера
+static void InitPortLED(void)//Инициализация портов микроконтроллера
 {
     MDR_PORTD->FUNC &= ~((0x3FF << (10 << 1))); 
     MDR_PORTD->ANALOG |= (1<<14|1<<13|1<<12|1<<11|1<<10); 
@@ -58,7 +58,7 @@ void InitPortLED(void)//Инициализация портов микрокон
     MDR_PORTD->OE |= (1<<14|1<<13|1<<12|1<<11|1<<10);
 }
 
-int main()
+int main(void)
 {
     SystemInit();//Системная функция, которая инициализирует тактовый генератор
     InitPortLED();

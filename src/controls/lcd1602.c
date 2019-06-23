@@ -1,6 +1,5 @@
 #include "lcd1602.h"
 #include "delay.h"
-#include "libopencm3/cm3/common.h"
 
 static struct {
     DIGITALPIN_NAME rs;
@@ -18,10 +17,10 @@ static void pulse(void) {
 }
 
 static void set_half_data(uint8_t d) {
-    digitalpin_set(lcd1602.db4, d & BIT0);
-    digitalpin_set(lcd1602.db5, d & BIT1);
-    digitalpin_set(lcd1602.db6, d & BIT2);
-    digitalpin_set(lcd1602.db7, d & BIT3);
+    digitalpin_set(lcd1602.db4, d & 0x01);
+    digitalpin_set(lcd1602.db5, d & 0x02);
+    digitalpin_set(lcd1602.db6, d & 0x04);
+    digitalpin_set(lcd1602.db7, d & 0x08);
 }
 
 static void send(uint8_t isData, uint8_t b) {

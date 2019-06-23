@@ -2,7 +2,6 @@
 #define __HARDWARE_SYSTICK_H__
 
 #include <stdint.h>
-#include <libopencm3/cm3/nvic.h>
 
 /**
  * init systick timer and start it

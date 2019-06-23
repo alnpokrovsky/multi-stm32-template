@@ -1,3 +1,6 @@
+#if defined(STM32F1)||defined(STM32F3)||defined(STM32F4)
+
+
 #include "usb/hid-cdc.h"
 #include <stdlib.h>
 #include "delay.h"
@@ -230,3 +233,4 @@ void hid_cdc_send(const char * buf, int len) {
 	while (usbd_ep_write_packet(usbd_dev, 0x82, buf, len) == 0); /* till it works */
 }
 
+#endif

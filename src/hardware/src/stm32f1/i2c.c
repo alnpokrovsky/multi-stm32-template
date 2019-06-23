@@ -1,9 +1,11 @@
+#if defined(STM32F1)
+
+
 #include "i2c.h"
 #include <libopencm3/stm32/i2c.h>
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/rcc.h>
 
-#if defined(STM32F1)
 
 void i2c_init() {
     /* Enable clocks for I2C1 and AFIO. */

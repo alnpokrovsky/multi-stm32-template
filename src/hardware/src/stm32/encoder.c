@@ -1,3 +1,5 @@
+#if defined(STM32F1)||defined(STM32F3)||defined(STM32F4)
+
 #include "encoder.h"
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/timer.h>
@@ -17,3 +19,5 @@ void encoder_init(void) {
 uint16_t encoder_get(void) {
     return (uint16_t) timer_get_counter(TIM3) >> SHIFT;
 }
+
+#endif

@@ -1,10 +1,11 @@
+#if defined(STM32F1)
+
 #include "adc.h"
 #include "delay.h"
 #include <libopencm3/stm32/adc.h>
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/rcc.h>
 
-#if defined(STM32F1)
 
 static void calibrate(void) {
     delay_some();

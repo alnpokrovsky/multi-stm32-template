@@ -6,10 +6,10 @@ ARCH_FLAGS	:= -mthumb -mcpu=cortex-m3 $(FP_FLAGS) -mfix-cortex-m3-ldrd
 
 include core/emdr1986x-std-per-lib.include
 
-SRC += SRC_MDR_VE9
+SRC += $(SRC_MDR_VE9)
 
-INC += INC_MDR_VE9
+INC += $(INC_MDR_VE9)
 
-LDSCRIPT := LD_MDR_VE9
+LDSCRIPT := $(LD_MDR_VE9)
 
 include rules.mk

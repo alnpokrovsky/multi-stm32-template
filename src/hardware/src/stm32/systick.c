@@ -1,3 +1,5 @@
+#if defined(STM32F1)||defined(STM32F3)||defined(STM32F4)
+
 #include "systick.h"
 #include <libopencm3/cm3/systick.h>
 
@@ -8,3 +10,5 @@ void systick_start_interrupt(uint32_t ticks) {
 	systick_interrupt_enable();
 	systick_counter_enable();
 }
+
+#endif
