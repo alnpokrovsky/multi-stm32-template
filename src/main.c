@@ -47,30 +47,25 @@
 
 #include "MDR32Fx.h"  //Подключаем заголовочный файл с регистрами
 #include "system_MDR32F9Qx.h" //Подключаем файл с инициализацией периферии
-long check = 0;
-
-static void InitPortLED(void)//Инициализация портов микроконтроллера
-{
-    MDR_PORTD->FUNC &= ~((0x3FF << (10 << 1))); 
-    MDR_PORTD->ANALOG |= (1<<14|1<<13|1<<12|1<<11|1<<10); 
-    MDR_PORTD->PWR |= (0x155 << (10 << 1));      
-    MDR_PORTD->RXTX &= ~(1<<14|1<<13|1<<12|1<<11|1<<10);
-    MDR_PORTD->OE |= (1<<14|1<<13|1<<12|1<<11|1<<10);
-}
+#include "delay.h"
 
 int main(void)
 {
     SystemInit();//Системная функция, которая инициализирует тактовый генератор
-    InitPortLED();
-    while(1)//Мигалка светодиодами
+    
+    MDR_RST_CLK->PER_CLOCK |= 1 << RST_CLK_PER_CLOCK_PCLK_EN_PORTC_Pos;
+
+    MDR_PORTC->OE     |= 1 << 2; // output
+    MDR_PORTC->ANALOG |= 1 << 2; // digital
+    MDR_PORTC->PULL   |= (1 << 2) << PORT_PULL_DOWN_Pos; // pull down
+    MDR_PORTC->PULL   |= (1 << 2) << PORT_PULL_UP_Pos;   //pull up
+    MDR_PORTC->PWR    |= 0x01 << PORT_PWR2_Pos; // speed slow
+
+    while(1)
     {
-        check++;
-        if(check == 1000)
-            MDR_PORTD->RXTX |= 1<<14|1<<10|1<<12;//vkl diod
-        if(check == 4000)
-        {
-            check = 0;
-            MDR_PORTD->RXTX &= (0<<11|0<<13);
-        }
+        delay_some();
+        MDR_PORTC->RXTX |= 1 << 2;
+        delay_some();
+        MDR_PORTC->RXTX &= ~(1 << 2);
     }
 }
