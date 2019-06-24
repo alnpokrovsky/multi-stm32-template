@@ -23,8 +23,10 @@ latex/
 # These are generated
 include/libopencm3/**/nvic.h
 include/libopencm3/**/**/nvic.h
-lib/**/vector_nvic.c
+!include/libopencm3/cm3/nvic.h
+!include/libopencm3/dispatch/nvic.h
 lib/**/**/vector_nvic.c
+!lib/dispatch/vector_nvic.c
 DoxygenLayout.xml
 doc/*/Doxyfile
 doc/*/DoxygenLayout_*.xml
