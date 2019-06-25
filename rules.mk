@@ -58,7 +58,8 @@ AS		:= $(PREFIX)-as
 OBJCOPY	:= $(PREFIX)-objcopy
 OBJDUMP	:= $(PREFIX)-objdump
 GDB		:= $(PREFIX)-gdb
-STFLASH	= $(shell which st-flash)
+STFLASH	?= st-flash
+OOCD	?= openocd
 
 
 ###############################################################################
@@ -125,14 +126,13 @@ OBJS_CXX := $(SRC_CXX:%.cpp=$(BUILD_DIR)/%.o)
 OBJS := $(OBJS_AS) $(OBJS_C) $(OBJS_CXX)
 
 
-.SUFFIXES: .elf .bin .hex .srec .list .map .images
+.SUFFIXES: .elf .bin .hex .list .map .images
 .SECONDEXPANSION:
 .SECONDARY:
 
 elf: $(PROJECT).elf
 bin: $(PROJECT).bin
 hex: $(PROJECT).hex
-srec: $(PROJECT).srec
 list: $(PROJECT).list
 images: $(PROJECT).images
 flash: $(PROJECT).flash
@@ -142,7 +142,7 @@ flash: $(PROJECT).flash
 	@printf "  LD \t$(*).elf\n"
 	$(Q)$(LD) $(TGT_LDFLAGS) $(LDFLAGS) $(OBJS) $(LDLIBS) -o $(*).elf
 
-%.images: %.bin %.hex %.srec %.list %.map
+%.images: %.bin %.hex %.list %.map
 	@printf "*** $* images generated ***\n"
 
 %.bin: %.elf
@@ -152,10 +152,6 @@ flash: $(PROJECT).flash
 %.hex: %.elf
 	@printf "  OBJCOPY $(*).hex\n"
 	$(Q)$(OBJCOPY) -Oihex $(*).elf $(*).hex
-
-%.srec: %.elf
-	@printf "  OBJCOPY $(*).srec\n"
-	$(Q)$(OBJCOPY) -Osrec $(*).elf $(*).srec
 
 %.list: %.elf
 	@printf "  OBJDUMP $(*).list\n"
@@ -186,11 +182,6 @@ $(BUILD_DIR)/%.o: %.cpp
 	@mkdir -p $(dir $@)
 	$(Q)$(CXX) $(TGT_CXXFLAGS) $(CXXFLAGS) $(TGT_CPPFLAGS) $(CPPFLAGS) -o $@ -c $<
 
-clean:
-	@printf "  CLEAN\n"
-	$(Q)$(RM) $(PROJECT).elf $(PROJECT).bin $(PROJECT).hex $(PROJECT).srec $(PROJECT).list $(PROJECT).map generated.* $(OBJS) $(OBJS:%.o=%.d)
-	$(Q)$(RM) -r $(BUILD_DIR)
-
 
 %.stlink-flash: %.bin
 	@printf "  FLASH  $<\n"
@@ -211,6 +202,12 @@ else
 		$(NULL)
 endif
 
-.PHONY: images clean elf bin hex srec list
+
+clean:
+	@printf "  CLEAN\n"
+	$(Q)$(RM) $(PROJECT).elf $(PROJECT).bin $(PROJECT).hex $(PROJECT).list $(PROJECT).map generated.* $(OBJS) $(OBJS:%.o=%.d)
+	$(Q)$(RM) -r $(BUILD_DIR)
+
+.PHONY: images clean elf bin hex list
 
 -include $(OBJS:.o=.d)
