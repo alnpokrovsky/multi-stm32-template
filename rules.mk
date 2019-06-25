@@ -58,7 +58,7 @@ AS		:= $(PREFIX)-as
 OBJCOPY	:= $(PREFIX)-objcopy
 OBJDUMP	:= $(PREFIX)-objdump
 GDB		:= $(PREFIX)-gdb
-STFLASH	:= $(shell which st-flash)
+STFLASH	= $(shell which st-flash)
 
 
 ###############################################################################
