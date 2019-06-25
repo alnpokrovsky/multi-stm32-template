@@ -31,9 +31,9 @@ endif
 ################################################################################
 # OpenOCD specific variables
 
-OOCD		?= openocd
+OOCD			?= openocd
 OOCD_INTERFACE	?= stlink-v2
-OOCD_TARGET	?= stm32f4x
+OOCD_TARGET		?= stm32f4x
 
 ################################################################################
 # Black Magic Probe specific variables
