@@ -60,7 +60,7 @@ vMBPortSerialEnable( BOOL xRxEnable, BOOL xTxEnable )
      * If xRXEnable enable serial receive interrupts.
      * If xTxENable enable transmitter empty interrupts. 
      */
-    uart_rx_tx_interrupt(MODBUS_PORT, xRxEnable, xTxEnable);
+    uart_rx_tx_interrupt_enable(MODBUS_PORT, xRxEnable, xTxEnable);
     
     /* rs485 enable pin control */
     if (xRxEnable) {

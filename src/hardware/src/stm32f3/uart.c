@@ -104,7 +104,7 @@ void uart_send(UART_PORT port, char c) {
     usart_send(UARTS[port].usart_base, c);
 }
 
-void uart_rx_tx_interrupt(UART_PORT port, bool rx_en, bool tx_en) {
+void uart_rx_tx_interrupt_enable(UART_PORT port, bool rx_en, bool tx_en) {
     if (rx_en) {
 		usart_enable_rx_interrupt(UARTS[port].usart_base);
     } else {

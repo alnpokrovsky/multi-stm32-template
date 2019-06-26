@@ -22,7 +22,7 @@ void uart_init(
     UART_PARITY parity
 );
 
-void uart_rx_tx_interrupt(UART_PORT port, bool rx_en, bool tx_en);
+void uart_rx_tx_interrupt_enable(UART_PORT port, bool rx_en, bool tx_en);
 
 char uart_recv(UART_PORT port);
 void uart_send(UART_PORT port, char c);
