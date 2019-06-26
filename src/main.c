@@ -49,22 +49,20 @@
 #include "delay.h"
 #include "rcc.h"
 #include "digitalpin.h"
+#include "systick.h"
+
+void systick_handler() {
+    digitalpin_toggle(PC_2);
+}
 
 int main(void)
 {
-    
+    rcc_init();
     digitalpin_mode(PC_2, DIGITALPIN_OUTPUT);
+    systick_start_interrupt(0);
 
     while(1)
     {
         delay_some();
-        delay_some();
-        delay_some();
-        delay_some();
-        delay_some();
-        delay_some();
-        delay_some();
-        delay_some();
-        digitalpin_toggle(PC_2);
     }
 }

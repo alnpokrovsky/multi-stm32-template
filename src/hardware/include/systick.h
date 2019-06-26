@@ -10,4 +10,6 @@
  */
 void systick_start_interrupt(uint32_t ticks);
 
+void systick_handler(void);
+
 #endif

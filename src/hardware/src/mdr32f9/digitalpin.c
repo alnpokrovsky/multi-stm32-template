@@ -1,7 +1,7 @@
 #if defined(USE_MDR1986VE9x)
 
 #include "digitalpin.h"
-#include "MDR32Fx.h"
+#include <MDR32Fx.h>
 
 typedef struct {
     MDR_PORT_TypeDef * port;
