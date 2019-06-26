@@ -51,23 +51,11 @@ void uart_init(
     MDR_RST_CLK->UART_CLOCK |= RST_CLK_UART_CLOCK_UART_BRG_HCLK << UARTS[port].uart_clock_brg_pos;
     MDR_RST_CLK->UART_CLOCK |= 1UL << UARTS[port].uart_clock_pos;
 
-    // float coef = 80000000.0 / (16*ulBaudRate);
-    // uint16_t ce = (uint16_t) coef;
-    // uint16_t fl = (uint16_t) ((coef - ce) * 64 + 0.5)
-    // UARTS[port].uart_base->IBRD = ce;
-    // UARTS[port].uart_base->FBRD = fl;
-
-    switch (ulBaudRate)
-    {
-    case 9600:
-        UARTS[port].uart_base->IBRD = 0x208; //целая часть делителя скорости
-        UARTS[port].uart_base->FBRD = 0x35; //дробная часть делителя скорости
-        break;
-    case 115200:
-        UARTS[port].uart_base->IBRD = 0x2b; //целая часть делителя скорости
-        UARTS[port].uart_base->FBRD = 0x1a; //дробная часть делителя скорости
-        break;
-    }
+    float coef = 80000000.0 / (16*ulBaudRate);
+    uint16_t ce = (uint16_t) coef;
+    uint16_t fl = (uint16_t) ((coef - ce) * 64 + 0.5);
+    UARTS[port].uart_base->IBRD = ce;
+    UARTS[port].uart_base->FBRD = fl;
 
     switch ( ucDataBits )
     {
