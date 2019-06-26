@@ -45,27 +45,26 @@
 // }
 
 
-#include "MDR32Fx.h"  //Подключаем заголовочный файл с регистрами
-#include "system_MDR32F9Qx.h" //Подключаем файл с инициализацией периферии
+
 #include "delay.h"
+#include "rcc.h"
+#include "digitalpin.h"
 
 int main(void)
 {
-    SystemInit();//Системная функция, которая инициализирует тактовый генератор
     
-    MDR_RST_CLK->PER_CLOCK |= 1 << RST_CLK_PER_CLOCK_PCLK_EN_PORTC_Pos;
-
-    MDR_PORTC->OE     |= 1 << 2; // output
-    MDR_PORTC->ANALOG |= 1 << 2; // digital
-    MDR_PORTC->PULL   |= (1 << 2) << PORT_PULL_DOWN_Pos; // pull down
-    MDR_PORTC->PULL   |= (1 << 2) << PORT_PULL_UP_Pos;   //pull up
-    MDR_PORTC->PWR    |= 0x01 << PORT_PWR2_Pos; // speed slow
+    digitalpin_mode(PC_2, DIGITALPIN_OUTPUT);
 
     while(1)
     {
         delay_some();
-        MDR_PORTC->RXTX |= 1 << 2;
         delay_some();
-        MDR_PORTC->RXTX &= ~(1 << 2);
+        delay_some();
+        delay_some();
+        delay_some();
+        delay_some();
+        delay_some();
+        delay_some();
+        digitalpin_toggle(PC_2);
     }
 }
