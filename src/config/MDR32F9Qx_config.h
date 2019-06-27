@@ -189,7 +189,7 @@ extern "C" {
 /* Uncomment USB_VCOM_SYNC to enable "reliable delivery" mode: no new data
  * would be received (EP3 will reply NAK) until all previous data is sent
  * to host. */
-#define USB_VCOM_SYNC
+//#define USB_VCOM_SYNC
 
 /* Uncomment USB_DEBUG_PROTO to utilize the ring buffer for received setup
  * packets and send/receive byte counters (for debug purposes). */
