@@ -12,9 +12,12 @@ static void null_handler(void)
 
 void systick_start_interrupt(uint32_t ticks) {
     (void)ticks;
+
+    NVIC_EnableIRQ(SysTick_IRQn);
+
     SysTick->LOAD = 0x9c40; //стартовое значение загружаемое в регистр VAL
-  SysTick->VAL = 0;
-  SysTick->CTRL =
+    SysTick->VAL = 0;
+    SysTick->CTRL =
                 (1 << 0) | //включение таймера
                 (1 << 1) | //разрешение прерывания
                 (0 << 2); //источник синхросигнала = LSI

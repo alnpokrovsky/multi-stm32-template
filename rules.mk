@@ -190,13 +190,13 @@ $(BUILD_DIR)/%.o: %.cpp
 %.flash: %.elf
 	@printf "  FLASH\t$<\n"
 ifeq (,$(OOCD_FILE))
-	$(Q)(echo "halt; program $(realpath $(*).elf) verify reset" | nc -4 localhost 4444 2>/dev/null) || \
+	$(Q)(echo "init; halt; program $(realpath $(*).elf) verify reset" | nc -4 localhost 4444 2>/dev/null) || \
 		$(OOCD) -f interface/$(OOCD_INTERFACE).cfg \
 		-f target/$(OOCD_TARGET).cfg \
 		-c "program $(realpath $(*).elf) verify reset exit" \
 		$(NULL)
 else
-	$(Q)(echo "halt; program $(realpath $(*).elf) verify reset" | nc -4 localhost 4444 2>/dev/null) || \
+	$(Q)(echo "init; halt; program $(realpath $(*).elf) verify reset" | nc -4 localhost 4444 2>/dev/null) || \
 		$(OOCD) -f $(OOCD_FILE) \
 		-c "program $(realpath $(*).elf) verify reset exit" \
 		$(NULL)

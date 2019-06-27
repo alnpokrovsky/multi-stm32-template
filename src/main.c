@@ -52,21 +52,31 @@
 #include "systick.h"
 #include "uart.h"
 
+
 void systick_handler() {
-    digitalpin_toggle(PC_2);
+    digitalpin_toggle(PC_2);    
+}
+
+void uart2_rx_handler() {
+    uart_send(UART_2, uart_recv(UART_2));
 }
 
 int main(void)
 {
     rcc_init();
     digitalpin_mode(PC_2, DIGITALPIN_OUTPUT);
+
     uart_init(UART_2, 115200, 8, PAR_NONE);
+
     systick_start_interrupt(0);
 
-    while(1)
+
+    uart_send(UART_2, 'w');
+    uart_rx_tx_interrupt_enable(UART_2, true, false);
+
+    while (1)
     {
-        uart_send(UART_2, 'a');
-        uart_send(UART_2, '\n');
-        delay_some();
+        
     }
+    
 }
