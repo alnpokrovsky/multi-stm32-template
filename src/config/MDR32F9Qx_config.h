@@ -93,7 +93,7 @@ extern "C" {
 
 /* RST_CLK frequencies startup timeouts settings */
 #define HSEonTimeOut    ((uint16_t)0x0600)
-#define HSE2onTimeOut	((uint16_t)0x8000)
+#define HSE2onTimeOut	  ((uint16_t)0x8000)
 #define LSEonTimeOut    ((uint16_t)0x0600)
 #define HSIonTimeOut    ((uint16_t)0x0600)
 #define LSIonTimeOut    ((uint16_t)0x0600)
@@ -189,7 +189,7 @@ extern "C" {
 /* Uncomment USB_VCOM_SYNC to enable "reliable delivery" mode: no new data
  * would be received (EP3 will reply NAK) until all previous data is sent
  * to host. */
-//#define USB_VCOM_SYNC
+#define USB_VCOM_SYNC
 
 /* Uncomment USB_DEBUG_PROTO to utilize the ring buffer for received setup
  * packets and send/receive byte counters (for debug purposes). */
