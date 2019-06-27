@@ -51,10 +51,6 @@
 #include "digitalpin.h"
 #include "systick.h"
 #include "uart.h"
-#include "MDR32F9Qx_uart.h"
-#include "MDR32F9Qx_rst_clk.h"
-#include "MDR32F9Qx_port.h"
-#include "MDR32F9Qx_eeprom.h"
 
 
 void systick_handler() {
@@ -64,8 +60,6 @@ void systick_handler() {
 void uart2_rx_handler() {
     uart_send(UART_2, uart_recv(UART_2));
 }
-
-#include "MDR32Fx.h"
 
 int main(void)
 {

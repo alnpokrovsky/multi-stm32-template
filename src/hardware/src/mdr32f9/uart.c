@@ -51,6 +51,8 @@ void uart_init(
     uint8_t ucDataBits,
     UART_PARITY parity
 ) {
+    (void)ucDataBits;
+    
     /* тактирование порта */
     MDR_RST_CLK->PER_CLOCK |= (1UL << UARTS[port].gpio_port_rcc_pos);
     /* переопределенная функция */
