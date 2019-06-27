@@ -6,7 +6,6 @@
 *.srec
 *.a
 *.elf
-lib/*.ld
 *.stylecheck
 *.swp
 \#*
