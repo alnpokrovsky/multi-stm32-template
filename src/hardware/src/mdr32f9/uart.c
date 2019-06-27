@@ -1,7 +1,9 @@
 #if defined(USE_MDR1986VE9x)
 
 #include "uart.h"
+#include "delay.h"
 #include <MDR32Fx.h>
+#include <MDR32F9Qx_uart.h>
 #include <assert.h>
 
 static void null_handler1(void) {}
@@ -19,8 +21,6 @@ static bool null_handler2(void) { return false; }
 typedef struct {
     MDR_UART_TypeDef * uart_base;
     uint8_t uart_rcc_pos;
-    uint8_t uart_clock_pos;
-    uint8_t uart_clock_brg_pos;
     uint8_t uart_irq;
     MDR_PORT_TypeDef * gpio_port;
     uint8_t gpio_port_rcc_pos;
@@ -30,13 +30,19 @@ typedef struct {
 
 static const Uart_descript UARTS[] = {
     {
-        MDR_UART1, RST_CLK_PER_CLOCK_PCLK_EN_UART1_Pos, RST_CLK_UART_CLOCK_UART1_CLK_EN_Pos, RST_CLK_UART_CLOCK_UART1_BRG_Pos, UART1_IRQn,
+        MDR_UART1, RST_CLK_PER_CLOCK_PCLK_EN_UART1_Pos, UART1_IRQn,
         MDR_PORTA, RST_CLK_PER_CLOCK_PCLK_EN_PORTA_Pos, 6, 7
     },
     {
-        MDR_UART2, RST_CLK_PER_CLOCK_PCLK_EN_UART2_Pos, RST_CLK_UART_CLOCK_UART2_CLK_EN_Pos, RST_CLK_UART_CLOCK_UART2_BRG_Pos, UART2_IRQn,
+        MDR_UART2, RST_CLK_PER_CLOCK_PCLK_EN_UART2_Pos, UART2_IRQn,
         MDR_PORTF, RST_CLK_PER_CLOCK_PCLK_EN_PORTF_Pos, 0, 1
     },
+};
+
+static const uint16_t PARITIES[] = {
+    UART_Parity_No,
+    UART_Parity_Even,
+    UART_Parity_Odd,
 };
 
 void uart_init(
@@ -57,57 +63,36 @@ void uart_init(
     UARTS[port].gpio_port->PWR |= PORT_PWR_MAX_FAST << 2*UARTS[port].gpio_rx_pos;
     UARTS[port].gpio_port->PWR |= PORT_PWR_MAX_FAST << 2*UARTS[port].gpio_tx_pos;
 
+
     /* Тактирование UART */
     MDR_RST_CLK->PER_CLOCK |= 1UL << UARTS[port].uart_rcc_pos;
-    /* предделитель UART */
-    MDR_RST_CLK->UART_CLOCK |= RST_CLK_UART_CLOCK_UART_BRG_HCLK << UARTS[port].uart_clock_brg_pos;
-    MDR_RST_CLK->UART_CLOCK |= 1UL << UARTS[port].uart_clock_pos;
-    /* Разрешаем FIFO */
-    //UARTS[port].uart_base->LCR_H |= UART_LCR_H_FEN;
+    /* Set the HCLK division factor = 1 for UART2*/
+    UART_BRGInit(MDR_UART2, UART_HCLKdiv1);
+    
+    static UART_InitTypeDef UART_InitStructure;
 
-    float coef = 80000000.0 / (16*ulBaudRate);
-    uint16_t ce = (uint16_t) coef;
-    uint16_t fl = (uint16_t) ((coef - ce) * 64 + 0.5);
-    UARTS[port].uart_base->IBRD = ce;
-    UARTS[port].uart_base->FBRD = fl;
+    /* Initialize UART_InitStructure */
+    UART_InitStructure.UART_BaudRate                = ulBaudRate;
+    UART_InitStructure.UART_WordLength              = UART_WordLength8b;
+    UART_InitStructure.UART_StopBits                = UART_StopBits1;
+    UART_InitStructure.UART_Parity                  = PARITIES[parity];
+    UART_InitStructure.UART_FIFOMode                = UART_FIFO_OFF;
+    UART_InitStructure.UART_HardwareFlowControl     = UART_HardwareFlowControl_RXE | UART_HardwareFlowControl_TXE;
 
-    switch ( ucDataBits )
-    {
-    case 8:
-		if (parity == PAR_NONE)
-            UARTS[port].uart_base->LCR_H |= UART_LCR_H_WLEN_8_BITS << UART_LCR_H_WLEN_Pos;
-        else 
-            assert(parity == PAR_NONE); // not support 9bits
-        break;
-    case 7:
-        /* 7 bits no parity not possible */
-		assert(parity != PAR_NONE);
-        UARTS[port].uart_base->LCR_H |= UART_LCR_H_WLEN_8_BITS << UART_LCR_H_WLEN_Pos;
-        break;
-    default:
-        /* impossible to config other */
-        assert(0);
-    }
-
-    switch (parity)
-    {
-    case PAR_NONE:
-        break;    
-    case PAR_EVEN:
-        UARTS[port].uart_base->LCR_H |= UART_LCR_H_BRK;
-        break;
-    case PAR_ODD:
-        UARTS[port].uart_base->LCR_H |= UART_LCR_H_BRK;
-        UARTS[port].uart_base->LCR_H |= UART_LCR_H_PEN;
-        break;
-    }
+    assert(((ucDataBits == 8) && (parity == PAR_NONE))
+        || ((ucDataBits == 7) && (parity != PAR_NONE))
+    );
 
     /* разрешаем прерываение */
     NVIC_EnableIRQ(UARTS[port].uart_irq);
     
-    /* передачик и приемник разрешен, разрешение приемопередатчика UART1 */
-    UARTS[port].uart_base->CR |= UART_CR_TXE | UART_CR_RXE;
-    UARTS[port].uart_base->CR |= UART_CR_UARTEN;
+    /* Configure UART2 parameters*/
+    UART_Init (UARTS[port].uart_base, &UART_InitStructure);
+
+    /* разрешение приемопередатчика UART */
+    UART_Cmd(UARTS[port].uart_base, ENABLE);
+
+    delay_some();
 }
 
 void uart_rx_tx_interrupt_enable(
@@ -137,11 +122,11 @@ void uart_rx_tx_interrupt_enable(
 }
 
 char uart_recv(UART_PORT port) {
-    return UARTS[port].uart_base->DR;
+    return UART_ReceiveData(UARTS[port].uart_base);
 }
 
 void uart_send(UART_PORT port, char c) {
-    UARTS[port].uart_base->DR = c;
+    UART_SendData(UARTS[port].uart_base, c);
 }
 
 void UART1_IRQHandler(void);
