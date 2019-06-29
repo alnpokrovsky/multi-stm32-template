@@ -1,11 +1,12 @@
-/* ----------------------- Modbus includes ----------------------------------*/
-#include "mb.h"
+#if defined(STM32F1)||defined(STM32F3)||defined(STM32F4)
+
+#include "critical.h"
 #include <libopencm3/cm3/cortex.h>
 
-static ULONG    ulNesting;
 
+static unsigned int ulNesting = 0;
 
-void __critical_enter( void )
+void critical_enter( void )
 {
     if(ulNesting == 0)
     {
@@ -14,7 +15,7 @@ void __critical_enter( void )
     ulNesting++;
 }
 
-void __critical_exit( void )
+void critical_exit( void )
 {
   ulNesting--;
   if(ulNesting == 0)
@@ -22,3 +23,5 @@ void __critical_exit( void )
     cm_enable_interrupts();
 	}
 }
+
+#endif

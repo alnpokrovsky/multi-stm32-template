@@ -4,6 +4,7 @@
 #include "delay.h"
 #include <MDR32Fx.h>
 #include <MDR32F9Qx_uart.h>
+#include <MDR32F9Qx_rst_clk.h>
 #include <assert.h>
 
 static void null_handler1(void) {}
@@ -20,22 +21,20 @@ static bool null_handler2(void) { return false; }
 
 typedef struct {
     MDR_UART_TypeDef * uart_base;
-    uint8_t uart_rcc_pos;
     uint8_t uart_irq;
     MDR_PORT_TypeDef * gpio_port;
-    uint8_t gpio_port_rcc_pos;
     uint8_t gpio_rx_pos;
     uint8_t gpio_tx_pos;
 } Uart_descript;
 
 static const Uart_descript UARTS[] = {
     {
-        MDR_UART1, RST_CLK_PER_CLOCK_PCLK_EN_UART1_Pos, UART1_IRQn,
-        MDR_PORTA, RST_CLK_PER_CLOCK_PCLK_EN_PORTA_Pos, 6, 7
+        MDR_UART1, UART1_IRQn,
+        MDR_PORTA, 6, 7
     },
     {
-        MDR_UART2, RST_CLK_PER_CLOCK_PCLK_EN_UART2_Pos, UART2_IRQn,
-        MDR_PORTF, RST_CLK_PER_CLOCK_PCLK_EN_PORTF_Pos, 0, 1
+        MDR_UART2, UART2_IRQn,
+        MDR_PORTF, 0, 1
     },
 };
 
@@ -54,7 +53,7 @@ void uart_init(
     (void)ucDataBits;
     
     /* тактирование порта */
-    MDR_RST_CLK->PER_CLOCK |= (1UL << UARTS[port].gpio_port_rcc_pos);
+    RST_CLK_PCLKcmd(PCLK_BIT(UARTS[port].gpio_port), ENABLE);
     /* переопределенная функция */
     UARTS[port].gpio_port->FUNC |= PORT_FUNC_MODE_OVER << 2*UARTS[port].gpio_rx_pos;
     UARTS[port].gpio_port->FUNC |= PORT_FUNC_MODE_OVER << 2*UARTS[port].gpio_tx_pos;
@@ -67,11 +66,11 @@ void uart_init(
 
 
     /* Тактирование UART */
-    MDR_RST_CLK->PER_CLOCK |= 1UL << UARTS[port].uart_rcc_pos;
+    RST_CLK_PCLKcmd(PCLK_BIT(UARTS[port].uart_base), ENABLE);
     /* Set the HCLK division factor = 1 for UART2*/
     UART_BRGInit(MDR_UART2, UART_HCLKdiv1);
     
-    static UART_InitTypeDef UART_InitStructure;
+    UART_InitTypeDef UART_InitStructure;
 
     /* Initialize UART_InitStructure */
     UART_InitStructure.UART_BaudRate                = ulBaudRate;
@@ -89,7 +88,7 @@ void uart_init(
     NVIC_EnableIRQ(UARTS[port].uart_irq);
     
     /* Configure UART2 parameters*/
-    UART_Init (UARTS[port].uart_base, &UART_InitStructure);
+    UART_Init(UARTS[port].uart_base, &UART_InitStructure);
 
     /* разрешение приемопередатчика UART */
     UART_Cmd(UARTS[port].uart_base, ENABLE);

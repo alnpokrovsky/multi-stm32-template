@@ -22,18 +22,16 @@
 #ifndef _PORT_H
 #define _PORT_H
 
-#include <assert.h>
+#include "critical.h"
 #include <inttypes.h>
 
 #define	INLINE                      inline
 #define PR_BEGIN_EXTERN_C           extern "C" {
 #define	PR_END_EXTERN_C             }
 
-void __critical_enter(void);
-void __critical_exit(void);
 
-#define ENTER_CRITICAL_SECTION( )   ( __critical_enter( ) )
-#define EXIT_CRITICAL_SECTION( )    ( __critical_exit( ) )
+#define ENTER_CRITICAL_SECTION( )   ( critical_enter() )
+#define EXIT_CRITICAL_SECTION( )    ( critical_exit() )
 
 typedef uint8_t BOOL;
 

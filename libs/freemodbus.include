@@ -3,8 +3,8 @@
 DEFS += -DFREEMODBUS_LIB
 
 INC += \
-    src/third-party/modbus/include \
-    src/third-party/modbus/port \
-    src/third-party/modbus/rtu
+    libs/freemodbus/include \
+    libs/freemodbus/port \
+    libs/freemodbus/rtu
 
 SRC += $(shell find libs/freemodbus -name "*.c")
