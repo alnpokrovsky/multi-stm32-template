@@ -102,8 +102,6 @@ xMBPortSerialPutByte( CHAR ucByte )
 
 void MODBUS_UART_RX_HANDLER()
 {
-    digitalpin_set(PC_13, 0);
-
     pxMBFrameCBByteReceived();    
 }
 

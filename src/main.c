@@ -4,8 +4,7 @@
 #include "controls/modbus.h"
 #include "uart.h"
 
-//#define LED PC_2
-#define LED PC_13
+#define LED PC_2
 
 
 int main(void) {
@@ -13,10 +12,8 @@ int main(void) {
 
     digitalpin_mode(LED, DIGITALPIN_OUTPUT);
 
-    modbus_init();
+    modbus_init(1, 115200);
 
-    digitalpin_set(PC_13, 1);
-    //digitalpin_toggle(LED);
 
     while (1) {
         modbus_poll();

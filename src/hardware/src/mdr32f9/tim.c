@@ -55,6 +55,7 @@ void tim_init(TIM tim, uint16_t val, TIM_UNITS units) {
 }
 
 void tim_start(TIM tim) {
+    TIMER_SetCounter(TIMS[tim].tim_base, 1);
     /* Включение прерывания при равенстве нулю */
     TIMER_ITConfig(TIMS[tim].tim_base, TIMER_STATUS_CNT_ARR, ENABLE);
     /* Запуск таймера */
@@ -73,7 +74,7 @@ void Timer2_IRQHandler(void) {
     if(TIMER_GetITStatus(MDR_TIMER2, TIMER_STATUS_CNT_ARR))
     {
         tim2_handler();
-        // Очистка флага прерывания в таймере (предотвращает повторный вызов того же прерывания)
+        /* Очистка флага прерывания в таймере */
         TIMER_ClearITPendingBit(MDR_TIMER2, TIMER_STATUS_CNT_ARR);
     }
 }
@@ -83,7 +84,7 @@ void Timer3_IRQHandler(void) {
     if(TIMER_GetITStatus(MDR_TIMER3, TIMER_STATUS_CNT_ARR))
     {
         tim3_handler();
-        // Очистка флага прерывания в таймере (предотвращает повторный вызов того же прерывания)
+        /* Очистка флага прерывания в таймере */        
         TIMER_ClearITPendingBit(MDR_TIMER3, TIMER_STATUS_CNT_ARR);
     }
 }

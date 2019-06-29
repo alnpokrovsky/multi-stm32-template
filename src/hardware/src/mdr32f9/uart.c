@@ -158,7 +158,6 @@ void UART1_IRQHandler(void) {
 
 void UART2_IRQHandler(void);
 void UART2_IRQHandler(void) {
-    uart2_rx_handler();
     /* Check if we were called because of RXNE. */
     if ((MDR_UART2->MIS & UART_MIS_RXMIS) != 0)
     {

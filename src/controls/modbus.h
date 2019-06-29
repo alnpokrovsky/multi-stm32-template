@@ -7,7 +7,7 @@
 /**
  * initializing hardware rs485 and freemodbus
  */
-void modbus_init(void);
+void modbus_init(uint8_t id, uint32_t baudrate);
 
 /**
  * periodically call it to serve freemodbus
