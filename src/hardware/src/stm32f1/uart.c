@@ -26,17 +26,18 @@ typedef struct {
     uint8_t usart_irq;
     uint32_t gpio_port;
     uint16_t gpio_port_rcc;
-    uint32_t gpio_pins;
+    uint32_t gpio_tx;
+    uint32_t gpio_rx;
 } Uart_descript;
 
 static const Uart_descript UARTS[] = {
     {
         USART1, RCC_USART1, NVIC_USART1_IRQ,
-        GPIOB, RCC_GPIOB, GPIO6|GPIO7,
+        GPIOA, RCC_GPIOA, GPIO9, GPIO10,
     },
     {
         USART2, RCC_USART2, NVIC_USART2_IRQ,
-        GPIOB, RCC_GPIOB, GPIO3|GPIO4,
+        GPIOA, RCC_GPIOA, GPIO2, GPIO3,
     },
 };
 
@@ -52,16 +53,20 @@ void uart_init(
     uint8_t ucDataBits,
     UART_PARITY parity
 ) {
+    rcc_periph_clock_enable(UARTS[port].gpio_port_rcc);
+    rcc_periph_clock_enable(UARTS[port].usart_rcc);
+
     /* gpio init */
-    /* Enable clocks for GPIO port A (for GPIO_USART1_TX) and USART1. */
-	rcc_peripheral_enable_clock(&RCC_APB2ENR, RCC_APB2ENR_IOPAEN |
-				    RCC_APB2ENR_AFIOEN | RCC_APB2ENR_USART1EN);
-	/* Setup GPIO pin GPIO_USART1_RE_TX on GPIO port A for transmit. */
-	gpio_set_mode(GPIOA, GPIO_MODE_OUTPUT_50_MHZ,
-		      GPIO_CNF_OUTPUT_ALTFN_PUSHPULL, GPIO_USART1_TX);
-	/* Setup GPIO pin GPIO_USART1_RE_RX on GPIO port A for receive. */
-	gpio_set_mode(GPIOA, GPIO_MODE_INPUT,
-		      GPIO_CNF_INPUT_FLOAT, GPIO_USART1_RX);
+	gpio_set_mode(UARTS[port].gpio_port, 
+        GPIO_MODE_OUTPUT_50_MHZ,
+        GPIO_CNF_OUTPUT_ALTFN_PUSHPULL,
+        UARTS[port].gpio_tx
+    );
+	gpio_set_mode(UARTS[port].gpio_port, 
+        GPIO_MODE_INPUT,
+		GPIO_CNF_INPUT_FLOAT,
+        UARTS[port].gpio_rx
+    );
 
     /* Setup UART parameters. */
 	usart_set_baudrate(UARTS[port].usart_base, ulBaudRate);
@@ -140,9 +145,10 @@ void usart1_isr() {
     /* Check if we were called because of transfer comlite*/
     if (((USART_CR1(USART1) & USART_CR1_TCIE) != 0) && usart_get_flag(USART1, USART_FLAG_TC))
     {
+        uart1_tc_handler();
+
         USART_CR1(USART1) &= ~USART_CR1_TCIE;/* Disble transfer complite interrupt*/
         USART_SR (USART1) &= ~USART_FLAG_TC;   /* Clear TC flag*/
-        uart1_tc_handler();
     }
 }
 
@@ -165,9 +171,10 @@ void usart2_isr() {
     /* Check if we were called because of transfer comlite*/
     if (((USART_CR1(USART2) & USART_CR1_TCIE) != 0) && usart_get_flag(USART2, USART_FLAG_TC))
     {
+        uart2_tc_handler();
+
         USART_CR1(USART2) &= ~USART_CR1_TCIE;/* Disble transfer complite interrupt*/
         USART_SR (USART2) &= ~USART_FLAG_TC;   /* Clear TC flag*/
-        uart2_tc_handler();
     }
 }
 

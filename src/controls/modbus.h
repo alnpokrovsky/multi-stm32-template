@@ -5,6 +5,16 @@
 #include <stdbool.h>
 
 /**
+ * initializing hardware rs485 and freemodbus
+ */
+void modbus_init(void);
+
+/**
+ * periodically call it to serve freemodbus
+ */
+void modbus_poll(void);
+
+/**
  * Holding Registers (Analog Output)
  */
 uint16_t modbus_Hreg(uint16_t addr);
@@ -28,14 +38,6 @@ void modbus_set_Ists_word(uint16_t addr16, uint16_t val16);
  */
 void modbus_set_Ireg(uint16_t addr, uint16_t val);
 
-/**
- * initializing hardware rs485 and freemodbus
- */
-void modbus_init(void);
 
-/**
- * periodically call it to serve freemodbus
- */
-void modbus_poll(void);
 
 #endif

@@ -6,7 +6,8 @@
 
 static void null_handler(void) {}
 
-#pragma weak tim1_handler = null_handler
+#pragma weak tim2_handler = null_handler
+#pragma weak tim3_handler = null_handler
 
 typedef struct {
     MDR_TIMER_TypeDef * tim_base;
@@ -15,7 +16,10 @@ typedef struct {
 
 static const tim_descript TIMS[] = {
     {
-        MDR_TIMER1, TIMER1_IRQn,
+        MDR_TIMER2, TIMER2_IRQn,
+    },
+    {
+        MDR_TIMER3, TIMER3_IRQn,
     },
 };
 
@@ -24,7 +28,7 @@ static const uint32_t PRESCAL_UNITS[] = {
     8000000,  /* MICROSEC * div8 */
 };
 
-void tim_init(TIM tim, TIM_UNITS units) {
+void tim_init(TIM tim, uint16_t val, TIM_UNITS units) {
     /* Включение тактирования таймера */
     RST_CLK_PCLKcmd(PCLK_BIT(TIMS[tim].tim_base), ENABLE);
     /* Установка предделителя тактовой частоты таймера */
@@ -41,6 +45,8 @@ void tim_init(TIM tim, TIM_UNITS units) {
     TIMER_CntStructInit(&TIMInit);
     /* делитель частоты */
     TIMInit.TIMER_Prescaler = prescal - 1;
+    /* основание счета */
+    TIMInit.TIMER_Period    = val;
     TIMER_CntInit(TIMS[tim].tim_base, &TIMInit);
 
     //Настройка прерывания
@@ -48,12 +54,7 @@ void tim_init(TIM tim, TIM_UNITS units) {
     NVIC_SetPriority(TIMS[tim].tim_irq, 0);
 }
 
-void tim_start(TIM tim, uint16_t val) {
-    /* основание счета */
-    TIMS[tim].tim_base->ARR = val;
-    /* ждем, пока не выставится время */
-    while (TIMER_GetCntWriteComplete(TIMS[tim].tim_base) == SET) ;
-
+void tim_start(TIM tim) {
     /* Включение прерывания при равенстве нулю */
     TIMER_ITConfig(TIMS[tim].tim_base, TIMER_STATUS_CNT_ARR, ENABLE);
     /* Запуск таймера */
@@ -66,13 +67,24 @@ void tim_stop(TIM tim) {
 }
 
 
-void Timer1_IRQHandler(void);
-void Timer1_IRQHandler(void) {
-    if(TIMER_GetITStatus(MDR_TIMER1, TIMER_STATUS_CNT_ARR))
+
+void Timer2_IRQHandler(void);
+void Timer2_IRQHandler(void) {
+    if(TIMER_GetITStatus(MDR_TIMER2, TIMER_STATUS_CNT_ARR))
     {
-        tim1_handler();
+        tim2_handler();
         // Очистка флага прерывания в таймере (предотвращает повторный вызов того же прерывания)
-        TIMER_ClearITPendingBit(MDR_TIMER1, TIMER_STATUS_CNT_ARR);
+        TIMER_ClearITPendingBit(MDR_TIMER2, TIMER_STATUS_CNT_ARR);
+    }
+}
+
+void Timer3_IRQHandler(void);
+void Timer3_IRQHandler(void) {
+    if(TIMER_GetITStatus(MDR_TIMER3, TIMER_STATUS_CNT_ARR))
+    {
+        tim3_handler();
+        // Очистка флага прерывания в таймере (предотвращает повторный вызов того же прерывания)
+        TIMER_ClearITPendingBit(MDR_TIMER3, TIMER_STATUS_CNT_ARR);
     }
 }
 

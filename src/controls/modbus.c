@@ -48,25 +48,6 @@ void modbus_set_Ireg(uint16_t addr, uint16_t val) {
     Ireg_table[addr] = word_swap(val);
 }
 
-
-void modbus_init() {
-
-    eMBErrorCode eStatus = MB_ENOERR;
-	eStatus = eMBInit(MB_RTU, 11, 1, 19200, MB_PAR_EVEN);
-	assert(eStatus == MB_ENOERR);
-
-	const char *report_data = "karlwashere";
-	eStatus = eMBSetSlaveID(0x34, TRUE, (UCHAR *) report_data, strlen(report_data));
-	assert(eStatus == MB_ENOERR);
-
-	eStatus = eMBEnable();
-	assert(eStatus == MB_ENOERR);
-}
-
-inline void modbus_poll() {
-    eMBPoll();
-}
-
 eMBErrorCode eMBRegInputCB(UCHAR * pucRegBuffer, USHORT usAddress,
 	USHORT usNRegs)
 {
@@ -160,6 +141,27 @@ eMBErrorCode eMBRegDiscreteCB(UCHAR * pucRegBuffer, USHORT usAddress,
     }
 
 	return MB_ENOERR;
+}
+
+#include "digitalpin.h"
+
+void modbus_init() {
+    eMBErrorCode eStatus = MB_ENOERR;
+    (void) eStatus;
+	eStatus = eMBInit(MB_RTU, 11, 1, 19200, MB_PAR_EVEN);
+    assert(eStatus == MB_ENOERR);
+
+	const char *report_data = "karlwashere";
+	eStatus = eMBSetSlaveID(0x34, TRUE, (UCHAR *) report_data, strlen(report_data));
+	assert(eStatus == MB_ENOERR);
+    
+
+	eStatus = eMBEnable();
+	assert(eStatus == MB_ENOERR);
+}
+
+inline void modbus_poll() {
+    eMBPoll();
 }
 
 

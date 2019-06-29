@@ -4,9 +4,9 @@
 #include <stdint.h>
 
 typedef enum {
-    TIM_1,
     TIM_2,
     TIM_3,
+    TIM_4,
 } TIM;
 
 typedef enum {
@@ -14,12 +14,15 @@ typedef enum {
     MICROSEC,
 } TIM_UNITS;
 
-void tim_init(TIM tim, TIM_UNITS units);
+void tim_init(TIM tim, uint16_t val, TIM_UNITS units);
 
-void tim_start(TIM tim, uint16_t val);
+void tim_start(TIM tim);
 
 void tim_stop(TIM tim);
 
-void tim1_handler(void);
+void tim2_handler(void);
+void tim3_handler(void);
+void tim4_handler(void);
+
 
 #endif

@@ -44,7 +44,7 @@ xMBPortSerialInit( UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits, eMBParity e
     (void)ucPORT;
 
     /* init uart */
-	uart_init(MODBUS_PORT, ulBaudRate, ucDataBits, eParity);
+	uart_init(MODBUS_UART, ulBaudRate, ucDataBits, eParity);
     /* init txe pin */
     digitalpin_mode(RS485_TXE_PIN, DIGITALPIN_OUTPUT);
     digitalpin_set(RS485_TXE_PIN, 0);
@@ -60,7 +60,7 @@ vMBPortSerialEnable( BOOL xRxEnable, BOOL xTxEnable )
      * If xRXEnable enable serial receive interrupts.
      * If xTxENable enable transmitter empty interrupts. 
      */
-    uart_rx_tx_interrupt_enable(MODBUS_PORT, xRxEnable, xTxEnable);
+    uart_rx_tx_interrupt_enable(MODBUS_UART, xRxEnable, xTxEnable);
     
     /* rs485 enable pin control */
     if (xRxEnable) {
@@ -77,7 +77,7 @@ vMBPortSerialEnable( BOOL xRxEnable, BOOL xTxEnable )
 BOOL
 xMBPortSerialGetByte( CHAR * pucByte )
 {
-    *pucByte = uart_recv(MODBUS_PORT);
+    *pucByte = uart_recv(MODBUS_UART);
     return TRUE;
 }
 
@@ -87,7 +87,7 @@ xMBPortSerialPutByte( CHAR ucByte )
     /* Put a byte in the UARTs transmit buffer. This function is called
      * by the protocol stack if pxMBFrameCBTransmitterEmpty( ) has been
      * called. */
-    uart_send(MODBUS_PORT, ucByte);
+    uart_send(MODBUS_UART, ucByte);
     return TRUE;
 }
 
@@ -100,18 +100,23 @@ xMBPortSerialPutByte( CHAR ucByte )
  */
 /* Find out what interrupted and get or send data as appropriate */
 
-void uart2_rx_handler(void) {
+void MODBUS_UART_RX_HANDLER()
+{
+    digitalpin_set(PC_13, 0);
+
     pxMBFrameCBByteReceived();    
 }
 
-bool uart2_tx_handler(void) {
+bool MODBUS_UART_TX_HANDLER()
+{
     pxMBFrameCBTransmitterEmpty();
     /* returns true if we need to disable 
        transmitter on tc event */
     return !txen;
 }
 
-void uart2_tc_handler(void) {
+void MODBUS_UART_TC_HANDLER()
+{
     /* Disable transmitter when complete */
     digitalpin_set(RS485_TXE_PIN, 0);
 }
