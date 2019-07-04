@@ -1,6 +1,6 @@
 #include "pinboard.h"
 #include "digitalpin.h"
-#include "usb/hid-keyboard.h"
+#include "usb/keyboard.h"
 
 
 typedef uint8_t Rowmap[COLS_N];
