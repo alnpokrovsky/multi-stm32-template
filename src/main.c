@@ -4,6 +4,7 @@
 #include "controls/modbus.h"
 #include "uart.h"
 #include "usb/hid.h"
+#include "usb/cdc.h"
 
 //#define LED PC_2
 #define LED PC_13
@@ -15,6 +16,7 @@ int main(void) {
 
     //modbus_init(1, 115200);
     usb_hid_init();
+    //usb_cdc_init();
 
     while (1) {
         //modbus_poll();
