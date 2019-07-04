@@ -5,8 +5,8 @@
 
 
 void rcc_init() {
-	rcc_clock_setup_in_hse_8mhz_out_24mhz();
-	rcc_set_ppre2(RCC_CFGR_PPRE2_HCLK_DIV2);
+	//rcc_clock_setup_in_hse_8mhz_out_24mhz();
+	rcc_clock_setup_in_hse_16mhz_out_72mhz();
 }
 
 
