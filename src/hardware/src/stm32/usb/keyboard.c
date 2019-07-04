@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include "delay.h"
 #include <libopencm3/usb/hid.h>
+#include "UsbConfig.h"
 #include "usb/private/setup.h"
 
 const struct usb_device_descriptor dev_descriptor = {
@@ -16,8 +17,8 @@ const struct usb_device_descriptor dev_descriptor = {
 	.bDeviceSubClass = 0,
 	.bDeviceProtocol = 0,
 	.bMaxPacketSize0 = 64,
-	.idVendor = 0x0483,
-	.idProduct = 0x5710,
+	.idVendor =  USB_DEV_VID,
+	.idProduct = USB_DEV_PID,
 	.bcdDevice = 0x0200,
 	.iManufacturer = 1,
 	.iProduct = 2,
