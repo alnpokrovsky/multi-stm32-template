@@ -2,6 +2,7 @@
 #include "descriptors/usb_core.h"
 #include <libopencm3/stm32/desig.h>
 #include "UsbConfig.h"
+#include "delay.h"
 
 
 void usb_init(void) {
@@ -10,4 +11,6 @@ void usb_init(void) {
     usb_core_set_serial_number(serial);
 
     usb_core_init();
+
+    delay_some();
 }
