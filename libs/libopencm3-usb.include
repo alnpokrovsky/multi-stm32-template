@@ -1,0 +1,5 @@
+# usb libopencm3 porting
+
+INC += libs/libopencm3-usb/include
+    
+SRC += $(shell find libs/libopencm3-usb/src -name "*.c")

@@ -18,7 +18,7 @@ INC += src/third-party/ugui
 
 ########### LIBRARIES ###############
 include libs/freemodbus.include
-
+include libs/libopencm3-usb.include
 
 ########### BUILD DEVICE ##############
 LDSCRIPT := make/stm32/f1/stm32f103xB.ld

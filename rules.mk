@@ -45,7 +45,7 @@ endif
 PROJECT		?= main
 INC 		+= src
 BUILD_DIR 	?= build
-CSTD		?= -std=c99
+CSTD		?= -std=c11
 
 ###############################################################################
 # Executables
