@@ -21,15 +21,20 @@
  */
 
 #include "msc.h"
+#include "UsbConfig.h"
+
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include <libopencm3/cm3/common.h>
 #include <libopencm3/usb/usbd.h>
 #include <libopencm3/usb/msc.h>
+
 #include "core/aggregate.h"
 #include "minmax.h"
-#include "uf2.h"
+#include "controls/ghostfat.h"
+
 
 //  USB Endpoints.
 #define MSC_OUT                 0x01
@@ -984,8 +989,6 @@ static usbd_mass_storage *custom_usb_msc_init(
 	return &_mass_storage;
 }
 
-#ifdef INTF_MSC
-
 //  MSC Endpoints
 static const struct usb_endpoint_descriptor msc_endp[] = {{
 	.bLength = USB_DT_ENDPOINT_SIZE,
@@ -1035,8 +1038,6 @@ void msc_setup(usbd_device* usbd_dev0) {
         INTF_MSC
     );
 }
-
-#endif  //  INTF_MSC
 
 
 /** @} */

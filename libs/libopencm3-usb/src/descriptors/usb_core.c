@@ -18,9 +18,11 @@
  */
 
 #include "usb_core.h"
+#include "UsbConfig.h"
 
 #include <stdlib.h>
 #include <string.h>
+
 #include <libopencm3/cm3/cortex.h>
 #include <libopencm3/cm3/nvic.h>
 #include <libopencm3/cm3/systick.h>
@@ -28,12 +30,12 @@
 #include <libopencm3/usb/dfu.h>
 #include <libopencm3/usb/msc.h>
 #include <libopencm3/usb/cdc.h>
+
 #include "dfu.h"
 #include "cdc.h"
 #include "webusb.h"
 #include "winusb.h"
 #include "usb21_standard.h"
-#include "uf2.h"
 #include "../private/setup.h"
 #include "bootloader.h"
 #include "msc.h"
@@ -41,7 +43,7 @@
 
 
 #ifdef USB21_INTERFACE
-static const char* origin_url = INDEX_URL;
+static const char* origin_url = "https://visualbluepill.github.io";
 #endif  //  USB21_INTERFACE
 
 static char serial_number[USB_SERIAL_NUM_LENGTH+1];
@@ -124,28 +126,6 @@ static const struct usb_config_descriptor config = {
     .bMaxPower = 0xfa,     //  500 mA. Copied from microbit.
     .interface = interfaces,
 };
-
-#ifdef USB21_INTERFACE
-//  BOS Capabilities for WebUSB and Microsoft Platform
-static const struct usb_device_capability_descriptor* capabilities[] = {
-	(const struct usb_device_capability_descriptor*) 
-        &webusb_platform_capability_descriptor,
-	(const struct usb_device_capability_descriptor*) 
-        &microsoft_platform_capability_descriptor,
-};
-
-//  BOS Descriptor for WebUSB and Microsoft Platform
-static const struct usb_bos_descriptor bos_descriptor = {
-	.bLength = USB_DT_BOS_SIZE,
-	.bDescriptorType = USB_DT_BOS,
-	.bNumDeviceCaps = sizeof(capabilities) / sizeof(capabilities[0]),
-	.capabilities = capabilities
-};
-#endif  //  USB21_INTERFACE
-
-
-
-
 
 
 

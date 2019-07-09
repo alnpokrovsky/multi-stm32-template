@@ -43,7 +43,7 @@ struct usb_bos_descriptor {
 #define USB_DT_BOS_SIZE 5
 
 /* USB Device Capability Types - USB 3.1 Table 9-14 */
-#define USB_DC_PLATFORM					5
+#define USB_DC_PLATFORM	5
 
 extern void usb21_setup(usbd_device* usbd_dev, const struct usb_bos_descriptor* binary_object_store);
 

@@ -20,14 +20,9 @@
 #define __LIB_USB_PRIVATE_WEBUSB_H__
 
 #include <libopencm3/usb/usbd.h>
-#include "webusb_defs.h"
 
-// Arbitrary
-#define WEBUSB_VENDOR_CODE 0x22  //  Don't use 0x21, reserved for WinUSB.
 
-extern const struct webusb_platform_descriptor webusb_platform_capability_descriptor;
-extern const struct webusb_platform_descriptor webusb_platform_capability_descriptor_no_landing_page;
-extern const struct microsoft_platform_descriptor microsoft_platform_capability_descriptor;
+extern const struct usb_bos_descriptor bos_descriptor;
 
 void webusb_setup(usbd_device* usbd_dev, const char* https_url);
 

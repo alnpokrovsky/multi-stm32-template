@@ -17,14 +17,16 @@
  */
 
 #include "dfu.h"
+#include "UsbConfig.h"
+#include "DeviceConfig.h"
+#include "core/aggregate.h"
+
 #include <stdlib.h>
 #include <string.h>
+
 #include <libopencm3/usb/usbd.h>
 #include <libopencm3/usb/dfu.h>
-#include "DeviceConfig.h"
-#include "memflash.h"
-#include "core/aggregate.h"
-#include <libopencm3/usb/dfu.h>
+
 
 struct dfu_getstatus_response {
     uint8_t bStatus;
@@ -38,7 +40,6 @@ struct dfu_getstate_response {
 } __attribute__((packed));
 
 
-#ifdef INTF_DFU
 #define CONTROL_CALLBACK_TYPE (USB_REQ_TYPE_CLASS | USB_REQ_TYPE_INTERFACE)
 #define CONTROL_CALLBACK_MASK (USB_REQ_TYPE_TYPE | USB_REQ_TYPE_RECIPIENT)
 
@@ -343,4 +344,3 @@ void dfu_setup(usbd_device* usbd_dev,
         on_state_change(current_dfu_state);
     }
 }
-#endif  //  INTF_DFU

@@ -1,6 +1,7 @@
 #include "usb.h"
 #include "descriptors/usb_core.h"
 #include <libopencm3/stm32/desig.h>
+#include "UsbConfig.h"
 
 
 void usb_init(void) {

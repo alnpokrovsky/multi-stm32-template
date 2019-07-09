@@ -9,13 +9,9 @@
 #define MSC_VENDOR_ID           "BluePill"        //  Max 8 chars
 #define MSC_PRODUCT_ID          "UF2 Bootloader"  //  Max 16 chars
 
-#define PRODUCT_NAME            "STM32BLUEPILL"
-#define BOARD_ID                "STM32BLUEPILL"
-#define INDEX_URL               "https://visualbluepill.github.io"
-#define VOLUME_LABEL            "BLUEPILL"
-// where the UF2 files are allowed to write data - we allow MBR, since it seems part of the softdevice .hex file
-#define USER_FLASH_START        (uint32_t)(APP_BASE_ADDRESS)
-#define USER_FLASH_END          (memflash_end())
+// DFU loader config
+#define DFU_UPLOAD_AVAILABLE 1
+#define DFU_DOWNLOAD_AVAILABLE 1
 
 
 #define USB_SERIAL_NUM_LENGTH   24

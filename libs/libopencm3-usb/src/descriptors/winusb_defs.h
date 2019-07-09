@@ -21,6 +21,11 @@
 
 #include <stdint.h>
 
+
+// Arbitrary, but must be equivalent to the last character in extra string
+#define WINUSB_MS_VENDOR_CODE '!'  //  0x21
+#define WINUSB_EXTRA_STRING {'M', 'S', 'F', 'T', '1', '0', '0', WINUSB_MS_VENDOR_CODE}
+
 //  Microsoft OS 2.0 descriptors.  See http://download.microsoft.com/download/3/5/6/3563ED4A-F318-4B66-A181-AB1D8F6FD42D/MS_OS_2_0_desc.docx
 
 #define MSOS20_PLATFORM_UUID   { 0xdf, 0x60, 0xdd, 0xd8, 0x89, 0x45, 0xc7, 0x4c, 0x9c, 0xd2, 0x65, 0x9d, 0x9e, 0x64, 0x8a, 0x9f }

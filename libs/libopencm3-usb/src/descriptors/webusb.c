@@ -20,12 +20,19 @@
 //  navigator.usb.requestDevice({ filters: [] }).then(console.log)
 //  navigator.usb.getDevices().then(console.log)
 
+#include "webusb.h"
+
 #include <string.h>
 #include "core/aggregate.h"
-#include "webusb.h"
 #include "winusb.h"  //  For WINUSB_MS_VENDOR_CODE
 #include "usb21_standard.h"
 #include "minmax.h"
+#include "winusb_defs.h"
+#include "webusb_defs.h"
+
+
+// Arbitrary
+#define WEBUSB_VENDOR_CODE 0x22  //  Don't use 0x21, reserved for WinUSB.
 
 
 #define CONTROL_CALLBACK_TYPE (USB_REQ_TYPE_VENDOR | USB_REQ_TYPE_DEVICE)
@@ -33,7 +40,7 @@
 
 
 //  WebUSB Descriptor with landing page.
-const struct webusb_platform_descriptor webusb_platform_capability_descriptor = {
+static const webusb_platform_descriptor webusb_platform_capability_descriptor = {
 	.bLength = WEBUSB_PLATFORM_DESCRIPTOR_SIZE,
 	.bDescriptorType = USB_DT_DEVICE_CAPABILITY,
 	.bDevCapabilityType = USB_DC_PLATFORM,
@@ -44,8 +51,9 @@ const struct webusb_platform_descriptor webusb_platform_capability_descriptor = 
 	.iLandingPage = 1
 };
 
+/* 
 //  WebUSB Descriptor without landing page.
-const struct webusb_platform_descriptor webusb_platform_capability_descriptor_no_landing_page = {
+static const webusb_platform_descriptor webusb_platform_capability_descriptor_no_landing_page = {
 	.bLength = WEBUSB_PLATFORM_DESCRIPTOR_SIZE,
 	.bDescriptorType = USB_DT_DEVICE_CAPABILITY,
 	.bDevCapabilityType = USB_DC_PLATFORM,
@@ -55,9 +63,10 @@ const struct webusb_platform_descriptor webusb_platform_capability_descriptor_no
 	.bVendorCode = WEBUSB_VENDOR_CODE,
 	.iLandingPage = 0
 };
+*/
 
 //  Microsoft Platform Descriptor.  From http://download.microsoft.com/download/3/5/6/3563ED4A-F318-4B66-A181-AB1D8F6FD42D/MS_OS_2_0_desc.docx
-const struct microsoft_platform_descriptor microsoft_platform_capability_descriptor = {
+static const struct microsoft_platform_descriptor microsoft_platform_capability_descriptor = {
 	.bLength = MICROSOFT_PLATFORM_DESCRIPTOR_SIZE,
 	.bDescriptorType = USB_DT_DEVICE_CAPABILITY,
 	.bDevCapabilityType = USB_DC_PLATFORM,
@@ -67,6 +76,22 @@ const struct microsoft_platform_descriptor microsoft_platform_capability_descrip
 	.wMSOSDescriptorSetTotalLength = MSOS20_DESCRIPTOR_SET_SIZE, //  Descriptor set length e.g. 0xb2
 	.bMS_VendorCode = WINUSB_MS_VENDOR_CODE,     //  Vendor code e.g. 0x21.  Host will call WinUSB to fetch descriptor.
 	.bAltEnumCode = 0  //  Alternate enumeration code e.g. 0x00
+};
+
+//  BOS Capabilities for WebUSB and Microsoft Platform
+static const struct usb_device_capability_descriptor* capabilities[] = {
+	(const struct usb_device_capability_descriptor*) 
+        &webusb_platform_capability_descriptor,
+	(const struct usb_device_capability_descriptor*) 
+        &microsoft_platform_capability_descriptor,
+};
+
+//  BOS Descriptor for WebUSB and Microsoft Platform
+const struct usb_bos_descriptor bos_descriptor = {
+	.bLength = USB_DT_BOS_SIZE,
+	.bDescriptorType = USB_DT_BOS,
+	.bNumDeviceCaps = sizeof(capabilities) / sizeof(capabilities[0]),
+	.capabilities = capabilities
 };
 
 static const char* webusb_https_url;
@@ -87,7 +112,7 @@ static enum usbd_request_return_codes webusb_control_vendor_request(
 	int status = USBD_REQ_NOTSUPP;
 	switch (req->wIndex) {
 		case WEBUSB_REQ_GET_URL: {
-			struct webusb_url_descriptor* url = (struct webusb_url_descriptor*)(*buf);
+			webusb_url_descriptor* url = (webusb_url_descriptor*)(*buf);
 			uint16_t index = req->wValue;
 			if (index == 0) {
     			// debug_print("*** webusb notsupp index "); debug_print_unsigned(index); debug_println(""); debug_flush(); ////

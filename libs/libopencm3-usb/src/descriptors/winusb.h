@@ -19,13 +19,7 @@
 #ifndef __LIB_USB_PRIVATE_WINUSB_H__
 #define __LIB_USB_PRIVATE_WINUSB_H__
 
-#include "winusb_defs.h"
 #include <libopencm3/usb/usbd.h>
-
-
-// Arbitrary, but must be equivalent to the last character in extra string
-#define WINUSB_MS_VENDOR_CODE '!'  //  0x21
-#define WINUSB_EXTRA_STRING {'M', 'S', 'F', 'T', '1', '0', '0', WINUSB_MS_VENDOR_CODE}
 
 void winusb_setup(usbd_device* usbd_dev, uint8_t interface);
 

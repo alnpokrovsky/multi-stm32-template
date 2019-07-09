@@ -16,10 +16,10 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include "usb21_standard.h"
 #include <stdint.h>
 #include <string.h>
 #include "core/aggregate.h"
-#include "usb21_standard.h"
 #include "minmax.h"
 
 #define DESCRIPTOR_CALLBACK_TYPE (USB_REQ_TYPE_IN | USB_REQ_TYPE_STANDARD | USB_REQ_TYPE_DEVICE)

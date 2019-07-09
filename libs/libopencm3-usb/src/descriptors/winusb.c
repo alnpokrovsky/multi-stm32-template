@@ -20,6 +20,7 @@
 #include <libopencm3/usb/usbd.h>
 #include "core/aggregate.h"
 #include "minmax.h"
+#include "winusb_defs.h"
 
 
 #define CONTROL_CALLBACK_TYPE USB_REQ_TYPE_VENDOR
