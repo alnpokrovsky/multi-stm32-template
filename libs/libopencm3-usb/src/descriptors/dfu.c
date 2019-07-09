@@ -21,10 +21,9 @@
 #include <string.h>
 #include <libopencm3/usb/usbd.h>
 #include <libopencm3/usb/dfu.h>
-#include "usb_core.h"
 #include "DeviceConfig.h"
 #include "memflash.h"
-
+#include "core/aggregate.h"
 #include <libopencm3/usb/dfu.h>
 
 struct dfu_getstatus_response {
@@ -147,7 +146,6 @@ static enum usbd_request_return_codes dfu_control_class_request(
     if (req->wIndex != INTF_DFU) {
         return USBD_REQ_NEXT_CALLBACK;
     }
-	dump_usb_request("dfu", req); ////
     int status = USBD_REQ_HANDLED;
     switch (req->bRequest) {
         case DFU_GETSTATE: {
@@ -301,6 +299,22 @@ static void dfu_set_config(usbd_device* usbd_dev, uint16_t wValue) {
         dfu_control_class_request);        
 	// if (status < 0) { debug_println("*** dfu_set_config failed"); debug_flush(); }
 }
+
+//  DFU Interface
+const struct usb_interface_descriptor dfu_iface = {
+    .bLength = USB_DT_INTERFACE_SIZE,
+    .bDescriptorType = USB_DT_INTERFACE,
+    .bInterfaceNumber = INTF_DFU,
+    .bAlternateSetting = 0,
+    .bNumEndpoints = 0,
+    .bInterfaceClass = 0xFE,
+    .bInterfaceSubClass = 1,
+    .bInterfaceProtocol = 2,
+    .iInterface = USB_STRINGS_DFU,  //  Name of DFU
+    .endpoint = NULL,
+    .extra = &dfu_function,
+    .extralen = sizeof(dfu_function),
+};
 
 void dfu_setup(usbd_device* usbd_dev,
                GenericCallback on_manifest_request,

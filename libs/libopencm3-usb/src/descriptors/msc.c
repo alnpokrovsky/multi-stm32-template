@@ -20,15 +20,22 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "msc.h"
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <libopencm3/cm3/common.h>
 #include <libopencm3/usb/usbd.h>
 #include <libopencm3/usb/msc.h>
-#include "msc.h"
-#include "usb_core.h"
+#include "core/aggregate.h"
 #include "minmax.h"
+#include "uf2.h"
+
+//  USB Endpoints.
+#define MSC_OUT                 0x01
+#define MSC_IN                  0x82
+
+#define MSC_PRODUCT_REVISION_LEVEL "2.1"  //  Max 4 chars
 
 
 /* Definitions of Mass Storage Class from:
@@ -874,16 +881,13 @@ static enum usbd_request_return_codes msc_control_request(
 	switch (req->bRequest) {
 	case USB_MSC_REQ_BULK_ONLY_RESET:
 		/* Do any special reset code here. */
-		//  dump_usb_request("msc", req); ////
 		return USBD_REQ_HANDLED;
 	case USB_MSC_REQ_GET_MAX_LUN:
 		/* Return the number of LUNs.  We use 0. */
-		//  dump_usb_request("msc", req); ////
 		*buf[0] = 0;
 		*len = 1;
 		return USBD_REQ_HANDLED;
 	}
-	//  dump_usb_request("msc next", req); debug_flush(); ////
 	return USBD_REQ_NEXT_CALLBACK;  //  Previously USBD_REQ_NOTSUPP. Allow unknown requests to fall to next callback e.g. CDC.
 }
 
@@ -934,7 +938,7 @@ static void msc_set_config(usbd_device *usbd_dev, uint16_t wValue)
 
 @return Pointer to the usbd_mass_storage struct.
 */
-usbd_mass_storage *custom_usb_msc_init(
+static usbd_mass_storage *custom_usb_msc_init(
 	usbd_device *usbd_dev,
 	uint8_t ep_in, uint8_t ep_in_size,
 	uint8_t ep_out, uint8_t ep_out_size,
@@ -942,8 +946,8 @@ usbd_mass_storage *custom_usb_msc_init(
 	const char *product_id,
 	const char *product_revision_level,
 	const uint32_t block_count,
-	int (*read_block)(uint32_t lba, uint8_t *copy_to),
-	int (*write_block)(uint32_t lba, const uint8_t *copy_from),
+	int (*pread_block)(uint32_t lba, uint8_t *copy_to),
+	int (*pwrite_block)(uint32_t lba, const uint8_t *copy_from),
 	uint8_t msc_interface_index0 //  Index of MSC interface
 ) {
     //  debug_println("custom_usb_msc_init"); // debug_flush(); ////
@@ -957,8 +961,8 @@ usbd_mass_storage *custom_usb_msc_init(
 	_mass_storage.product_id = product_id;
 	_mass_storage.product_revision_level = product_revision_level;
 	_mass_storage.block_count = block_count - 1;
-	_mass_storage.read_block = read_block;
-	_mass_storage.write_block = write_block;
+	_mass_storage.read_block = pread_block;
+	_mass_storage.write_block = pwrite_block;
 	_mass_storage.lock = NULL;
 	_mass_storage.unlock = NULL;
 
@@ -979,5 +983,60 @@ usbd_mass_storage *custom_usb_msc_init(
 
 	return &_mass_storage;
 }
+
+#ifdef INTF_MSC
+
+//  MSC Endpoints
+static const struct usb_endpoint_descriptor msc_endp[] = {{
+	.bLength = USB_DT_ENDPOINT_SIZE,
+	.bDescriptorType = USB_DT_ENDPOINT,
+	.bEndpointAddress = MSC_OUT,
+	.bmAttributes = USB_ENDPOINT_ATTR_BULK,
+	.wMaxPacketSize = USB_MAX_PACKET_SIZE,
+	.bInterval = 0,
+}, {
+	.bLength = USB_DT_ENDPOINT_SIZE,
+	.bDescriptorType = USB_DT_ENDPOINT,
+	.bEndpointAddress = MSC_IN,
+	.bmAttributes = USB_ENDPOINT_ATTR_BULK,
+	.wMaxPacketSize = USB_MAX_PACKET_SIZE,
+	.bInterval = 0,
+}};
+
+//  MSC Interface
+const struct usb_interface_descriptor msc_iface = {
+	.bLength = USB_DT_INTERFACE_SIZE,
+	.bDescriptorType = USB_DT_INTERFACE,
+	.bInterfaceNumber = INTF_MSC,
+	.bAlternateSetting = 0,
+	.bNumEndpoints = 2,
+	.bInterfaceClass = USB_CLASS_MSC,
+	.bInterfaceSubClass = USB_MSC_SUBCLASS_SCSI,
+	.bInterfaceProtocol = USB_MSC_PROTOCOL_BBB,
+    .iInterface = USB_STRINGS_MSC,  //  Name of MSC
+	.endpoint = msc_endp,  //  MSC Endpoints
+	.extra = NULL,
+	.extralen = 0
+};
+
+
+void msc_setup(usbd_device* usbd_dev0) {
+#ifdef RAM_DISK
+    ramdisk_init();
+#endif  //  RAM_DISK
+    
+    custom_usb_msc_init(usbd_dev0, MSC_IN, USB_MAX_PACKET_SIZE, MSC_OUT, USB_MAX_PACKET_SIZE, 
+        MSC_VENDOR_ID, MSC_PRODUCT_ID, MSC_PRODUCT_REVISION_LEVEL, 
+#ifdef RAM_DISK    
+        ramdisk_blocks(), ramdisk_read, ramdisk_write,
+#else
+        UF2_NUM_BLOCKS, read_block, write_block,
+#endif  //  RAM_DISK        
+        INTF_MSC
+    );
+}
+
+#endif  //  INTF_MSC
+
 
 /** @} */

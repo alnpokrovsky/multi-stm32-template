@@ -18,7 +18,7 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "usb_core.h"
+#include "core/aggregate.h"
 #include "usb21_standard.h"
 #include "minmax.h"
 
@@ -75,7 +75,6 @@ static enum usbd_request_return_codes usb21_standard_get_descriptor(
 		return USBD_REQ_NOTSUPP;
 	}
 	if (req->bRequest == USB_REQ_GET_DESCRIPTOR) {
-		// dump_usb_request("bos", req); debug_flush(); ////
 		*len = MIN(*len, build_bos_descriptor(usb21_bos, *buf, *len));
 
 		// uint8_t *b = *buf; int i;

@@ -1,8 +1,13 @@
 //  CDC code from https://github.com/Apress/Beg-STM32-Devel-FreeRTOS-libopencm3-GCC/blob/master/rtos/usbcdcdemo/usbcdc.c
 #include "cdc.h"
 #include <libopencm3/usb/cdc.h>
-#include "usb_core.h"
+#include "core/aggregate.h"
+#include "UsbConfig.h"
 #include <stdlib.h>
+
+#define DATA_OUT                0x03
+#define DATA_IN                 0x84
+#define COMM_IN                 0x85
 
 #define CONTROL_CALLBACK_TYPE (USB_REQ_TYPE_CLASS | USB_REQ_TYPE_INTERFACE)
 #define CONTROL_CALLBACK_MASK (USB_REQ_TYPE_TYPE | USB_REQ_TYPE_RECIPIENT)
@@ -27,7 +32,6 @@ static enum usbd_request_return_codes cdcacm_control_request(
   ) __attribute__((unused))
 ) {
 	//  Handle USB Control Requests
-	//  dump_usb_request("*** cdc", req); ////
 	switch (req->bRequest) {
 		case USB_CDC_REQ_SET_CONTROL_LINE_STATE: {
 			/* From https://github.com/libopencm3/libopencm3-examples/blob/master/examples/stm32/f3/stm32f3-discovery/usb_cdcacm/cdcacm.c
@@ -59,7 +63,6 @@ static enum usbd_request_return_codes cdcacm_control_request(
 			return USBD_REQ_HANDLED;
 		}
 	}
-	//  dump_usb_request("*** cdc next", req); ////
 	return USBD_REQ_NEXT_CALLBACK;  //  Previously USBD_REQ_NOTSUPP
 }
 
@@ -116,6 +119,121 @@ cdcacm_set_config(
 		// debug_flush();
 	}
 }
+
+/////////////////////////////////////////////////////////////////////
+#ifdef INTF_COMM
+//  CDC Endpoints
+
+/*
+ * This notification endpoint isn't implemented. According to CDC spec it's
+ * optional, but its absence causes a NULL pointer dereference in the
+ * Linux cdc_acm driver. (Gareth McMullin <gareth@blacksphere.co.nz>)
+ */
+static const struct usb_endpoint_descriptor comm_endp[] = {
+	{
+		.bLength = USB_DT_ENDPOINT_SIZE,
+		.bDescriptorType = USB_DT_ENDPOINT,
+		.bEndpointAddress = COMM_IN,
+		.bmAttributes = USB_ENDPOINT_ATTR_INTERRUPT,
+		.wMaxPacketSize = USB_CDC_PACKET_SIZE,  //  Smaller than others
+		.bInterval = 255,
+	}
+};
+
+static const struct usb_endpoint_descriptor data_endp[] = {
+	{
+		.bLength = USB_DT_ENDPOINT_SIZE,
+		.bDescriptorType = USB_DT_ENDPOINT,
+		.bEndpointAddress = DATA_OUT,
+		.bmAttributes = USB_ENDPOINT_ATTR_BULK,
+		.wMaxPacketSize = USB_MAX_PACKET_SIZE,
+		.bInterval = 1,
+	}, {
+		.bLength = USB_DT_ENDPOINT_SIZE,
+		.bDescriptorType = USB_DT_ENDPOINT,
+		.bEndpointAddress = DATA_IN,
+		.bmAttributes = USB_ENDPOINT_ATTR_BULK,
+		.wMaxPacketSize = USB_MAX_PACKET_SIZE,
+		.bInterval = 1,
+	}
+};
+
+static const struct {
+	struct usb_cdc_header_descriptor header;
+	struct usb_cdc_call_management_descriptor call_mgmt;
+	struct usb_cdc_acm_descriptor acm;
+	struct usb_cdc_union_descriptor cdc_union;
+} __attribute__((packed)) cdcacm_functional_descriptors = {
+	.header = {
+		.bFunctionLength = sizeof(struct usb_cdc_header_descriptor),
+		.bDescriptorType = CS_INTERFACE,
+		.bDescriptorSubtype = USB_CDC_TYPE_HEADER,
+		.bcdCDC = 0x0110,
+	},
+	.call_mgmt = {
+		.bFunctionLength =
+			sizeof(struct usb_cdc_call_management_descriptor),
+		.bDescriptorType = CS_INTERFACE,
+		.bDescriptorSubtype = USB_CDC_TYPE_CALL_MANAGEMENT,
+		.bmCapabilities = 0,
+		.bDataInterface = INTF_DATA,  //  DATA Interface
+	},
+	.acm = {
+		.bFunctionLength = sizeof(struct usb_cdc_acm_descriptor),
+		.bDescriptorType = CS_INTERFACE,
+		.bDescriptorSubtype = USB_CDC_TYPE_ACM,
+		.bmCapabilities = 0,
+	},
+	.cdc_union = {
+		.bFunctionLength = sizeof(struct usb_cdc_union_descriptor),
+		.bDescriptorType = CS_INTERFACE,
+		.bDescriptorSubtype = USB_CDC_TYPE_UNION,
+		.bControlInterface = INTF_COMM,       //  COMM Interface
+		.bSubordinateInterface0 = INTF_DATA,  //  DATA Interface
+	 }
+};
+
+//  CDC Interfaces
+const struct usb_iface_assoc_descriptor cdc_iface_assoc = {  //  Copied from microbit.  Mandatory for composite device.
+	.bLength = USB_DT_INTERFACE_ASSOCIATION_SIZE,
+	.bDescriptorType = USB_DT_INTERFACE_ASSOCIATION,
+	.bFirstInterface = INTF_COMM,  //  First associated interface (INTF_COMM and INTF_DATA)
+	.bInterfaceCount = 2,          //  Total number of associated interfaces (INTF_COMM and INTF_DATA), ID must be consecutive.
+	.bFunctionClass = USB_CLASS_CDC,
+	.bFunctionSubClass = USB_CDC_SUBCLASS_ACM,
+	.bFunctionProtocol = USB_CDC_PROTOCOL_AT,
+	.iFunction = USB_STRINGS_SERIAL_PORT  //  Name of Serial Port
+};
+
+const struct usb_interface_descriptor comm_iface = {
+    .bLength = USB_DT_INTERFACE_SIZE,
+    .bDescriptorType = USB_DT_INTERFACE,
+    .bInterfaceNumber = INTF_COMM,
+    .bAlternateSetting = 0,
+    .bNumEndpoints = 1,
+    .bInterfaceClass = USB_CLASS_CDC,
+    .bInterfaceSubClass = USB_CDC_SUBCLASS_ACM,
+    .bInterfaceProtocol = USB_CDC_PROTOCOL_AT,
+    .iInterface = USB_STRINGS_COMM,  //  Name of COMM
+    .endpoint = comm_endp,           //  COMM Endpoint
+    .extra = &cdcacm_functional_descriptors,
+    .extralen = sizeof(cdcacm_functional_descriptors)
+};
+
+const struct usb_interface_descriptor data_iface = {
+    .bLength = USB_DT_INTERFACE_SIZE,
+    .bDescriptorType = USB_DT_INTERFACE,
+    .bInterfaceNumber = INTF_DATA,
+    .bAlternateSetting = 0,
+    .bNumEndpoints = 2,
+    .bInterfaceClass = USB_CLASS_DATA,
+    .bInterfaceSubClass = 0,
+    .bInterfaceProtocol = 0,
+    .iInterface = USB_STRINGS_DATA,  //  Name of DATA
+    .endpoint = data_endp,           //  DATA Endpoints
+};
+
+#endif  //  INTF_COMM
 
 void cdc_setup(usbd_device* usbd_dev) {
 	int status = aggregate_register_config_callback(usbd_dev, cdcacm_set_config);

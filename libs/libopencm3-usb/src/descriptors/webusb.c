@@ -21,7 +21,7 @@
 //  navigator.usb.getDevices().then(console.log)
 
 #include <string.h>
-#include "usb_core.h"
+#include "core/aggregate.h"
 #include "webusb.h"
 #include "winusb.h"  //  For WINUSB_MS_VENDOR_CODE
 #include "usb21_standard.h"
@@ -94,7 +94,6 @@ static enum usbd_request_return_codes webusb_control_vendor_request(
 				return USBD_REQ_NOTSUPP;
 			}
 			if (index == 1) {
-				// dump_usb_request("weburl", req); debug_flush(); ////
 				size_t url_len = strlen(webusb_https_url);
 				url->bLength = WEBUSB_DT_URL_DESCRIPTOR_SIZE + url_len;
 				url->bDescriptorType = WEBUSB_DT_URL;

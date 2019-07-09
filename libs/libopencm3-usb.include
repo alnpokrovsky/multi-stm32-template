@@ -2,4 +2,4 @@
 
 INC += libs/libopencm3-usb/include
     
-SRC += $(shell find libs/libopencm3-usb/src -name "*.c")
+SRC += $(shell find libs/libopencm3-usb -name "*.c")

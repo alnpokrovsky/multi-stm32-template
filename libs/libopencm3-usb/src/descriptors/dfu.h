@@ -16,26 +16,25 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef __LIB_USB_PRIVATE_USB_CORE_H__
-#define __LIB_USB_PRIVATE_USB_CORE_H__
+#ifndef __LIB_USB_PRIVATE_DFU_H__
+#define __LIB_USB_PRIVATE_DFU_H__
 
-#include "UsbConfig.h"
 #include <libopencm3/usb/usbd.h>
+#include <libopencm3/usb/dfu.h>
 
 
+typedef void (*GenericCallback)(void);
+typedef void (*StateChangeCallback)(enum dfu_state);
+typedef void (*StatusChangeCallback)(enum dfu_status);
 
-void usb_set_serial_number(const char* serial);
-usbd_device* usb_core_init(void);
-void msc_setup(usbd_device* usbd_dev0);
-uint16_t send_msc_packet(const void *buf, int len);
-void dump_usb_request(const char *msg, struct usb_setup_data *req);
-int aggregate_register_config_callback(
-    usbd_device *usbd_dev,
-	usbd_set_config_callback callback);
-int aggregate_register_callback(
-    usbd_device *usbd_dev, 
-    uint8_t type,
-    uint8_t type_mask,
-    usbd_control_callback callback);
+void dfu_setup(
+    usbd_device* usbd_dev,
+    GenericCallback on_detach_request,
+    StateChangeCallback on_state_change,
+    StatusChangeCallback on_status_change
+);
+
+extern const struct usb_dfu_descriptor dfu_function;
+extern const struct usb_interface_descriptor dfu_iface;
 
 #endif

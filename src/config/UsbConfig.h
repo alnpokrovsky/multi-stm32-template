@@ -34,4 +34,30 @@
 #define INTF_DATA               3
 #endif  //  ALL_USB_INTERFACES
 
+
+#define USB_STRINGS { \
+    "Devanarchy",              /*  USB Manufacturer */ \
+    "DAPBoot DFU Bootloader",  /*  USB Product */ \
+    serial_number,             /*  Serial number */ \
+    "DAPBoot DFU",             /*  DFU */ \
+    "Blue Pill MSC",           /*  MSC */ \
+    "Blue Pill Serial Port",   /*  Serial Port */ \
+    "Blue Pill COMM",          /*  COMM */ \
+    "Blue Pill DATA",          /*  DATA */ \
+};
+
+/**
+ * Index of USB strings.  Must sync with above, starts from 1.
+ */
+enum usb_strings_index {
+    USB_STRINGS_MANUFACTURER = 1,
+    USB_STRINGS_PRODUCT,
+    USB_STRINGS_SERIAL_NUMBER,
+    USB_STRINGS_DFU,
+    USB_STRINGS_MSC,
+    USB_STRINGS_SERIAL_PORT,
+    USB_STRINGS_COMM,
+    USB_STRINGS_DATA,
+};
+
 #endif

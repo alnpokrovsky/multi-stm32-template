@@ -16,23 +16,15 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef __LIB_USB_PRIVATE_DFU_H__
-#define __LIB_USB_PRIVATE_DFU_H__
+#ifndef __LIB_USB_PRIVATE_USB_CORE_H__
+#define __LIB_USB_PRIVATE_USB_CORE_H__
 
+#include "UsbConfig.h"
+#include <stdint.h>
 #include <libopencm3/usb/usbd.h>
-#include <libopencm3/usb/dfu.h>
 
-extern const struct usb_dfu_descriptor dfu_function;
+void usb_core_set_serial_number(const char* serial);
+usbd_device* usb_core_init(void);
 
-typedef void (*GenericCallback)(void);
-typedef void (*StateChangeCallback)(enum dfu_state);
-typedef void (*StatusChangeCallback)(enum dfu_status);
-
-void dfu_setup(
-    usbd_device* usbd_dev,
-    GenericCallback on_detach_request,
-    StateChangeCallback on_state_change,
-    StatusChangeCallback on_status_change
-);
 
 #endif
