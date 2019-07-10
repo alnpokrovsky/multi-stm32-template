@@ -6,9 +6,9 @@
 #include <stdbool.h>
 
 void memflash_lock(void);
-
 void memflash_unlock(void);
 
+uint32_t memflash_start(void);
 uint32_t memflash_end(void);
 
 size_t memflash_awailable_size(void);

@@ -23,13 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <libopencm3/cm3/cortex.h>
-#include <libopencm3/cm3/nvic.h>
-#include <libopencm3/cm3/systick.h>
 #include <libopencm3/usb/usbd.h>
-#include <libopencm3/usb/dfu.h>
-#include <libopencm3/usb/msc.h>
-#include <libopencm3/usb/cdc.h>
 
 #include "dfu.h"
 #include "cdc.h"
@@ -164,7 +158,7 @@ usbd_device* usb_core_init(void) {
     //  Define USB 2.1 BOS interface used by WebUSB.
 	usb21_setup(usbd_dev, &bos_descriptor);
 	webusb_setup(usbd_dev, origin_url);
-	winusb_setup(usbd_dev, INTF_DFU);  //  Previously INTF_DFU
+	winusb_setup(usbd_dev, INTF_DFU);
 #endif  //  USB21_INTERFACE
 
     //  Set the aggregate callback.    

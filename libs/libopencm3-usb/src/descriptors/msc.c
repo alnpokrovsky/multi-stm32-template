@@ -176,7 +176,7 @@ struct usb_msc_trans {
 	uint32_t block_count;
 	uint32_t current_block;
 
-	uint8_t msd_buf[512];
+	uint8_t msd_buf[SECTOR_SIZE];
 
 	bool csw_valid;
 	uint8_t csw_sent;		/* Write until 13 bytes */
@@ -198,8 +198,8 @@ struct _usbd_mass_storage {
 	const char *product_revision_level;
 	uint32_t block_count;
 
-	int (*read_block)(uint32_t lba, uint8_t *copy_to);
-	int (*write_block)(uint32_t lba, const uint8_t *copy_from);
+	int (*ghostfat_read_block)(uint32_t lba, uint8_t *copy_to);
+	int (*ghostfat_write_block)(uint32_t lba, const uint8_t *copy_from);
 
 	void (*lock)(void);
 	void (*unlock)(void);
@@ -364,7 +364,7 @@ static void scsi_read_capacity(usbd_mass_storage *ms,
 		trans->msd_buf[2] = 0xff & (ms->block_count >> 8);
 		trans->msd_buf[3] = 0xff & ms->block_count;
 
-		/* Block size: 512 */
+		/* Block size: 512 */ //todo: fixed 512 size. find way to castomize 
 		trans->msd_buf[4] = 0;
 		trans->msd_buf[5] = 0;
 		trans->msd_buf[6] = 2;
@@ -381,10 +381,10 @@ static void scsi_format_unit(usbd_mass_storage *ms,
 	if (EVENT_CBW_VALID == event) {
 		uint32_t i;
 
-		memset(trans->msd_buf, 0, 512);
+		memset(trans->msd_buf, 0, SECTOR_SIZE);
 
 		for (i = 0; i < ms->block_count; i++) {
-			(*ms->write_block)(i, trans->msd_buf);
+			(*ms->ghostfat_write_block)(i, trans->msd_buf);
 		}
 
 		set_sbc_status_good(ms);
@@ -659,7 +659,6 @@ static void scsi_command(usbd_mass_storage *ms,
 /** @brief Handle the USB 'OUT' requests. */
 static void msc_data_rx_cb(usbd_device *usbd_dev, uint8_t ep)
 {
-    // debug_println("msc_data_rx_cb"); // debug_flush(); ////
 	usbd_mass_storage *ms;
 	struct usb_msc_trans *trans;
 	int len, max_len, left;
@@ -675,32 +674,13 @@ static void msc_data_rx_cb(usbd_device *usbd_dev, uint8_t ep)
 		p = &trans->cbw.buf[0x1ff & trans->cbw_cnt];
 		len = usbd_ep_read_packet(usbd_dev, ep, p, max_len);
 		trans->cbw_cnt += len;
-        // debug_print("msc_data_rx_cb len "); debug_print_unsigned(len); debug_println(""); debug_flush(); ////
 
 		if (sizeof(struct usb_msc_cbw) == trans->cbw_cnt) {
 			scsi_command(ms, trans, EVENT_CBW_VALID);
 
-#ifdef NOTUSED
-            debug_print("msc_data_rx_cb byte_count "); 
-            debug_print_unsigned(trans->byte_count);
-            debug_print(", bytes_to_read "); 
-            debug_print_unsigned(trans->bytes_to_read);
-            debug_print(", CBWCB "); 
-            debug_printhex(trans->cbw.cbw.CBWCB[0]);
-            debug_println(""); debug_flush(); ////
-#endif  //  NOTUSED            
-
 			if (trans->byte_count < trans->bytes_to_read) {
 				/* We must wait until there is something to
 				 * read again. */
-#ifdef NOTUSED				
-                debug_print("msc_data_rx_cb wait byte_count "); 
-                debug_print_unsigned(trans->byte_count);
-                debug_print(", bytes_to_read "); 
-                debug_print_unsigned(trans->bytes_to_read);
-                debug_println(""); // debug_flush(); ////
-#endif  //  NOTUSED				
-
 				return;
 			}
 		}
@@ -724,7 +704,7 @@ static void msc_data_rx_cb(usbd_device *usbd_dev, uint8_t ep)
 				uint32_t lba;
 
 				lba = trans->lba_start + trans->current_block;
-				if (0 != (*ms->write_block)(lba, trans->msd_buf)) {
+				if (0 != (*ms->ghostfat_write_block)(lba, trans->msd_buf)) {
 					/* Error */
                     // debug_println("msc_data_rx_cb write error"); debug_flush(); ////
 				}
@@ -758,7 +738,7 @@ static void msc_data_rx_cb(usbd_device *usbd_dev, uint8_t ep)
 				uint32_t lba;
 
 				lba = trans->lba_start + trans->current_block;
-				if (0 != (*ms->read_block)(lba, trans->msd_buf)) {
+				if (0 != (*ms->ghostfat_read_block)(lba, trans->msd_buf)) {
 					/* Error */
                     // debug_println("msc_data_rx_cb read error"); debug_flush(); ////
 				}
@@ -777,7 +757,7 @@ static void msc_data_rx_cb(usbd_device *usbd_dev, uint8_t ep)
 				uint32_t lba;
 
 				lba = trans->lba_start + trans->current_block;
-				if (0 != (*ms->write_block)(lba, trans->msd_buf)) {
+				if (0 != (*ms->ghostfat_write_block)(lba, trans->msd_buf)) {
 					/* Error */
                     // debug_println("msc_data_rx_cb write error 2"); debug_flush(); ////
 				}
@@ -822,7 +802,7 @@ static void msc_data_tx_cb(usbd_device *usbd_dev, uint8_t ep)
 				uint32_t lba;
 
 				lba = trans->lba_start + trans->current_block;
-				if (0 != (*ms->read_block)(lba, trans->msd_buf)) {
+				if (0 != (*ms->ghostfat_read_block)(lba, trans->msd_buf)) {
 					/* Error */
                     // debug_println("msc_data_tx_cb read error"); debug_flush(); ////
 				}
@@ -936,9 +916,9 @@ static void msc_set_config(usbd_device *usbd_dev, uint16_t wValue)
 @param[in] product_revision_level The SCSI product revision level to return.
 		Maximum used length is 4.
 @param[in] block_count The number of 512-byte blocks available.
-@param[in] read_block The function called when the host requests to read a LBA
+@param[in] ghostfat_read_block The function called when the host requests to read a LBA
 		block.  Must _NOT_ be NULL.
-@param[in] write_block The function called when the host requests to write a
+@param[in] ghostfat_write_block The function called when the host requests to write a
 		LBA block.  Must _NOT_ be NULL.
 
 @return Pointer to the usbd_mass_storage struct.
@@ -966,8 +946,8 @@ static usbd_mass_storage *custom_usb_msc_init(
 	_mass_storage.product_id = product_id;
 	_mass_storage.product_revision_level = product_revision_level;
 	_mass_storage.block_count = block_count - 1;
-	_mass_storage.read_block = pread_block;
-	_mass_storage.write_block = pwrite_block;
+	_mass_storage.ghostfat_read_block = pread_block;
+	_mass_storage.ghostfat_write_block = pwrite_block;
 	_mass_storage.lock = NULL;
 	_mass_storage.unlock = NULL;
 
@@ -1033,7 +1013,7 @@ void msc_setup(usbd_device* usbd_dev0) {
 #ifdef RAM_DISK    
         ramdisk_blocks(), ramdisk_read, ramdisk_write,
 #else
-        UF2_NUM_BLOCKS, read_block, write_block,
+        FLASH_TOTAL_SECTORS, ghostfat_read_block, ghostfat_write_block,
 #endif  //  RAM_DISK        
         INTF_MSC
     );

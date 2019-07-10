@@ -25,7 +25,11 @@ size_t memflash_awailable_size(void) {
     return (flash_end >= flash_start) ? (size_t)(flash_end - flash_start) : 0;
 }
 
-uint32_t memflash_end(void) {
+inline uint32_t memflash_start(void) {
+    return FLASH_BASE;
+}
+
+inline uint32_t memflash_end(void) {
     /* Only allow access to the chip's self-reported flash size */
     return (FLASH_BASE + (size_t)DESIG_FLASH_SIZE*FLASH_PAGE_SIZE);
 }
