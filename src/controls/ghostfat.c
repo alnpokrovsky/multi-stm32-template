@@ -66,7 +66,7 @@ static void padded_memcpy(char *dst, const char *src) {
 #define RESERVED_SECTORS    1
 #define ROOT_DIR_SECTORS    1
 #define SECTORS_PER_FAT     1
-#define SECTORS_PER_CLUSTER 1
+#define SECTORS_PER_CLUSTER 2
 #define MEDIA_DESCRIPTOR    0xF8
 
 #define START_FAT0          RESERVED_SECTORS
@@ -160,7 +160,7 @@ static void fat16_fat_sector(uint8_t *data, uint32_t block_no)
     //todo: rewrite
     /* Каждая строка таблицы FAT занимает 2 байта памяти, 
      * поэтому количество строк для нашего случая это 512/2 */
-    for (uint16_t i = 2; i <= FAT_COLUMNS_COUNT; ++i)
+    for (uint16_t i = 2; i < FAT_COLUMNS_COUNT; ++i)
     {
         /* блоки маленьких файлов */
         if (i <= FAT_LABEL_OFFSET + FILES_COUNT) {
@@ -177,7 +177,7 @@ static void fat16_root_sector(uint8_t *data)
     DirEntry *d = (void *)data;
     padded_memcpy(d->name, (const char *)BootBlock.VolumeLabel);
     d->attrs = FAT_ATTR_LABEL; // метка тома
-    for (uint16_t i = 0; i < FILES_COUNT; ++i) {
+    for (uint16_t i = 1; i <= FILES_COUNT; ++i) {
         d++;
         // имя файла
         padded_memcpy(d->name, files[i].name);
@@ -187,8 +187,13 @@ static void fat16_root_sector(uint8_t *data)
         } else {
             d->size = memflash_awailable_size(); //todo: тут должен быть размер прошивки
         }
-        // номер первого кластера
-        d->startCluster = i + 2; //todo: WTF??
+        /**
+         * номер первого кластера
+         * указывает на слово в таблице FAT1
+         * (файлы идут по порядку и занимают всего 
+         * по одному кластеру)
+         */
+        d->startCluster = i + FAT_LABEL_OFFSET;
     }
 }
 
@@ -227,12 +232,16 @@ int ghostfat_write_block(uint32_t lba, const uint8_t *copy_from)
 {
     (void)lba;
 
-    if (uf2_is_block(copy_from)) {
+    if (uf2_is_block(copy_from)) // если пишем прошивку
+    {
         if (uf2_is_valid(copy_from)) {
             static WriteState wrState;
             uf2_write_flash_sector(copy_from, false, &wrState);
+        } else {
+            return -1;
         }
-    } else {
+    }
+    else { // если обычный файл
 
     }
 
