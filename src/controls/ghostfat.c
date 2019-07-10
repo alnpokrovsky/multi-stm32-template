@@ -143,6 +143,9 @@ static void fat16_boot_sector(uint8_t *data)
 #define FAT_EOF             0xffff
 #define FAT_LABEL_OFFSET    1
 
+#define FAT_ATTR_READONLY   0x01
+#define FAT_ATTR_LABEL      0x28
+
 static void fat16_fat_sector(uint8_t *data, uint32_t block_no)
 {
     (void)block_no; //todo: use if fat sector more than one block
@@ -173,7 +176,7 @@ static void fat16_root_sector(uint8_t *data)
 {
     DirEntry *d = (void *)data;
     padded_memcpy(d->name, (const char *)BootBlock.VolumeLabel);
-    d->attrs = 0x28; // метка тома
+    d->attrs = FAT_ATTR_LABEL; // метка тома
     for (uint16_t i = 0; i < FILES_COUNT; ++i) {
         d++;
         // имя файла
