@@ -62,40 +62,6 @@ static void padded_memcpy(char *dst, const char *src) {
     }
 }
 
-/////////////////////////// fat16 load sector //////////
-#define RESERVED_SECTORS    1
-#define ROOT_DIR_SECTORS    1
-#define SECTORS_PER_FAT     1
-#define SECTORS_PER_CLUSTER 2
-#define MEDIA_DESCRIPTOR    0xF8
-
-#define START_FAT0          RESERVED_SECTORS
-#define START_FAT1          ( START_FAT0 + SECTORS_PER_FAT )
-#define START_ROOTDIR       ( START_FAT1 + SECTORS_PER_FAT )
-#define START_CLUSTERS      ( START_ROOTDIR + ROOT_DIR_SECTORS )
-
-/**
- * http://s-engineer.ru/opisanie-fajlovoj-sistemy-fat16/
- */
-static const FAT_BootBlock BootBlock = {
-    .JumpInstruction = {0xeb, 0x3c, 0x90},
-    .OEMInfo = "UF2 UF2 ",
-    .SectorSize = SECTOR_SIZE,
-    .SectorsPerCluster = SECTORS_PER_CLUSTER,
-    .ReservedSectors = RESERVED_SECTORS,
-    .FATCopies = 2,
-    .RootDirectoryEntries = (ROOT_DIR_SECTORS * SECTOR_SIZE / 32),
-    .TotalSectors16 = FLASH_TOTAL_SECTORS,
-    .MediaDescriptor = MEDIA_DESCRIPTOR,
-    .SectorsPerFAT = SECTORS_PER_FAT,
-    .SectorsPerTrack = 1,
-    .Heads = 1,
-    .ExtendedBootSig = 0x29,
-    .VolumeSerialNumber = 0x00420042,
-    .VolumeLabel = VOLUME_LABEL,
-    .FilesystemIdentifier = "FAT16   ",
-};
-
 //////////////////////// FILES //////////////////////
 
 typedef struct {
@@ -130,16 +96,53 @@ static const TextFile files[] = {
 /////////////////////////////////////////////////////
 
 
+
+/////////////////////////// fat16 load sector //////////
+#define RESERVED_SECTORS    1
+#define ROOT_DIR_SECTORS    1
+#define SECTORS_PER_FAT     1
+#define SECTORS_PER_CLUSTER 1
+#define MEDIA_DESCRIPTOR    0xF8
+
+#define START_FAT0          RESERVED_SECTORS
+#define START_FAT1          ( START_FAT0 + SECTORS_PER_FAT )
+#define START_ROOTDIR       ( START_FAT1 + SECTORS_PER_FAT )
+#define START_CLUSTERS      ( START_ROOTDIR + ROOT_DIR_SECTORS )
+
+/**
+ * http://s-engineer.ru/opisanie-fajlovoj-sistemy-fat16/
+ */
+static const FAT_BootBlock BootBlock = {
+    .JumpInstruction = {0xeb, 0x3c, 0x90},
+    .OEMInfo = "UF2 UF2 ",
+    .SectorSize = GHOSTFAT_SECTOR_SIZE,
+    .SectorsPerCluster = SECTORS_PER_CLUSTER,
+    .ReservedSectors = RESERVED_SECTORS,
+    .FATCopies = 2,
+    .RootDirectoryEntries = (ROOT_DIR_SECTORS * GHOSTFAT_SECTOR_SIZE / 32),
+    .TotalSectors16 = GHOSTFAT_TOTAL_SECTORS,
+    .MediaDescriptor = MEDIA_DESCRIPTOR,
+    .SectorsPerFAT = SECTORS_PER_FAT,
+    .SectorsPerTrack = 1,
+    .Heads = 1,
+    .ExtendedBootSig = 0x29,
+    .VolumeSerialNumber = 0x00420042,
+    .VolumeLabel = VOLUME_LABEL,
+    .FilesystemIdentifier = "FAT16   ",
+};
+
+
+
 static void fat16_boot_sector(uint8_t *data)
 {
     memcpy(data, &BootBlock, sizeof(BootBlock));
     /* bootSignature 0x55AA 
     * - конец загрузочного сектора */
-    data[SECTOR_SIZE-2] = 0x55;
-    data[SECTOR_SIZE-1] = 0xaa;
+    data[GHOSTFAT_SECTOR_SIZE-2] = 0x55;
+    data[GHOSTFAT_SECTOR_SIZE-1] = 0xaa;
 }
 
-#define FAT_COLUMNS_COUNT   ( SECTORS_PER_FAT * SECTOR_SIZE / 2 )
+#define FAT_COLUMNS_COUNT   ( SECTORS_PER_FAT * GHOSTFAT_SECTOR_SIZE / 2 )
 #define FAT_EOF             0xffff
 #define FAT_LABEL_OFFSET    1
 
@@ -177,7 +180,7 @@ static void fat16_root_sector(uint8_t *data)
     DirEntry *d = (void *)data;
     padded_memcpy(d->name, (const char *)BootBlock.VolumeLabel);
     d->attrs = FAT_ATTR_LABEL; // метка тома
-    for (uint16_t i = 1; i <= FILES_COUNT; ++i) {
+    for (uint32_t i = 0; i < FILES_COUNT; ++i) {
         d++;
         // имя файла
         padded_memcpy(d->name, files[i].name);
@@ -193,13 +196,13 @@ static void fat16_root_sector(uint8_t *data)
          * (файлы идут по порядку и занимают всего 
          * по одному кластеру)
          */
-        d->startCluster = i + FAT_LABEL_OFFSET;
+        d->startCluster = i + (FAT_LABEL_OFFSET + 1);
     }
 }
 
 int ghostfat_read_block(uint32_t block_no, uint8_t *data)
 {
-    memset(data, 0, SECTOR_SIZE);
+    memset(data, 0, GHOSTFAT_SECTOR_SIZE);
     uint32_t sectionIdx = block_no;
 
     if (block_no == 0) // загрузочный сектор
@@ -216,7 +219,7 @@ int ghostfat_read_block(uint32_t block_no, uint8_t *data)
     }
     else { // данные
         sectionIdx -= START_CLUSTERS;
-        if (sectionIdx < FILES_COUNT - 1) {
+        if (sectionIdx < FILES_COUNT) {
             memcpy(data, files[sectionIdx].content, strlen(files[sectionIdx].content));
         } else { // прошивка
             sectionIdx -= FILES_COUNT - 1;
@@ -228,21 +231,19 @@ int ghostfat_read_block(uint32_t block_no, uint8_t *data)
 }
 
 
-int ghostfat_write_block(uint32_t lba, const uint8_t *copy_from)
+int ghostfat_write_block(uint32_t block_no, const uint8_t *data)
 {
-    (void)lba;
-
-    if (uf2_is_block(copy_from)) // если пишем прошивку
+    if (uf2_is_block(data)) // если пишем прошивку
     {
-        if (uf2_is_valid(copy_from)) {
+        if (uf2_is_valid(data)) {
             static WriteState wrState;
-            uf2_write_flash_sector(copy_from, false, &wrState);
+            uf2_write_flash_sector(data, false, &wrState);
         } else {
             return -1;
         }
     }
-    else { // если обычный файл
-
+    else if (block_no >= START_CLUSTERS) { // если обычный файл
+        memflash_write_block(0, data, GHOSTFAT_SECTOR_SIZE);
     }
 
     return 0;

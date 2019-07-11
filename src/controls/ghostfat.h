@@ -4,9 +4,9 @@
 #include <stdint.h>
 #include "DeviceConfig.h"
 
-#define SECTOR_SIZE         512 // still fixed in msc.c (look todo's)
-#define FLASH_SIZE          ( 64 * 1024 ) // 64kb
-#define FLASH_TOTAL_SECTORS ( FLASH_SIZE / SECTOR_SIZE )
+#define GHOSTFAT_SECTOR_SIZE        1024
+#define GHOSTFAT_TOTAL_SIZE         ( 64 * 1024 ) // 64kb
+#define GHOSTFAT_TOTAL_SECTORS      ( GHOSTFAT_TOTAL_SIZE / GHOSTFAT_SECTOR_SIZE )
 
 
 #define PRODUCT_NAME            "STM32BLUEPILL"

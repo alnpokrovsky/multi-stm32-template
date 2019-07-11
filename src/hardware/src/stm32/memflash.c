@@ -4,6 +4,7 @@
 #include "DeviceConfig.h"
 #include <libopencm3/stm32/flash.h>
 #include <libopencm3/stm32/desig.h>
+#include <string.h>
 
 
 static inline uint16_t* memflash_page_address(uint16_t* dest) {
@@ -31,7 +32,47 @@ inline uint32_t memflash_start(void) {
 
 inline uint32_t memflash_end(void) {
     /* Only allow access to the chip's self-reported flash size */
-    return (FLASH_BASE + (size_t)DESIG_FLASH_SIZE*FLASH_PAGE_SIZE);
+    return (FLASH_BASE + DESIG_FLASH_SIZE*FLASH_PAGE_SIZE);
+}
+
+static bool memflash_write_page(uint32_t page_address, const uint8_t *data, uint16_t N)
+{
+    /*Erasing page*/
+	flash_erase_page(page_address);
+	if(flash_get_status_flags() != FLASH_SR_EOP)
+		return false;
+
+    for (uint16_t i = 0; i < N; i += 4) {
+        flash_program_word(page_address + i, *((uint32_t*)(data + i)));
+		// if(flash_get_status_flags() != FLASH_SR_EOP)
+		// 	return false;
+
+		// /*verify if correct data is programmed*/
+		// if(*((uint32_t*)(page_address+i)) != *((uint32_t*)(data + i)))
+		// 	return false;
+    }
+
+    return true;
+}
+
+bool memflash_write_block(uint8_t block_no, const uint8_t *data, uint16_t N)
+{
+    uint32_t page_address = memflash_end() - (block_no + 1) * FLASH_PAGE_SIZE;
+
+    flash_unlock();
+    
+    bool result = memflash_write_page(page_address, data, N);
+
+    flash_lock();
+
+    return result;
+}
+
+void memflash_read_block(uint8_t block_no, uint8_t *data, uint16_t N)
+{
+	uint8_t * page_ptr = (uint8_t *) (memflash_end() - (block_no + 1) * FLASH_PAGE_SIZE);
+
+    memcpy(data, page_ptr, N);
 }
 
 bool memflash_program_array(uint16_t* dest, const uint16_t* data, size_t half_word_count) {

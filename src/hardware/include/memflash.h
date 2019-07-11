@@ -15,4 +15,8 @@ size_t memflash_awailable_size(void);
 
 bool memflash_program_array(uint16_t* dest, const uint16_t* data, size_t half_word_count);
 
+void memflash_read_block(uint8_t block_no, uint8_t *data, uint16_t N);
+bool memflash_write_block(uint8_t block_no, const uint8_t *data, uint16_t max_len);
+
+
 #endif

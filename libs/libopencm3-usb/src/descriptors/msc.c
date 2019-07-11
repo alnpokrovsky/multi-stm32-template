@@ -56,23 +56,23 @@
 #define CBW_SIGNATURE				0x43425355
 #define CBW_STATUS_SUCCESS			0
 #define CBW_STATUS_FAILED			1
-#define CBW_STATUS_PHASE_ERROR			2
+#define CBW_STATUS_PHASE_ERROR		2
 
 /* Command Status Wrapper */
 #define CSW_SIGNATURE				0x53425355
 #define CSW_STATUS_SUCCESS			0
 #define CSW_STATUS_FAILED			1
-#define CSW_STATUS_PHASE_ERROR			2
+#define CSW_STATUS_PHASE_ERROR		2
 
 /* Implemented SCSI Commands */
-#define SCSI_TEST_UNIT_READY			0x00
+#define SCSI_TEST_UNIT_READY		0x00
 #define SCSI_REQUEST_SENSE			0x03
 #define SCSI_FORMAT_UNIT			0x04
-#define SCSI_READ_6				0x08
+#define SCSI_READ_6					0x08
 #define SCSI_WRITE_6				0x0A
 #define SCSI_INQUIRY				0x12
 #define SCSI_MODE_SENSE_6			0x1A
-#define SCSI_SEND_DIAGNOSTIC			0x1D
+#define SCSI_SEND_DIAGNOSTIC		0x1D
 #define SCSI_READ_CAPACITY			0x25
 #define SCSI_READ_10				0x28
 
@@ -80,57 +80,57 @@
 /* Required SCSI Commands */
 
 /* Optional SCSI Commands */
-#define SCSI_REPORT_LUNS			0xA0
+#define SCSI_REPORT_LUNS				0xA0
 #define SCSI_PREVENT_ALLOW_MEDIUM_REMOVAL	0x1E
-#define SCSI_MODE_SELECT_6			0x15
-#define SCSI_MODE_SELECT_10			0x55
-#define SCSI_MODE_SENSE_10			0x5A
-#define SCSI_READ_12				0xA8
+#define SCSI_MODE_SELECT_6				0x15
+#define SCSI_MODE_SELECT_10				0x55
+#define SCSI_MODE_SENSE_10				0x5A
+#define SCSI_READ_12					0xA8
 #define SCSI_READ_FORMAT_CAPACITIES		0x23
 #define SCSI_READ_TOC_PMA_ATIP			0x43
 #define SCSI_START_STOP_UNIT			0x1B
 #define SCSI_SYNCHRONIZE_CACHE			0x35
-#define SCSI_VERIFY				0x2F
-#define SCSI_WRITE_10				0x2A
-#define SCSI_WRITE_12				0xAA
+#define SCSI_VERIFY						0x2F
+#define SCSI_WRITE_10					0x2A
+#define SCSI_WRITE_12					0xAA
 
 /* The sense codes */
 enum sbc_sense_key {
 	SBC_SENSE_KEY_NO_SENSE			= 0x00,
-	SBC_SENSE_KEY_RECOVERED_ERROR		= 0x01,
+	SBC_SENSE_KEY_RECOVERED_ERROR	= 0x01,
 	SBC_SENSE_KEY_NOT_READY			= 0x02,
 	SBC_SENSE_KEY_MEDIUM_ERROR		= 0x03,
-	SBC_SENSE_KEY_HARDWARE_ERROR		= 0x04,
-	SBC_SENSE_KEY_ILLEGAL_REQUEST		= 0x05,
-	SBC_SENSE_KEY_UNIT_ATTENTION		= 0x06,
+	SBC_SENSE_KEY_HARDWARE_ERROR	= 0x04,
+	SBC_SENSE_KEY_ILLEGAL_REQUEST	= 0x05,
+	SBC_SENSE_KEY_UNIT_ATTENTION	= 0x06,
 	SBC_SENSE_KEY_DATA_PROTECT		= 0x07,
 	SBC_SENSE_KEY_BLANK_CHECK		= 0x08,
-	SBC_SENSE_KEY_VENDOR_SPECIFIC		= 0x09,
+	SBC_SENSE_KEY_VENDOR_SPECIFIC	= 0x09,
 	SBC_SENSE_KEY_COPY_ABORTED		= 0x0A,
-	SBC_SENSE_KEY_ABORTED_COMMAND		= 0x0B,
-	SBC_SENSE_KEY_VOLUME_OVERFLOW		= 0x0D,
+	SBC_SENSE_KEY_ABORTED_COMMAND	= 0x0B,
+	SBC_SENSE_KEY_VOLUME_OVERFLOW	= 0x0D,
 	SBC_SENSE_KEY_MISCOMPARE		= 0x0E
 };
 
 enum sbc_asc {
 	SBC_ASC_NO_ADDITIONAL_SENSE_INFORMATION	= 0x00,
 	SBC_ASC_PERIPHERAL_DEVICE_WRITE_FAULT	= 0x03,
-	SBC_ASC_LOGICAL_UNIT_NOT_READY		= 0x04,
-	SBC_ASC_UNRECOVERED_READ_ERROR		= 0x11,
+	SBC_ASC_LOGICAL_UNIT_NOT_READY			= 0x04,
+	SBC_ASC_UNRECOVERED_READ_ERROR			= 0x11,
 	SBC_ASC_INVALID_COMMAND_OPERATION_CODE	= 0x20,
-	SBC_ASC_LBA_OUT_OF_RANGE		= 0x21,
-	SBC_ASC_INVALID_FIELD_IN_CDB		= 0x24,
-	SBC_ASC_WRITE_PROTECTED			= 0x27,
-	SBC_ASC_NOT_READY_TO_READY_CHANGE	= 0x28,
-	SBC_ASC_FORMAT_ERROR			= 0x31,
-	SBC_ASC_MEDIUM_NOT_PRESENT		= 0x3A
+	SBC_ASC_LBA_OUT_OF_RANGE				= 0x21,
+	SBC_ASC_INVALID_FIELD_IN_CDB			= 0x24,
+	SBC_ASC_WRITE_PROTECTED					= 0x27,
+	SBC_ASC_NOT_READY_TO_READY_CHANGE		= 0x28,
+	SBC_ASC_FORMAT_ERROR					= 0x31,
+	SBC_ASC_MEDIUM_NOT_PRESENT				= 0x3A
 };
 
 enum sbc_ascq {
-	SBC_ASCQ_NA				= 0x00,
-	SBC_ASCQ_FORMAT_COMMAND_FAILED		= 0x01,
+	SBC_ASCQ_NA								= 0x00,
+	SBC_ASCQ_FORMAT_COMMAND_FAILED			= 0x01,
 	SBC_ASCQ_INITIALIZING_COMMAND_REQUIRED	= 0x02,
-	SBC_ASCQ_OPERATION_IN_PROGRESS		= 0x07
+	SBC_ASCQ_OPERATION_IN_PROGRESS			= 0x07
 };
 
 enum trans_event {
@@ -176,7 +176,7 @@ struct usb_msc_trans {
 	uint32_t block_count;
 	uint32_t current_block;
 
-	uint8_t msd_buf[SECTOR_SIZE];
+	uint8_t msd_buf[GHOSTFAT_SECTOR_SIZE];
 
 	bool csw_valid;
 	uint8_t csw_sent;		/* Write until 13 bytes */
@@ -197,9 +197,10 @@ struct _usbd_mass_storage {
 	const char *product_id;
 	const char *product_revision_level;
 	uint32_t block_count;
+	uint32_t block_size;
 
-	int (*ghostfat_read_block)(uint32_t lba, uint8_t *copy_to);
-	int (*ghostfat_write_block)(uint32_t lba, const uint8_t *copy_from);
+	int (*read_block)(uint32_t lba, uint8_t *copy_to);
+	int (*write_block)(uint32_t lba, const uint8_t *copy_from);
 
 	void (*lock)(void);
 	void (*unlock)(void);
@@ -287,8 +288,7 @@ static void scsi_read_6(usbd_mass_storage *ms,
 
 		/* TODO: Check the lba & block_count for range. */
 
-		/* both are in terms of 512 byte blocks, so shift by 9 */
-		trans->bytes_to_write = trans->block_count << 9;
+		trans->bytes_to_write = trans->block_count * ms->block_size;
 
 		set_sbc_status_good(ms);
 	}
@@ -309,7 +309,7 @@ static void scsi_write_6(usbd_mass_storage *ms,
 		trans->block_count = buf[4];
 		trans->current_block = 0;
 
-		trans->bytes_to_read = trans->block_count << 9;
+		trans->bytes_to_read = trans->block_count * ms->block_size;
 	}
 }
 
@@ -329,7 +329,7 @@ static void scsi_write_10(usbd_mass_storage *ms,
 		trans->block_count = (buf[7] << 8) | buf[8];
 		trans->current_block = 0;
 
-		trans->bytes_to_read = trans->block_count << 9;
+		trans->bytes_to_read = trans->block_count * ms->block_size;
 	}
 }
 
@@ -347,8 +347,7 @@ static void scsi_read_10(usbd_mass_storage *ms,
 
 		/* TODO: Check the lba & block_count for range. */
 
-		/* both are in terms of 512 byte blocks, so shift by 9 */
-		trans->bytes_to_write = trans->block_count << 9;
+		trans->bytes_to_write = trans->block_count * ms->block_size;
 
 		set_sbc_status_good(ms);
 	}
@@ -359,16 +358,15 @@ static void scsi_read_capacity(usbd_mass_storage *ms,
 			       enum trans_event event)
 {
 	if (EVENT_CBW_VALID == event) {
-		trans->msd_buf[0] = ms->block_count >> 24;
-		trans->msd_buf[1] = 0xff & (ms->block_count >> 16);
-		trans->msd_buf[2] = 0xff & (ms->block_count >> 8);
-		trans->msd_buf[3] = 0xff & ms->block_count;
+		trans->msd_buf[0] = (uint8_t) (ms->block_count >> 24);
+		trans->msd_buf[1] = (uint8_t) (ms->block_count >> 16);
+		trans->msd_buf[2] = (uint8_t) (ms->block_count >> 8);
+		trans->msd_buf[3] = (uint8_t) (ms->block_count);
 
-		/* Block size: 512 */ //todo: fixed 512 size. find way to castomize 
-		trans->msd_buf[4] = 0;
-		trans->msd_buf[5] = 0;
-		trans->msd_buf[6] = 2;
-		trans->msd_buf[7] = 0;
+		trans->msd_buf[4] = (uint8_t) (ms->block_size >> 24);
+		trans->msd_buf[5] = (uint8_t) (ms->block_size >> 16);
+		trans->msd_buf[6] = (uint8_t) (ms->block_size >> 8);
+		trans->msd_buf[7] = (uint8_t) (ms->block_size);
 		trans->bytes_to_write = 8;
 		set_sbc_status_good(ms);
 	}
@@ -381,10 +379,10 @@ static void scsi_format_unit(usbd_mass_storage *ms,
 	if (EVENT_CBW_VALID == event) {
 		uint32_t i;
 
-		memset(trans->msd_buf, 0, SECTOR_SIZE);
+		memset(trans->msd_buf, 0, ms->block_size);
 
 		for (i = 0; i < ms->block_count; i++) {
-			(*ms->ghostfat_write_block)(i, trans->msd_buf);
+			(*ms->write_block)(i, trans->msd_buf);
 		}
 
 		set_sbc_status_good(ms);
@@ -567,15 +565,15 @@ static void scsi_read_format_capacities(usbd_mass_storage *ms, struct usb_msc_tr
 	if (EVENT_CBW_VALID == event) {
 
 		trans->msd_buf[3] = 0x08;
-		trans->msd_buf[4] = ms->block_count >> 24;
-		trans->msd_buf[5] = 0xff & (ms->block_count >> 16);
-		trans->msd_buf[6] = 0xff & (ms->block_count >> 8);
-		trans->msd_buf[7] = 0xff & ms->block_count;
+		trans->msd_buf[4] = (uint8_t) (ms->block_count >> 24);
+		trans->msd_buf[5] = (uint8_t) (ms->block_count >> 16);
+		trans->msd_buf[6] = (uint8_t) (ms->block_count >> 8);
+		trans->msd_buf[7] = (uint8_t) (ms->block_count);
 
 		trans->msd_buf[8] =  0x02;
-		trans->msd_buf[9] = 0;
-		trans->msd_buf[10] = 0x02;
-		trans->msd_buf[11] = 0;
+		trans->msd_buf[9] =  (uint8_t) (ms->block_size >> 16);;
+		trans->msd_buf[10] = (uint8_t) (ms->block_size >> 8);;
+		trans->msd_buf[11] = (uint8_t) (ms->block_size);
 		trans->bytes_to_write = 12;  //  Was 9.
 		set_sbc_status_good(ms);
 	}
@@ -671,7 +669,7 @@ static void msc_data_rx_cb(usbd_device *usbd_dev, uint8_t ep)
 	left = sizeof(struct usb_msc_cbw) - trans->cbw_cnt;
 	if (0 < left) {
 		max_len = MIN(ms->ep_out_size, left);
-		p = &trans->cbw.buf[0x1ff & trans->cbw_cnt];
+		p = &trans->cbw.buf[(ms->block_size-1) & trans->cbw_cnt];
 		len = usbd_ep_read_packet(usbd_dev, ep, p, max_len);
 		trans->cbw_cnt += len;
 
@@ -695,16 +693,16 @@ static void msc_data_rx_cb(usbd_device *usbd_dev, uint8_t ep)
 
 		left = trans->bytes_to_read - trans->byte_count;
 		max_len = MIN(ms->ep_out_size, left);
-		p = &trans->msd_buf[0x1ff & trans->byte_count];
+		p = &trans->msd_buf[(ms->block_size-1) & trans->byte_count];
 		len = usbd_ep_read_packet(usbd_dev, ep, p, max_len);
 		trans->byte_count += len;
 
 		if (0 < trans->block_count) {
-			if (0 == (0x1ff & trans->byte_count)) {
+			if (0 == ((ms->block_size-1) & trans->byte_count)) {
 				uint32_t lba;
 
 				lba = trans->lba_start + trans->current_block;
-				if (0 != (*ms->ghostfat_write_block)(lba, trans->msd_buf)) {
+				if (0 != (*ms->write_block)(lba, trans->msd_buf)) {
 					/* Error */
                     // debug_println("msc_data_rx_cb write error"); debug_flush(); ////
 				}
@@ -734,11 +732,11 @@ static void msc_data_rx_cb(usbd_device *usbd_dev, uint8_t ep)
 				(*ms->lock)();
 			}
 
-			if (0 == (0x1ff & trans->byte_count)) {
+			if (0 == ((ms->block_size-1) & trans->byte_count)) {
 				uint32_t lba;
 
 				lba = trans->lba_start + trans->current_block;
-				if (0 != (*ms->ghostfat_read_block)(lba, trans->msd_buf)) {
+				if (0 != (*ms->read_block)(lba, trans->msd_buf)) {
 					/* Error */
                     // debug_println("msc_data_rx_cb read error"); debug_flush(); ////
 				}
@@ -748,7 +746,7 @@ static void msc_data_rx_cb(usbd_device *usbd_dev, uint8_t ep)
 
 		left = trans->bytes_to_write - trans->byte_count;
 		max_len = MIN(ms->ep_out_size, left);
-		p = &trans->msd_buf[0x1ff & trans->byte_count];
+		p = &trans->msd_buf[(ms->block_size-1) & trans->byte_count];
 		len = usbd_ep_write_packet(usbd_dev, ms->ep_in, p, max_len);
 		trans->byte_count += len;
 	} else {
@@ -757,7 +755,7 @@ static void msc_data_rx_cb(usbd_device *usbd_dev, uint8_t ep)
 				uint32_t lba;
 
 				lba = trans->lba_start + trans->current_block;
-				if (0 != (*ms->ghostfat_write_block)(lba, trans->msd_buf)) {
+				if (0 != (*ms->write_block)(lba, trans->msd_buf)) {
 					/* Error */
                     // debug_println("msc_data_rx_cb write error 2"); debug_flush(); ////
 				}
@@ -798,11 +796,11 @@ static void msc_data_tx_cb(usbd_device *usbd_dev, uint8_t ep)
 
 	if (trans->byte_count < trans->bytes_to_write) {
 		if (0 < trans->block_count) {
-			if (0 == (0x1ff & trans->byte_count)) {
+			if (0 == ((ms->block_size-1) & trans->byte_count)) {
 				uint32_t lba;
 
 				lba = trans->lba_start + trans->current_block;
-				if (0 != (*ms->ghostfat_read_block)(lba, trans->msd_buf)) {
+				if (0 != (*ms->read_block)(lba, trans->msd_buf)) {
 					/* Error */
                     // debug_println("msc_data_tx_cb read error"); debug_flush(); ////
 				}
@@ -812,7 +810,7 @@ static void msc_data_tx_cb(usbd_device *usbd_dev, uint8_t ep)
 
 		left = trans->bytes_to_write - trans->byte_count;
 		max_len = MIN(ms->ep_out_size, left);
-		p = &trans->msd_buf[0x1ff & trans->byte_count];
+		p = &trans->msd_buf[(ms->block_size-1) & trans->byte_count];
 		len = usbd_ep_write_packet(usbd_dev, ep, p, max_len);
 		trans->byte_count += len;
 	} else {
@@ -915,10 +913,11 @@ static void msc_set_config(usbd_device *usbd_dev, uint16_t wValue)
 @param[in] product_id The SCSI product ID to return.  Maximum used length is 16.
 @param[in] product_revision_level The SCSI product revision level to return.
 		Maximum used length is 4.
-@param[in] block_count The number of 512-byte blocks available.
-@param[in] ghostfat_read_block The function called when the host requests to read a LBA
+@param[in] block_count The number of <block_size>-byte blocks available.
+@param[in] block_size size of one block.
+@param[in] read_block The function called when the host requests to read a LBA
 		block.  Must _NOT_ be NULL.
-@param[in] ghostfat_write_block The function called when the host requests to write a
+@param[in] write_block The function called when the host requests to write a
 		LBA block.  Must _NOT_ be NULL.
 
 @return Pointer to the usbd_mass_storage struct.
@@ -931,6 +930,7 @@ static usbd_mass_storage *custom_usb_msc_init(
 	const char *product_id,
 	const char *product_revision_level,
 	const uint32_t block_count,
+	const uint32_t block_size,
 	int (*pread_block)(uint32_t lba, uint8_t *copy_to),
 	int (*pwrite_block)(uint32_t lba, const uint8_t *copy_from),
 	uint8_t msc_interface_index0 //  Index of MSC interface
@@ -946,8 +946,9 @@ static usbd_mass_storage *custom_usb_msc_init(
 	_mass_storage.product_id = product_id;
 	_mass_storage.product_revision_level = product_revision_level;
 	_mass_storage.block_count = block_count - 1;
-	_mass_storage.ghostfat_read_block = pread_block;
-	_mass_storage.ghostfat_write_block = pwrite_block;
+	_mass_storage.block_size = block_size;
+	_mass_storage.read_block = pread_block;
+	_mass_storage.write_block = pwrite_block;
 	_mass_storage.lock = NULL;
 	_mass_storage.unlock = NULL;
 
@@ -1013,7 +1014,7 @@ void msc_setup(usbd_device* usbd_dev0) {
 #ifdef RAM_DISK    
         ramdisk_blocks(), ramdisk_read, ramdisk_write,
 #else
-        FLASH_TOTAL_SECTORS, ghostfat_read_block, ghostfat_write_block,
+        GHOSTFAT_TOTAL_SECTORS, GHOSTFAT_SECTOR_SIZE, ghostfat_read_block, ghostfat_write_block,        
 #endif  //  RAM_DISK        
         INTF_MSC
     );
