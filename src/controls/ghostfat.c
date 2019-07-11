@@ -203,7 +203,6 @@ static void fat16_root_sector(uint8_t *data)
 int ghostfat_read_block(uint32_t block_no, uint8_t *data)
 {
     memset(data, 0, GHOSTFAT_SECTOR_SIZE);
-    uint32_t sectionIdx = block_no;
 
     if (block_no == 0) // загрузочный сектор
     {
@@ -218,9 +217,11 @@ int ghostfat_read_block(uint32_t block_no, uint8_t *data)
         fat16_root_sector(data);
     }
     else { // данные
+        uint32_t sectionIdx = block_no;
         sectionIdx -= START_CLUSTERS;
         if (sectionIdx < FILES_COUNT) {
-            memcpy(data, files[sectionIdx].content, strlen(files[sectionIdx].content));
+            memflash_read_block(block_no - START_CLUSTERS, data, GHOSTFAT_SECTOR_SIZE);
+            //memcpy(data, files[sectionIdx].content, strlen(files[sectionIdx].content));
         } else { // прошивка
             sectionIdx -= FILES_COUNT - 1;
             uf2_read_flash_sector(data, sectionIdx);
@@ -243,7 +244,7 @@ int ghostfat_write_block(uint32_t block_no, const uint8_t *data)
         }
     }
     else if (block_no >= START_CLUSTERS) { // если обычный файл
-        memflash_write_block(0, data, GHOSTFAT_SECTOR_SIZE);
+        memflash_write_block(block_no - START_CLUSTERS, data, GHOSTFAT_SECTOR_SIZE);
     }
 
     return 0;
