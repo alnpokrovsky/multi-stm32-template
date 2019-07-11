@@ -62,40 +62,6 @@ static void padded_memcpy(char *dst, const char *src) {
     }
 }
 
-//////////////////////// FILES //////////////////////
-
-typedef struct {
-    const char name[FILE_FULLNAME_SIZE];
-    const char *content;
-} TextFile;
-
-const char infoFile[] = //
-    "Model: "         PRODUCT_NAME  "\r\n"
-    "Board-ID: "      BOARD_ID      "\r\n";
-
-const char indexFile[] = //
-    "<!doctype html>\n"
-    "<html>"
-    "<body>"
-    "<script>\n"
-    "location.replace(\"" INDEX_URL "\");\n"
-    "</script>"
-    "</body>"
-    "</html>\n";
-
-static const TextFile files[] = {
-    {.name = "INFO    TXT", .content = infoFile},
-    {.name = "INDEX   HTM", .content = indexFile},
-    {.name = "CURRENT UF2"},
-};
-#define FILES_COUNT ( sizeof(files) / sizeof(files[0]) )
-
-#define UF2_FIRST_SECTOR    ( FILES_COUNT + 1 )
-#define UF2_LAST_SECTOR     ( UF2_FIRST_SECTOR + UF2_BLOCKS_COUNT - 1 )
-
-/////////////////////////////////////////////////////
-
-
 
 /////////////////////////// fat16 load sector //////////
 #define RESERVED_SECTORS    1
@@ -132,7 +98,6 @@ static const FAT_BootBlock BootBlock = {
 };
 
 
-
 static void fat16_boot_sector(uint8_t *data)
 {
     memcpy(data, &BootBlock, sizeof(BootBlock));
@@ -142,12 +107,44 @@ static void fat16_boot_sector(uint8_t *data)
     data[GHOSTFAT_SECTOR_SIZE-1] = 0xaa;
 }
 
+//////////////////////////////////////////////////////////
+
 #define FAT_COLUMNS_COUNT   ( SECTORS_PER_FAT * GHOSTFAT_SECTOR_SIZE / 2 )
 #define FAT_EOF             0xffff
 #define FAT_LABEL_OFFSET    1
 
 #define FAT_ATTR_READONLY   0x01
 #define FAT_ATTR_LABEL      0x28
+
+
+//////////////////////// FILES //////////////////////
+
+typedef struct {
+    const char name[FILE_FULLNAME_SIZE];
+    const uint32_t content_ptr;
+    const bool readonly;
+} TextFile;
+
+
+static const TextFile files[] = {
+    {
+        .name = "INDEX   HTM",
+        .content_ptr = 0,
+        .readonly = true,
+    },
+    {
+        .name = "CONFIG  TXT",
+        .content_ptr = 1,
+        .readonly = false,
+    },
+    //{.name = "CURRENT UF2"},
+};
+#define FILES_COUNT ( sizeof(files) / sizeof(files[0]) )
+
+#define UF2_FIRST_SECTOR    ( FILES_COUNT + 1 )
+#define UF2_LAST_SECTOR     ( UF2_FIRST_SECTOR + UF2_BLOCKS_COUNT - 1 )
+
+/////////////////////////////////////////////////////
 
 static void fat16_fat_sector(uint8_t *data, uint32_t block_no)
 {
@@ -184,19 +181,18 @@ static void fat16_root_sector(uint8_t *data)
         d++;
         // имя файла
         padded_memcpy(d->name, files[i].name);
+        // аттрибут
+        //d->attrs = files[i].readonly ? FAT_ATTR_READONLY : 0;
         // размер файла
-        if (files[i].content != NULL) {
-            d->size = strlen(files[i].content);
-        } else {
-            d->size = memflash_awailable_size(); //todo: тут должен быть размер прошивки
-        }
+        uint8_t tmpdata[GHOSTFAT_SECTOR_SIZE];
+        memflash_read_block(files[i].content_ptr, tmpdata, GHOSTFAT_SECTOR_SIZE);
+        d->size = strlen((char*)tmpdata);
         /**
          * номер первого кластера
          * указывает на слово в таблице FAT1
-         * (файлы идут по порядку и занимают всего 
-         * по одному кластеру)
+         * (нумерация FAT с единицы)
          */
-        d->startCluster = i + (FAT_LABEL_OFFSET + 1);
+        d->startCluster = 1 + files[i].content_ptr + FAT_LABEL_OFFSET;
     }
 }
 

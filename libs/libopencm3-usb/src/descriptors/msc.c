@@ -697,12 +697,12 @@ static void msc_data_rx_cb(usbd_device *usbd_dev, uint8_t ep)
 		len = usbd_ep_read_packet(usbd_dev, ep, p, max_len);
 		trans->byte_count += len;
 
-		if (0 < trans->block_count) {
-			if (0 == ((ms->block_size-1) & trans->byte_count)) {
+		if (trans->block_count > 0) {
+			if (((ms->block_size-1) & trans->byte_count) == 0) {
 				uint32_t lba;
 
 				lba = trans->lba_start + trans->current_block;
-				if (0 != (*ms->write_block)(lba, trans->msd_buf)) {
+				if ((*ms->write_block)(lba, trans->msd_buf) != 0) {
 					/* Error */
                     // debug_println("msc_data_rx_cb write error"); debug_flush(); ////
 				}
@@ -712,13 +712,13 @@ static void msc_data_rx_cb(usbd_device *usbd_dev, uint8_t ep)
 /////////////////////ADDED THIS//////////////////////////////////////////////////////////////////////////////////
 //  From https://habr.com/company/thirdpin/blog/304924/
 
-		if (false == trans->csw_valid) {
+		if (!trans->csw_valid) {
 			scsi_command(ms, trans, EVENT_NEED_STATUS);
 			trans->csw_valid = true;
 		}
 
 		left = sizeof(struct usb_msc_csw) - trans->csw_sent;
-		if (0 < left) {
+		if (left > 0) {
 			max_len = MIN(ms->ep_out_size, left);
 			p = &trans->csw.buf[trans->csw_sent];
 			len = usbd_ep_write_packet(usbd_dev, ms->ep_in, p,

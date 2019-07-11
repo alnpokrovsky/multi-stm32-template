@@ -68,6 +68,11 @@ bool memflash_write_block(uint8_t block_no, const uint8_t *data, uint16_t N)
     return result;
 }
 
+/**
+ * прочитать страницу флеша
+ * нумерация с нуля
+ * первый пишется в конец доступной памяти
+ */
 void memflash_read_block(uint8_t block_no, uint8_t *data, uint16_t N)
 {
 	uint8_t * page_ptr = (uint8_t *) (memflash_end() - (block_no + 1) * FLASH_PAGE_SIZE);
