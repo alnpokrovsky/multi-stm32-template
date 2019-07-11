@@ -20,7 +20,6 @@
 ##
 
 
-all: bin
 
 # Be silent per default, but 'make V=1' will show all compiler calls.
 ifneq ($(V),1)
@@ -59,7 +58,6 @@ AS		:= $(PREFIX)-as
 OBJCOPY	:= $(PREFIX)-objcopy
 OBJDUMP	:= $(PREFIX)-objdump
 GDB		:= $(PREFIX)-gdb
-STFLASH	?= st-flash
 OOCD	?= openocd
 
 
@@ -104,9 +102,7 @@ TGT_LDFLAGS 	+= -specs=nosys.specs
 TGT_LDFLAGS 	+= -Wl,--print-memory-usage
 TGT_LDFLAGS		+= -Wl,-Map=$(*).map -Wl,--cref
 TGT_LDFLAGS		+= -Wl,--gc-sections
-ifeq ($(V),99)
-TGT_LDFLAGS		+= -Wl,--print-gc-sections
-endif
+
 
 ###############################################################################
 # Used libraries
@@ -184,10 +180,6 @@ $(BUILD_DIR)/%.o: %.cpp
 	$(Q)$(CXX) $(TGT_CXXFLAGS) $(CXXFLAGS) $(TGT_CPPFLAGS) $(CPPFLAGS) -o $@ -c $<
 
 
-%.stlink-flash: %.bin
-	@printf "  FLASH  $<\n"
-	$(STFLASH) write $(*).bin 0x8000000
-
 %.flash: %.elf
 	@printf "  FLASH\t$<\n"
 ifeq (,$(OOCD_FILE))
@@ -209,6 +201,6 @@ clean:
 	$(Q)$(RM) $(PROJECT).elf $(PROJECT).bin $(PROJECT).hex $(PROJECT).list $(PROJECT).map generated.* $(OBJS) $(OBJS:%.o=%.d)
 	$(Q)$(RM) -r $(BUILD_DIR)
 
-.PHONY: images clean elf bin hex list
+.PHONY: images flash clean elf bin hex list
 
 -include $(OBJS:.o=.d)
