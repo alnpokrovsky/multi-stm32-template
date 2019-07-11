@@ -196,11 +196,17 @@ else
 endif
 
 
+debug:
+	$(GDB) build/main.elf \
+		-ex 'target remote localhost:3333' \
+		-ex 'monitor reset halt'
+
+
 clean:
 	@printf "  CLEAN\n"
 	$(Q)$(RM) $(PROJECT).elf $(PROJECT).bin $(PROJECT).hex $(PROJECT).list $(PROJECT).map generated.* $(OBJS) $(OBJS:%.o=%.d)
 	$(Q)$(RM) -r $(BUILD_DIR)
 
-.PHONY: images flash clean elf bin hex list
+.PHONY: images flash clean debug elf bin hex list
 
 -include $(OBJS:.o=.d)
