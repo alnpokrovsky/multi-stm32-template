@@ -2,6 +2,10 @@
 
 PROJECT := techPult
 
+###### Create binary ###########
+all: bin
+
+
 ########## SOURCES ##############
 SRC += $(shell find src -name "*.c")
 

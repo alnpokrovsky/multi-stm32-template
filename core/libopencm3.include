@@ -1,6 +1,14 @@
 # LIBOPENCM3
 
+LIBFILE := core/libopencm3/lib/lib$(LIBNAME).a
+
+
 INC		    += core/libopencm3/include
 LDFLAGS		+= -Lcore/libopencm3/lib
 LDLIBS		+= -l$(LIBNAME)
-LIBS_A 		+= core/libopencm3/lib/lib$(LIBNAME).a
+LIBS_A 		+= $(LIBFILE)
+
+
+$(LIBFILE):
+	@echo "LIBOPENCM3 need to be build"
+	$(Q)$(MAKE) -C $(OPENCM3_DIR)
