@@ -36,6 +36,8 @@
 #include "controls/ghostfat.h"
 
 
+#ifdef USB_INTERFACE_MSC
+
 //  USB Endpoints.
 #define MSC_OUT                 0x01
 #define MSC_IN                  0x82
@@ -986,7 +988,7 @@ static const struct usb_endpoint_descriptor msc_endp[] = {{
 const struct usb_interface_descriptor msc_iface = {
 	.bLength = USB_DT_INTERFACE_SIZE,
 	.bDescriptorType = USB_DT_INTERFACE,
-	.bInterfaceNumber = INTF_MSC,
+	.bInterfaceNumber = USB_INTERFACE_MSC,
 	.bAlternateSetting = 0,
 	.bNumEndpoints = 2,
 	.bInterfaceClass = USB_CLASS_MSC,
@@ -1005,15 +1007,14 @@ void msc_setup(usbd_device* usbd_dev0) {
 #endif  //  RAM_DISK
     
     custom_usb_msc_init(usbd_dev0, MSC_IN, USB_MAX_PACKET_SIZE, MSC_OUT, USB_MAX_PACKET_SIZE, 
-        MSC_VENDOR_ID, MSC_PRODUCT_ID, MSC_PRODUCT_REVISION_LEVEL, 
+        USB_MSC_VENDOR_ID, USB_MSC_PRODUCT_ID, MSC_PRODUCT_REVISION_LEVEL, 
 #ifdef RAM_DISK    
         ramdisk_blocks(), ramdisk_read, ramdisk_write,
 #else
         GHOSTFAT_TOTAL_SECTORS, GHOSTFAT_SECTOR_SIZE, ghostfat_read_block, ghostfat_write_block,        
 #endif  //  RAM_DISK        
-        INTF_MSC
+        USB_INTERFACE_MSC
     );
 }
 
-
-/** @} */
+#endif

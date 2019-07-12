@@ -6,12 +6,8 @@
 #define USB_VID                 0x1209
 #define USB_PID                 0xdb42
 
-#define MSC_VENDOR_ID           "BluePill"        //  Max 8 chars
-#define MSC_PRODUCT_ID          "UF2 Bootloader"  //  Max 16 chars
-
-// DFU loader config
-#define DFU_UPLOAD_AVAILABLE 1
-#define DFU_DOWNLOAD_AVAILABLE 1
+#define USB_MSC_VENDOR_ID       "BluePill"
+#define USB_MSC_PRODUCT_ID      "MSC Config"
 
 
 #define USB_SERIAL_NUM_LENGTH   24
@@ -19,27 +15,30 @@
 #define USB_MAX_PACKET_SIZE     64   //  Previously 32
 #define USB_CDC_PACKET_SIZE     16
 
-//#define USB21_INTERFACE              //  Enable USB 2.1 with WebUSB and BOS support.
-#define ALL_USB_INTERFACES           //  Enable all USB interfaces.
 
 //  Index of each USB interface.  Must be consecutive and must sync with interfaces[].
-#ifdef ALL_USB_INTERFACES
-//#define INTF_DFU                0
-#define INTF_MSC                1
-#define INTF_COMM               2
-#define INTF_DATA               3
-#endif  //  ALL_USB_INTERFACES
+//#define INTF_DFU                0 /* TODO */
+#define USB_INTERFACE_MSC         1
+#define USB_INTERFACE_CDC_COMM    2
+#define USB_INTERFACE_CDC_DATA    3
+#define USB21_INTERFACE              /* Enable USB 2.1 with WebUSB and BOS support.*/
+
+#ifdef INTF_DFU
+// DFU loader config
+#define USB_DFU_UPLOAD_AVAILABLE 1
+#define USB_DFU_DOWNLOAD_AVAILABLE 1
+#endif
 
 
 #define USB_STRINGS { \
-    "Devanarchy",              /*  USB Manufacturer */ \
-    "DAPBoot DFU Bootloader",  /*  USB Product */ \
-    serial_number,             /*  Serial number */ \
-    "DAPBoot DFU",             /*  DFU */ \
-    "Blue Pill MSC",           /*  MSC */ \
-    "Blue Pill Serial Port",   /*  Serial Port */ \
-    "Blue Pill COMM",          /*  COMM */ \
-    "Blue Pill DATA",          /*  DATA */ \
+    "POKROV",        /*  USB Manufacturer */ \
+    "Product",       /*  USB Product */ \
+    serial_number,   /*  Serial number */ \
+    "DFU",           /*  DFU */ \
+    "MSC",           /*  MSC */ \
+    "Serial Port",   /*  Serial Port */ \
+    "COMM",          /*  COMM */ \
+    "DATA",          /*  DATA */ \
 };
 
 /**
