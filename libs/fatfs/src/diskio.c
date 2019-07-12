@@ -60,7 +60,9 @@ DRESULT disk_read (
 )
 {
 	(void) pdrv;
-	memflash_read_block(sector, buff, count);
+	for (UINT i = 0; i < count; ++i) {
+		memflash_read_block(sector + i, buff);
+	}
 	return RES_OK;
 }
 

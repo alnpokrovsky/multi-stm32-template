@@ -667,7 +667,7 @@ static void msc_data_rx_cb(usbd_device *usbd_dev, uint8_t ep)
 
 	/* RX only */
 	left = sizeof(struct usb_msc_cbw) - trans->cbw_cnt;
-	if (0 < left) {
+	if (left > 0) {
 		max_len = MIN(ms->ep_out_size, left);
 		p = &trans->cbw.buf[(ms->block_size-1) & trans->cbw_cnt];
 		len = usbd_ep_read_packet(usbd_dev, ep, p, max_len);
@@ -685,8 +685,8 @@ static void msc_data_rx_cb(usbd_device *usbd_dev, uint8_t ep)
 	}
 
 	if (trans->byte_count < trans->bytes_to_read) {
-		if (0 < trans->block_count) {
-			if ((0 == trans->byte_count) && (NULL != ms->lock)){
+		if (trans->block_count > 0) {
+			if ((trans->byte_count == 0) && (ms->lock != NULL)){
 				(*ms->lock)();
 			}
 		}
@@ -704,7 +704,6 @@ static void msc_data_rx_cb(usbd_device *usbd_dev, uint8_t ep)
 				lba = trans->lba_start + trans->current_block;
 				if ((*ms->write_block)(lba, trans->msd_buf) != 0) {
 					/* Error */
-                    // debug_println("msc_data_rx_cb write error"); debug_flush(); ////
 				}
 				trans->current_block++;
 			}
@@ -727,18 +726,17 @@ static void msc_data_rx_cb(usbd_device *usbd_dev, uint8_t ep)
 		}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	} else if (trans->byte_count < trans->bytes_to_write) {
-		if (0 < trans->block_count) {
-			if ((0 == trans->byte_count) && (NULL != ms->lock)) {
+		if (trans->block_count > 0) {
+			if ((trans->byte_count == 0) && (ms->lock != NULL)) {
 				(*ms->lock)();
 			}
 
-			if (0 == ((ms->block_size-1) & trans->byte_count)) {
+			if (((ms->block_size-1) & trans->byte_count) == 0) {
 				uint32_t lba;
 
 				lba = trans->lba_start + trans->current_block;
-				if (0 != (*ms->read_block)(lba, trans->msd_buf)) {
+				if ((*ms->read_block)(lba, trans->msd_buf) != 0) {
 					/* Error */
-                    // debug_println("msc_data_rx_cb read error"); debug_flush(); ////
 				}
 				trans->current_block++;
 			}
@@ -750,29 +748,28 @@ static void msc_data_rx_cb(usbd_device *usbd_dev, uint8_t ep)
 		len = usbd_ep_write_packet(usbd_dev, ms->ep_in, p, max_len);
 		trans->byte_count += len;
 	} else {
-		if (0 < trans->block_count) {
+		if (trans->block_count > 0) {
 			if (trans->current_block == trans->block_count) {
 				uint32_t lba;
 
 				lba = trans->lba_start + trans->current_block;
 				if (0 != (*ms->write_block)(lba, trans->msd_buf)) {
 					/* Error */
-                    // debug_println("msc_data_rx_cb write error 2"); debug_flush(); ////
 				}
 
 				trans->current_block = 0;
-				if (NULL != ms->unlock){
+				if (ms->unlock != NULL){
 					(*ms->unlock)();
 				}
 			}
 		}
-		if (false == trans->csw_valid) {
+		if (!trans->csw_valid) {
 			scsi_command(ms, trans, EVENT_NEED_STATUS);
 			trans->csw_valid = true;
 		}
 
 		left = sizeof(struct usb_msc_csw) - trans->csw_sent;
-		if (0 < left) {
+		if (left > 0) {
 			max_len = MIN(ms->ep_out_size, left);
 			p = &trans->csw.buf[trans->csw_sent];
 			len = usbd_ep_write_packet(usbd_dev, ms->ep_in, p, max_len);
@@ -785,7 +782,6 @@ static void msc_data_rx_cb(usbd_device *usbd_dev, uint8_t ep)
 /** @brief Handle the USB 'IN' requests. */
 static void msc_data_tx_cb(usbd_device *usbd_dev, uint8_t ep)
 {
-    // debug_println("msc_data_tx_cb"); // debug_flush(); ////
 	usbd_mass_storage *ms;
 	struct usb_msc_trans *trans;
 	int len, max_len, left;
@@ -795,14 +791,13 @@ static void msc_data_tx_cb(usbd_device *usbd_dev, uint8_t ep)
 	trans = &ms->trans;
 
 	if (trans->byte_count < trans->bytes_to_write) {
-		if (0 < trans->block_count) {
-			if (0 == ((ms->block_size-1) & trans->byte_count)) {
+		if (trans->block_count > 0) {
+			if (((ms->block_size-1) & trans->byte_count) == 0) {
 				uint32_t lba;
 
 				lba = trans->lba_start + trans->current_block;
 				if (0 != (*ms->read_block)(lba, trans->msd_buf)) {
 					/* Error */
-                    // debug_println("msc_data_tx_cb read error"); debug_flush(); ////
 				}
 				trans->current_block++;
 			}
@@ -822,13 +817,13 @@ static void msc_data_tx_cb(usbd_device *usbd_dev, uint8_t ep)
 				}
 			}
 		}
-		if (false == trans->csw_valid) {
+		if (!trans->csw_valid) {
 			scsi_command(ms, trans, EVENT_NEED_STATUS);
 			trans->csw_valid = true;
 		}
 
 		left = sizeof(struct usb_msc_csw) - trans->csw_sent;
-		if (0 < left) {
+		if (left > 0) {
 			max_len = MIN(ms->ep_out_size, left);
 			p = &trans->csw.buf[trans->csw_sent];
 			len = usbd_ep_write_packet(usbd_dev, ep, p, max_len);

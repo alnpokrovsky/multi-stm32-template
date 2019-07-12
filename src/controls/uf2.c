@@ -64,9 +64,9 @@ typedef struct {
 #define NO_CACHE 0xffffffff
 
 static uint32_t flashAddr = NO_CACHE;
-static uint8_t flashBuf[FLASH_PAGE_SIZE] __attribute__((aligned(4)));
+static uint8_t flashBuf[MEMFLASH_SECTOR_SIZE] __attribute__((aligned(4)));
 static bool firstFlush = true;
-static bool hadWrite = false;
+// static bool hadWrite = false;
 static uint32_t ms;
 static uint32_t resetTime;
 static uint32_t lastFlush;
@@ -83,31 +83,30 @@ static void ghostfat_flash_flush(void) {
     }
     // debug_print("ghostfat_flash_flush "); debug_print_unsigned((size_t) flashAddr); debug_println(""); debug_flush();
     // DBG("Flush at %x", flashAddr);
-    if (memcmp(flashBuf, (void *)flashAddr, FLASH_PAGE_SIZE) != 0) {
+    if (memcmp(flashBuf, (void *)flashAddr, MEMFLASH_SECTOR_SIZE) != 0) {
         // debug_print("ghostfat_flash_flush write "); debug_print_unsigned((size_t) flashAddr); debug_println(""); debug_flush();
         // DBG("Write flush at %x", flashAddr);
 
-        memflash_unlock();
-        bool ok = memflash_program_array((void *)flashAddr, (void*)flashBuf, FLASH_PAGE_SIZE / 2);
-        memflash_lock();
-        (void)ok;
+        // memflash_unlock();
+        // bool ok = memflash_program_array((void *)flashAddr, (void*)flashBuf, MEMFLASH_SECTOR_SIZE / 2);
+        // memflash_lock();
     }
 
     flashAddr = NO_CACHE;
 }
 
-static void ghostfat_flash_write(uint32_t dst, const uint8_t *src, int len) {
-    uint32_t newAddr = dst & ~(FLASH_PAGE_SIZE - 1);
+// static void ghostfat_flash_write(uint32_t dst, const uint8_t *src, int len) {
+//     uint32_t newAddr = dst & ~(MEMFLASH_SECTOR_SIZE - 1);
 
-    hadWrite = true;
+//     hadWrite = true;
 
-    if (newAddr != flashAddr) {
-        ghostfat_flash_flush();
-        flashAddr = newAddr;
-        memcpy(flashBuf, (void *)newAddr, FLASH_PAGE_SIZE);
-    }
-    memcpy(flashBuf + (dst & (FLASH_PAGE_SIZE - 1)), src, len);
-}
+//     if (newAddr != flashAddr) {
+//         ghostfat_flash_flush();
+//         flashAddr = newAddr;
+//         memcpy(flashBuf, (void *)newAddr, MEMFLASH_SECTOR_SIZE);
+//     }
+//     memcpy(flashBuf + (dst & (MEMFLASH_SECTOR_SIZE - 1)), src, len);
+// }
 
 
 static void uf2_timer_start(int delay) {
@@ -154,13 +153,13 @@ void uf2_write_flash_sector(const uint8_t *data, bool quiet, WriteState *state)
 {
     const UF2_Block *bl = (const void *)data;
 
-    if ((bl->flags & UF2_FLAG_NOFLASH) || bl->payloadSize > 256 || (bl->targetAddr & 0xff) ||
-        bl->targetAddr < APP_BASE_ADDRESS || bl->targetAddr + bl->payloadSize > memflash_end()) {
-        // this happens when we're trying to re-flash CURRENT.UF2 file previously
-        // copied from a device; we still want to count these blocks to reset properly
-    } else {
-        ghostfat_flash_write(bl->targetAddr, bl->data, bl->payloadSize);
-    }
+    // if ((bl->flags & UF2_FLAG_NOFLASH) || bl->payloadSize > 256 || (bl->targetAddr & 0xff) ||
+    //     bl->targetAddr < APP_BASE_ADDRESS || bl->targetAddr + bl->payloadSize > memflash_end()) {
+    //     // this happens when we're trying to re-flash CURRENT.UF2 file previously
+    //     // copied from a device; we still want to count these blocks to reset properly
+    // } else {
+    //     ghostfat_flash_write(bl->targetAddr, bl->data, bl->payloadSize);
+    // }
 
     bool isSet = false;
 

@@ -19,12 +19,12 @@
 #define USB_MAX_PACKET_SIZE     64   //  Previously 32
 #define USB_CDC_PACKET_SIZE     16
 
-#define USB21_INTERFACE              //  Enable USB 2.1 with WebUSB and BOS support.
+//#define USB21_INTERFACE              //  Enable USB 2.1 with WebUSB and BOS support.
 #define ALL_USB_INTERFACES           //  Enable all USB interfaces.
 
 //  Index of each USB interface.  Must be consecutive and must sync with interfaces[].
 #ifdef ALL_USB_INTERFACES
-#define INTF_DFU                0
+//#define INTF_DFU                0
 #define INTF_MSC                1
 #define INTF_COMM               2
 #define INTF_DATA               3

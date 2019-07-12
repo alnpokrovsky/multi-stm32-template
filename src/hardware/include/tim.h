@@ -2,6 +2,7 @@
 #define __HARDWARE_TIM_H__
 
 #include <stdint.h>
+#include "nvicprior.h"
 
 typedef enum {
     TIM_2,
@@ -16,7 +17,9 @@ typedef enum {
 
 void tim_init(TIM tim, uint16_t val, TIM_UNITS units);
 
-void tim_start(TIM tim);
+void tim_start_once(TIM tim);
+
+void tim_start_cyclic(TIM tim);
 
 void tim_stop(TIM tim);
 

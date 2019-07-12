@@ -3,20 +3,17 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include <stdbool.h>
+#include "DeviceConfig.h"
 
-void memflash_lock(void);
-void memflash_unlock(void);
+#define MEMFLASH_SECTOR_SIZE     FLASH_PAGE_SIZE
+#define MEMFLASH_SECTORS         8  /* NOT LESS THAN 8!!! */
 
-uint32_t memflash_start(void);
-uint32_t memflash_end(void);
+void memflash_init(void);
 
 size_t memflash_awailable_size(void);
 
-bool memflash_program_array(uint16_t* dest, const uint16_t* data, size_t half_word_count);
-
-void memflash_read_block(uint8_t block_no, uint8_t *data, uint16_t N);
-bool memflash_write_block(uint8_t block_no, const uint8_t *data, uint16_t max_len);
+void memflash_read_block(uint8_t block_no, uint8_t *data);
+void memflash_write_block(uint8_t block_no, const uint8_t *data);
 
 
 #endif

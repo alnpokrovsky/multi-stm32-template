@@ -27,6 +27,7 @@
 #include <libopencm3/usb/usbd.h>
 #include <libopencm3/usb/dfu.h>
 
+#ifdef INTF_DFU
 
 struct dfu_getstatus_response {
     uint8_t bStatus;
@@ -301,6 +302,7 @@ static void dfu_set_config(usbd_device* usbd_dev, uint16_t wValue) {
 	// if (status < 0) { debug_println("*** dfu_set_config failed"); debug_flush(); }
 }
 
+
 //  DFU Interface
 const struct usb_interface_descriptor dfu_iface = {
     .bLength = USB_DT_INTERFACE_SIZE,
@@ -344,3 +346,5 @@ void dfu_setup(usbd_device* usbd_dev,
         on_state_change(current_dfu_state);
     }
 }
+
+#endif

@@ -45,9 +45,6 @@ void tim_init(TIM tim, uint16_t val, TIM_UNITS units) {
     /* Reset TIM peripheral to defaults. */
 	rcc_periph_reset_pulse(TIMS[tim].tim_rst);
 
-    /* Enable TIM interrupt. */
- 	nvic_enable_irq(TIMS[tim].tim_irq);
-
     /* Timer global mode:
      * Divider 1, 
      * Alignment edge, 
@@ -58,18 +55,31 @@ void tim_init(TIM tim, uint16_t val, TIM_UNITS units) {
         TIM_CR1_CMS_EDGE, 
         TIM_CR1_DIR_UP
     );
-	timer_continuous_mode(TIMS[tim].tim_base);
 
     uint32_t prescal = 2*rcc_apb1_frequency / PRESCAL_UNITS[units];
 
 	timer_set_prescaler(TIMS[tim].tim_base, prescal - 1);
     timer_set_period(TIMS[tim].tim_base, val - 1);
+
+    /* Enable NVIC TIM interrupt. */    
+    nvic_set_priority(TIMS[tim].tim_irq, NVIC_HIGH);
+ 	nvic_enable_irq(TIMS[tim].tim_irq);
 }
 
-void tim_start(TIM tim) {
+static void tim_start(TIM tim) {
     TIM_CNT(TIMS[tim].tim_base) = 1;
     timer_enable_irq(TIMS[tim].tim_base, TIM_DIER_UIE);
     timer_enable_counter(TIMS[tim].tim_base);
+}
+
+void tim_start_once(TIM tim) {
+    timer_one_shot_mode(TIMS[tim].tim_base);
+    tim_start(tim);
+}
+
+void tim_start_cyclic(TIM tim) {
+	timer_continuous_mode(TIMS[tim].tim_base);
+    tim_start(tim);
 }
 
 void tim_stop(TIM tim) {
