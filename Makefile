@@ -3,7 +3,7 @@
 PROJECT := techPult
 
 ###### Create binary ###########
-all: bin
+all: elf
 
 
 ########## SOURCES ##############
@@ -25,6 +25,8 @@ INC += src/third-party/ugui
 include libs/libopencm3-usb.include
 
 ########### BUILD DEVICE ##############
-LDSCRIPT := make/stm32/f1/stm32f103xB.ld
-include make/stm32/f1.mk
+#LDSCRIPT := make/stm32/f1/stm32f103xB.ld
+#include make/stm32/f1.mk
+LDSCRIPT := make/stm32/f4/stm32f407.ld
+include make/stm32/f4.mk
 #include make/mdr1986/ve9.mk

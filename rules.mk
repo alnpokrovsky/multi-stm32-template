@@ -28,10 +28,11 @@ NULL		:= 2>/dev/null
 endif
 
 # 'make BUILD=debug' will compile with debugging symbols 
-# By default builds debug version with optimization 
+# By default builds release version with optimization 
 ifeq ($(BUILD),debug)
 OPT	  := -O0
 DEBUG := -ggdb3
+DEFS  += -DDEBUG
 else
 OPT	  := -Os
 DEBUG := -g0
@@ -195,9 +196,13 @@ else
 		$(NULL)
 endif
 
+oocd:
+	$(OOCD) -f interface/$(OOCD_INTERFACE).cfg \
+		-f target/$(OOCD_TARGET).cfg
 
-debug:
-	$(GDB) build/main.elf \
+debug: elf
+	@printf "  DEBUGING\t$<\n"
+	$(GDB) $< \
 		-ex 'target remote localhost:3333' \
 		-ex 'monitor reset halt'
 
@@ -207,6 +212,6 @@ clean:
 	$(Q)$(RM) $(PROJECT).elf $(PROJECT).bin $(PROJECT).hex $(PROJECT).list $(PROJECT).map generated.* $(OBJS) $(OBJS:%.o=%.d)
 	$(Q)$(RM) -r $(BUILD_DIR)
 
-.PHONY: images flash clean debug elf bin hex list
+.PHONY: images flash clean debug oocd elf bin hex list
 
 -include $(OBJS:.o=.d)
