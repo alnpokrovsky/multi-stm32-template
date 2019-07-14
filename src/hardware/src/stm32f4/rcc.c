@@ -2,10 +2,15 @@
 
 #include "rcc.h"
 #include <libopencm3/stm32/rcc.h>
+#include "DeviceConfig.h"
 
 
 void rcc_init() {
-	rcc_clock_setup_hse_3v3(&rcc_hse_8mhz_3v3[RCC_CLOCK_3V3_168MHZ]);
+#if HSE_Value == 8000000
+	rcc_clock_setup_pll(&rcc_hse_8mhz_3v3[RCC_CLOCK_3V3_168MHZ]);
+#else
+#error "HSE value not supported"
+#endif
 }
 
 

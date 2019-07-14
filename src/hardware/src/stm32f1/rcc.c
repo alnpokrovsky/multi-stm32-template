@@ -12,7 +12,7 @@ void rcc_init() {
 #elif HSE_Value == 16000000
 	rcc_clock_setup_in_hse_16mhz_out_72mhz();
 #else
-#error "HSE value not defined"
+#error "HSE value not supported"
 #endif
 }
 
