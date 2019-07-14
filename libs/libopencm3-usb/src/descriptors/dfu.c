@@ -27,6 +27,7 @@
 #include <libopencm3/usb/usbd.h>
 #include <libopencm3/usb/dfu.h>
 
+#ifdef INTF_DFU
 
 struct dfu_getstatus_response {
     uint8_t bStatus;
@@ -46,8 +47,8 @@ struct dfu_getstate_response {
 const struct usb_dfu_descriptor dfu_function = {
     .bLength = sizeof(struct usb_dfu_descriptor),
     .bDescriptorType = DFU_FUNCTIONAL,
-    .bmAttributes = ((DFU_DOWNLOAD_AVAILABLE ? USB_DFU_CAN_DOWNLOAD : 0) |
-                     (DFU_UPLOAD_AVAILABLE ? USB_DFU_CAN_UPLOAD : 0) |
+    .bmAttributes = ((USB_DFU_DOWNLOAD_AVAILABLE ? USB_DFU_CAN_DOWNLOAD : 0) |
+                     (USB_DFU_UPLOAD_AVAILABLE ? USB_DFU_CAN_UPLOAD : 0) |
                      USB_DFU_WILL_DETACH ),
     .wDetachTimeout = 255,
     .wTransferSize = USB_CONTROL_BUF_SIZE,
@@ -161,7 +162,7 @@ static enum usbd_request_return_codes dfu_control_class_request(
             resp = (struct dfu_getstatus_response*)(*buf);
             uint32_t bwPollTimeout = 0;
             switch (current_dfu_state) {
-#if DFU_DOWNLOAD_AVAILABLE
+#if USB_DFU_DOWNLOAD_AVAILABLE
                 case STATE_DFU_DNLOAD_SYNC: {
                     dfu_set_state(STATE_DFU_DNBUSY);
                     bwPollTimeout = 100;
@@ -198,7 +199,7 @@ static enum usbd_request_return_codes dfu_control_class_request(
             dfu_set_status(DFU_STATUS_OK);
             break;
         }
-#if DFU_DOWNLOAD_AVAILABLE
+#if USB_DFU_DOWNLOAD_AVAILABLE
         case DFU_DNLOAD: {
             switch (current_dfu_state) {
                 case STATE_DFU_IDLE: {
@@ -247,7 +248,7 @@ static enum usbd_request_return_codes dfu_control_class_request(
             }
             break;
         }
-#if DFU_UPLOAD_AVAILABLE
+#if USB_DFU_UPLOAD_AVAILABLE
         case DFU_UPLOAD: {
             switch (current_dfu_state) {
                 case STATE_DFU_IDLE: {
@@ -301,6 +302,7 @@ static void dfu_set_config(usbd_device* usbd_dev, uint16_t wValue) {
 	// if (status < 0) { debug_println("*** dfu_set_config failed"); debug_flush(); }
 }
 
+
 //  DFU Interface
 const struct usb_interface_descriptor dfu_iface = {
     .bLength = USB_DT_INTERFACE_SIZE,
@@ -344,3 +346,5 @@ void dfu_setup(usbd_device* usbd_dev,
         on_state_change(current_dfu_state);
     }
 }
+
+#endif

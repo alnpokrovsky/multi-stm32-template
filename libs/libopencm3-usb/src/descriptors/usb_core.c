@@ -23,13 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <libopencm3/cm3/cortex.h>
-#include <libopencm3/cm3/nvic.h>
-#include <libopencm3/cm3/systick.h>
 #include <libopencm3/usb/usbd.h>
-#include <libopencm3/usb/dfu.h>
-#include <libopencm3/usb/msc.h>
-#include <libopencm3/usb/cdc.h>
 
 #include "dfu.h"
 #include "cdc.h"
@@ -93,25 +87,25 @@ static const struct usb_interface interfaces[] = {
         .altsetting = &dfu_iface,  //  Index must sync with INTF_DFU.
     }, 
 #endif  //  INTF_DFU
-#ifdef INTF_MSC    
+#ifdef USB_INTERFACE_MSC    
     {
         .num_altsetting = 1,
-        .altsetting = &msc_iface,  //  Index must sync with INTF_MSC.
+        .altsetting = &msc_iface,  //  Index must sync with USB_INTERFACE_MSC.
     }, 	
-#endif  //  INTF_MSC
-#ifdef INTF_COMM
+#endif  //  USB_INTERFACE_MSC
+#ifdef USB_INTERFACE_CDC_COMM
     {
         .num_altsetting = 1,
 #ifndef SERIAL_USB_INTERFACE
 	    .iface_assoc = &cdc_iface_assoc,  //  Mandatory for composite device with multiple interfaces.
 #endif  //  SERIAL_USB_INTERFACE
-        .altsetting = &comm_iface,  //  Index must sync with INTF_COMM.
+        .altsetting = &comm_iface,  //  Index must sync with USB_INTERFACE_CDC_COMM.
     }, 
     {
         .num_altsetting = 1,
-        .altsetting = &data_iface,  //  Index must sync with INTF_DATA.
+        .altsetting = &data_iface,  //  Index must sync with USB_INTERFACE_CDC_DATA.
     },
-#endif  //  INTF_COMM
+#endif  //  USB_INTERFACE_CDC_COMM
 };
 
 //  USB Config
@@ -149,22 +143,25 @@ usbd_device* usb_core_init(void) {
         usb_strings, num_strings,
         usbd_control_buffer, sizeof(usbd_control_buffer));
 
-    //  The following USB setup functions will call aggregate_register_callback() to register callbacks.
+//  The following USB setup functions will call aggregate_register_callback() to register callbacks.
 #ifdef INTF_DFU    
     dfu_setup(usbd_dev, &bootloader_manifest_app, NULL, NULL);
 #endif  //  INTF_DFU
-#ifdef INTF_MSC    
+#ifdef USB_INTERFACE_MSC    
     msc_setup(usbd_dev);
-#endif  //  INTF_MSC
-#ifdef INTF_COMM    
+#endif  //  USB_INTERFACE_MSC
+#ifdef USB_INTERFACE_CDC_COMM    
     cdc_setup(usbd_dev);
-#endif  //  INTF_COMM
+#endif  //  USB_INTERFACE_CDC_COMM
 
 #ifdef USB21_INTERFACE
     //  Define USB 2.1 BOS interface used by WebUSB.
 	usb21_setup(usbd_dev, &bos_descriptor);
+#ifdef INTF_DFU
+	winusb_setup(usbd_dev, INTF_DFU);
+#else
 	webusb_setup(usbd_dev, origin_url);
-	winusb_setup(usbd_dev, INTF_DFU);  //  Previously INTF_DFU
+#endif
 #endif  //  USB21_INTERFACE
 
     //  Set the aggregate callback.    

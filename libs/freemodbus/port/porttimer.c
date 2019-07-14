@@ -45,7 +45,7 @@ inline void
 vMBPortTimersEnable(  )
 {
     /* Enable the timer with the timeout passed to xMBPortTimersInit( ) */
-	tim_start(MODBUS_TIM);
+	tim_start_once(MODBUS_TIM);
 }
 
 inline void

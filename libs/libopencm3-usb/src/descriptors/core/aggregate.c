@@ -38,7 +38,6 @@ int aggregate_register_callback(
 ) {
     (void) usbd_dev;
     // Register application callback function for handling USB control requests.  We aggregate here so we can handle more than 4 callbacks.
-    // debug_println("aggregate_register_callback"); ////
 	int i;
 	for (i = 0; i < MAX_CONTROL_CALLBACK; i++) {
 		if (control_callback[i].cb) { 
@@ -56,7 +55,6 @@ int aggregate_register_callback(
 		control_callback[i].cb = callback;
 		return 0;
 	}
-    // debug_println("*** ERROR: Too many control callbacks"); debug_flush();
 	return -1;
 }
 
@@ -98,7 +96,6 @@ void aggregate_set_callback (
     //  This callback is called when the device is updated.  We set our control callback.
     if (wValue != (uint16_t) -1) {  //  If this is an actual callback, not a call by usb_setup()...
         //  Call the config functions before setting our callback.
-        // debug_println("set_aggregate_callback"); ////
         int i;
         for (i = 0; i < MAX_CONTROL_CALLBACK; i++) {
             if (!config_callback[i]) { break; }
@@ -111,5 +108,4 @@ void aggregate_set_callback (
         0,  //  Register for all notifications.
         0,
 		aggregate_callback);
-	// if (status < 0) { debug_println("*** ERROR: set_aggregate_callback failed"); debug_flush(); }  
 }

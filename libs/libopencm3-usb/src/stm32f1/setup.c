@@ -20,6 +20,7 @@ inline usbd_device * usb_setup(
 
     usbd_dev = usbd_init(&usb_driver, 
         dev, conf, strings, num_strings, control_buffer, control_buffer_size);
+    nvic_set_priority(NVIC_USB_RX, 0xFF);
     nvic_enable_irq(NVIC_USB_RX);
     return usbd_dev;
 }

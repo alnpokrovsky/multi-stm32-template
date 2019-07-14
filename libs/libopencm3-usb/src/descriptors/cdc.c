@@ -5,6 +5,8 @@
 #include "UsbConfig.h"
 #include <stdlib.h>
 
+#ifdef USB_INTERFACE_CDC_COMM
+
 #define DATA_OUT                0x03
 #define DATA_IN                 0x84
 #define COMM_IN                 0x85
@@ -76,7 +78,7 @@ static const struct {
 		.bDescriptorType = CS_INTERFACE,
 		.bDescriptorSubtype = USB_CDC_TYPE_CALL_MANAGEMENT,
 		.bmCapabilities = 0,
-		.bDataInterface = INTF_DATA,  //  DATA Interface
+		.bDataInterface = USB_INTERFACE_CDC_DATA,  //  DATA Interface
 	},
 	.acm = {
 		.bFunctionLength = sizeof(struct usb_cdc_acm_descriptor),
@@ -88,8 +90,8 @@ static const struct {
 		.bFunctionLength = sizeof(struct usb_cdc_union_descriptor),
 		.bDescriptorType = CS_INTERFACE,
 		.bDescriptorSubtype = USB_CDC_TYPE_UNION,
-		.bControlInterface = INTF_COMM,       //  COMM Interface
-		.bSubordinateInterface0 = INTF_DATA,  //  DATA Interface
+		.bControlInterface = USB_INTERFACE_CDC_COMM,       //  COMM Interface
+		.bSubordinateInterface0 = USB_INTERFACE_CDC_DATA,  //  DATA Interface
 	 }
 };
 
@@ -97,8 +99,8 @@ static const struct {
 const struct usb_iface_assoc_descriptor cdc_iface_assoc = {  //  Copied from microbit.  Mandatory for composite device.
 	.bLength = USB_DT_INTERFACE_ASSOCIATION_SIZE,
 	.bDescriptorType = USB_DT_INTERFACE_ASSOCIATION,
-	.bFirstInterface = INTF_COMM,  //  First associated interface (INTF_COMM and INTF_DATA)
-	.bInterfaceCount = 2,          //  Total number of associated interfaces (INTF_COMM and INTF_DATA), ID must be consecutive.
+	.bFirstInterface = USB_INTERFACE_CDC_COMM,  //  First associated interface (USB_INTERFACE_CDC_COMM and USB_INTERFACE_CDC_DATA)
+	.bInterfaceCount = 2,          //  Total number of associated interfaces (USB_INTERFACE_CDC_COMM and USB_INTERFACE_CDC_DATA), ID must be consecutive.
 	.bFunctionClass = USB_CLASS_CDC,
 	.bFunctionSubClass = USB_CDC_SUBCLASS_ACM,
 	.bFunctionProtocol = USB_CDC_PROTOCOL_AT,
@@ -108,7 +110,7 @@ const struct usb_iface_assoc_descriptor cdc_iface_assoc = {  //  Copied from mic
 const struct usb_interface_descriptor comm_iface = {
     .bLength = USB_DT_INTERFACE_SIZE,
     .bDescriptorType = USB_DT_INTERFACE,
-    .bInterfaceNumber = INTF_COMM,
+    .bInterfaceNumber = USB_INTERFACE_CDC_COMM,
     .bAlternateSetting = 0,
     .bNumEndpoints = 1,
     .bInterfaceClass = USB_CLASS_CDC,
@@ -123,7 +125,7 @@ const struct usb_interface_descriptor comm_iface = {
 const struct usb_interface_descriptor data_iface = {
     .bLength = USB_DT_INTERFACE_SIZE,
     .bDescriptorType = USB_DT_INTERFACE,
-    .bInterfaceNumber = INTF_DATA,
+    .bInterfaceNumber = USB_INTERFACE_CDC_DATA,
     .bAlternateSetting = 0,
     .bNumEndpoints = 2,
     .bInterfaceClass = USB_CLASS_DATA,
@@ -244,3 +246,5 @@ void cdc_setup(usbd_device* usbd_dev) {
 		// debug_flush();
 	}
 }
+
+#endif
