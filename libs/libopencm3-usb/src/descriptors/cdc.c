@@ -6,8 +6,7 @@
 
 #include "basic/aggregate.h"
 #include "UsbConfig.h"
-#include "usb_handlers.h"
-#include "usb_funcs.h"
+#include "usb_cdc.h"
 
 
 static void null_handler(char * buf, uint16_t len)

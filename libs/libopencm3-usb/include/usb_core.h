@@ -20,7 +20,6 @@
 #define __LIB_USB_PRIVATE_USB_CORE_H__
 
 #include <libopencm3/usb/usbd.h>
-#include "usb_funcs.h"
 
 void usb_core_set_serial_number(const char* serial);
 usbd_device* usb_core_init(void);

@@ -1,5 +1,5 @@
-#ifndef __HARDWARE_USB_KEYBOARD_H__
-#define __HARDWARE_USB_KEYBOARD_H__
+#ifndef __LIB_USB_KEYBOARD_H__
+#define __LIB_USB_KEYBOARD_H__
 
 #include <stdint.h>
 
@@ -51,11 +51,6 @@ typedef enum {
     DOWN_ARROW,         /* Down arrow */
     UP_ARROW,           /* Up arrow */
 } FUNCTION_KEY;
-
-/**
- * init usb device like keyboard
- */
-void usb_keyboard_init(void);
 
 /**
  * press alpha char key or one of FUNCTION_KEYs
