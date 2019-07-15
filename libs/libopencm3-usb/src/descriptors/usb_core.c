@@ -27,6 +27,7 @@
 
 #include "dfu.h"
 #include "cdc.h"
+#include "keyboard.h"
 #include "webusb.h"
 #include "winusb.h"
 #include "usb21_standard.h"
@@ -36,15 +37,11 @@
 #include "basic/aggregate.h"
 
 
-#ifdef USB21_INTERFACE
-static const char* origin_url = "https://visualbluepill.github.io";
-#endif  //  USB21_INTERFACE
-
 static char serial_number[USB_SERIAL_NUM_LENGTH+1];
 static const char *usb_strings[] = USB_STRINGS;
+#define NUM_STRINGS ( sizeof(usb_strings) / sizeof(const char*) )
 
 #define USB_CLASS_MISCELLANEOUS 0xef  //  Copy from microbit.
-
 
 
 //  USB Device
@@ -56,16 +53,9 @@ static const struct usb_device_descriptor dev = {
 #else
     .bcdUSB = 0x0200,  //  USB Version 2.0.  No need to handle special requests e.g. BOS.
 #endif  //  USB21_INTERFACE
-
-#ifdef SERIAL_USB_INTERFACE  //  If we are providing serial interface only...
-	.bDeviceClass = USB_CLASS_CDC,  //  Set the class to CDC if it's only serial.  Serial interface will not start on Windows when class = 0.
-    .bDeviceSubClass = 0,
-    .bDeviceProtocol = 0,
-#else  //  If we are providing multiple interfaces...
     .bDeviceClass = USB_CLASS_MISCELLANEOUS,  //  Copied from microbit. For composite device, let host probe the interfaces.
     .bDeviceSubClass = 2,  //  Common Class
     .bDeviceProtocol = 1,  //  Interface Association Descriptor
-#endif  //  SERIAL_USB_INTERFACE
     .bMaxPacketSize0 = USB_MAX_PACKET_SIZE,
     .idVendor = USB_VID,
     .idProduct = USB_PID,
@@ -96,9 +86,7 @@ static const struct usb_interface interfaces[] = {
 #ifdef USB_INTERFACE_CDC_COMM
     {
         .num_altsetting = 1,
-#ifndef SERIAL_USB_INTERFACE
 	    .iface_assoc = &cdc_iface_assoc,  //  Mandatory for composite device with multiple interfaces.
-#endif  //  SERIAL_USB_INTERFACE
         .altsetting = &comm_iface,  //  Index must sync with USB_INTERFACE_CDC_COMM.
     }, 
     {
@@ -106,6 +94,12 @@ static const struct usb_interface interfaces[] = {
         .altsetting = &data_iface,  //  Index must sync with USB_INTERFACE_CDC_DATA.
     },
 #endif  //  USB_INTERFACE_CDC_COMM
+#ifdef USB_INTERFACE_KEYBOARD
+    {
+	    .num_altsetting = 1,
+	    .altsetting = &keyboard_iface,
+    },
+#endif
 };
 
 //  USB Config
@@ -136,11 +130,10 @@ static uint8_t usbd_control_buffer[USB_CONTROL_BUF_SIZE] __attribute__ ((aligned
 static usbd_device* usbd_dev = NULL;
 
 usbd_device* usb_core_init(void) {
-    int num_strings = sizeof(usb_strings) / sizeof(const char*);
     // debug_print("usb_setup num_strings "); debug_print_int(num_strings); debug_println(""); // debug_flush(); ////
     usbd_dev = usb_setup(
         &dev, &config, 
-        usb_strings, num_strings,
+        usb_strings, NUM_STRINGS,
         usbd_control_buffer, sizeof(usbd_control_buffer));
 
 //  The following USB setup functions will call aggregate_register_callback() to register callbacks.
@@ -153,14 +146,16 @@ usbd_device* usb_core_init(void) {
 #ifdef USB_INTERFACE_CDC_COMM    
     cdc_setup(usbd_dev);
 #endif  //  USB_INTERFACE_CDC_COMM
-
+#ifdef USB_INTERFACE_KEYBOARD
+	keyboard_setup(usbd_dev);
+#endif
 #ifdef USB21_INTERFACE
     //  Define USB 2.1 BOS interface used by WebUSB.
 	usb21_setup(usbd_dev, &bos_descriptor);
 #ifdef USB_INTERFACE_DFU
 	winusb_setup(usbd_dev, USB_INTERFACE_DFU);
 #else
-	webusb_setup(usbd_dev, origin_url);
+	webusb_setup(usbd_dev, USB21_URL);
 #endif
 #endif  //  USB21_INTERFACE
 

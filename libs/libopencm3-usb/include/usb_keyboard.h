@@ -1,5 +1,5 @@
-#ifndef __LIB_USB_KEYBOARD_H__
-#define __LIB_USB_KEYBOARD_H__
+#ifndef __LIB_USB_USB_KEYBOARD_H__
+#define __LIB_USB_USB_KEYBOARD_H__
 
 #include <stdint.h>
 

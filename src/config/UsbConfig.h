@@ -5,7 +5,7 @@
 
 
 #define USB_VID                 0x1209
-#define USB_PID                 0xdb42
+#define USB_PID                 0xdb41
 
 #define USB_MSC_VENDOR_ID       "BluePill"
 #define USB_MSC_PRODUCT_ID      "MSC Config"
@@ -18,10 +18,11 @@
 
 
 //  Index of each USB interface.  Must be consecutive and must sync with interfaces[].
-//#define USB_INTERFACE_DFU                0 /* TODO */
+// #define USB_INTERFACE_DFU                0 /* TODO */
 #define USB_INTERFACE_MSC         1
 #define USB_INTERFACE_CDC_COMM    2
 #define USB_INTERFACE_CDC_DATA    3
+// #define USB_INTERFACE_KEYBOARD    4
 #define USB21_INTERFACE              /* Enable USB 2.1 with WebUSB and BOS support.*/
 
 #ifdef USB_INTERFACE_DFU
@@ -38,6 +39,9 @@
 #define USB_MSC_READ_BLOCK    ghostfat_read_block
 #endif
 
+#ifdef USB21_INTERFACE
+#define USB21_URL "https://visualbluepill.github.io"
+#endif
 
 #define USB_STRINGS { \
     "POKROV",        /*  USB Manufacturer */ \
@@ -48,6 +52,7 @@
     "Serial Port",   /*  Serial Port */ \
     "COMM",          /*  COMM */ \
     "DATA",          /*  DATA */ \
+    "KEYBOARD",                  \
 };
 
 /**
@@ -62,6 +67,7 @@ enum usb_strings_index {
     USB_STRINGS_SERIAL_PORT,
     USB_STRINGS_COMM,
     USB_STRINGS_DATA,
+    USB_STRINGS_KEYBOARD,
 };
 
 

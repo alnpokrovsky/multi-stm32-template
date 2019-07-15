@@ -1,30 +1,18 @@
-#if defined(STM32F1)||defined(STM32F3)||defined(STM32F4)
-
-#include "usb/keyboard.h"
+#include "keyboard.h"
+#include "usb_keyboard.h"
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include "delay.h"
 #include <libopencm3/usb/hid.h>
 #include "UsbConfig.h"
-#include "usb/private/setup.h"
+#include "basic/aggregate.h"
+#include "../private/setup.h"
 
-const struct usb_device_descriptor dev_descriptor = {
-	.bLength = USB_DT_DEVICE_SIZE,
-	.bDescriptorType = USB_DT_DEVICE,
-	.bcdUSB = 0x0200,
-	.bDeviceClass = 0,
-	.bDeviceSubClass = 0,
-	.bDeviceProtocol = 0,
-	.bMaxPacketSize0 = 64,
-	.idVendor =  USB_VID,
-	.idProduct = USB_PID,
-	.bcdDevice = 0x0200,
-	.iManufacturer = 1,
-	.iProduct = 2,
-	.iSerialNumber = 3,
-	.bNumConfigurations = 1,
-};
+
+#ifdef USB_INTERFACE_KEYBOARD
+
+#define ENDP_KEYBOARD  ( 0x81 + USB_INTERFACE_KEYBOARD )
 
 static const uint8_t hid_report_descriptor[] =
 {
@@ -109,16 +97,16 @@ static const struct {
 	},
 };
 
-const struct usb_endpoint_descriptor hid_endpoint = {
+static const struct usb_endpoint_descriptor keyboard_endpoint = {
 	.bLength = USB_DT_ENDPOINT_SIZE,
 	.bDescriptorType = USB_DT_ENDPOINT,
-	.bEndpointAddress = 0x81,
+	.bEndpointAddress = ENDP_KEYBOARD,
 	.bmAttributes = USB_ENDPOINT_ATTR_INTERRUPT,
 	.wMaxPacketSize = 9,
 	.bInterval = 0x05,
 };
 
-const struct usb_interface_descriptor hid_iface = {
+const struct usb_interface_descriptor keyboard_iface = {
 	.bLength = USB_DT_INTERFACE_SIZE,
 	.bDescriptorType = USB_DT_INTERFACE,
 	.bInterfaceNumber = 0,
@@ -127,39 +115,15 @@ const struct usb_interface_descriptor hid_iface = {
 	.bInterfaceClass = USB_CLASS_HID,
 	.bInterfaceSubClass = 1, // boot
 	.bInterfaceProtocol = 1, // keyboard
-	.iInterface = 0,
+	.iInterface = USB_STRINGS_KEYBOARD,
 
-	.endpoint = &hid_endpoint,
+	.endpoint = &keyboard_endpoint,
 
 	.extra = &hid_function,
 	.extralen = sizeof(hid_function),
 };
 
-const struct usb_interface ifaces[] = {{
-	.num_altsetting = 1,
-	.altsetting = &hid_iface,
-}};
-
-const struct usb_config_descriptor config_descriptor = {
-	.bLength = USB_DT_CONFIGURATION_SIZE,
-	.bDescriptorType = USB_DT_CONFIGURATION,
-	.wTotalLength = 0,
-	.bNumInterfaces = 1,
-	.bConfigurationValue = 1,
-	.iConfiguration = 0,
-	.bmAttributes = 0xC0,
-	.bMaxPower = 0x32,
-
-	.interface = ifaces,
-};
-
-static const char *usb_strings[] = {
-	"Something strange",
-	"Keyboard + mouse",
-	"demo",
-};
-
-static enum usbd_request_return_codes hid_control_request(usbd_device *usbd_dev, struct usb_setup_data *req, uint8_t **buf, uint16_t *len, usbd_control_complete_callback *complete)
+static enum usbd_request_return_codes keyboard_control_request(usbd_device *usbd_dev, struct usb_setup_data *req, uint8_t **buf, uint16_t *len, usbd_control_complete_callback *complete)
 {
 	(void)complete;
 	(void)usbd_dev;
@@ -187,7 +151,7 @@ typedef struct {
 } KEYMAP;
 
 
-const KEYMAP keymap[] = {
+static const KEYMAP keymap[] = {
     {0, 0},             /* NUL */
     {0, 0},             /* SOH */
     {0x4f, KEY_SHIFT},  /* RIGHT_ARROW */ /* Combo selection arrows */
@@ -350,37 +314,35 @@ const KEYMAP keymap[] = {
 
 /**********************************************************************/
 
-static uint8_t usbd_control_buffer[128];
-static usbd_device *usbd_dev;
+static usbd_device *keyboardd_dev;
 static bool usbd_configured = false;
 
 
-static void usb_set_config(usbd_device *usbd_p, uint16_t wValue)
+static void keyboard_set_config(usbd_device *usbd_p, uint16_t wValue)
 {
 	(void)wValue; // shut up compiller's 'unused parameter'
 
-	usbd_ep_setup(usbd_p, 0x81, USB_ENDPOINT_ATTR_INTERRUPT, 4, NULL);
-	usbd_register_control_callback(
+	usbd_ep_setup(usbd_p, ENDP_KEYBOARD, USB_ENDPOINT_ATTR_INTERRUPT, 4, NULL);
+	aggregate_register_callback(
 				usbd_p,
 				USB_REQ_TYPE_STANDARD | USB_REQ_TYPE_INTERFACE,
 				USB_REQ_TYPE_TYPE | USB_REQ_TYPE_RECIPIENT,
-				hid_control_request);
+				keyboard_control_request);
     
     usbd_configured = true;
 }
 
 static void usb_keyboard_send_report(uint8_t *buf, uint32_t len) {
     if (!usbd_configured) return; // don't allow to send anything before configured
-	while(usbd_ep_write_packet(usbd_dev, 0x81, buf, len) == 0);
+	while(usbd_ep_write_packet(keyboardd_dev,
+        ENDP_KEYBOARD,
+        buf, len) == 0);
 }
 
 
-void usb_keyboard_init() {
-	usbd_dev = usb_setup(
-        &dev_descriptor, &config_descriptor, usb_strings, 3,
-        usbd_control_buffer, sizeof(usbd_control_buffer));
-	usbd_register_set_config_callback(usbd_dev, usb_set_config);
-    delay_some();
+void keyboard_setup(usbd_device* usbd_dev) {
+    keyboardd_dev = usbd_dev;
+	aggregate_register_config_callback(usbd_dev, keyboard_set_config);
 }
 
 void usb_keyboard_move_mouse(int8_t x, int8_t y){
