@@ -33,7 +33,7 @@
 #include "../private/setup.h"
 #include "bootloader.h"
 #include "msc.h"
-#include "core/aggregate.h"
+#include "basic/aggregate.h"
 
 
 #ifdef USB21_INTERFACE
@@ -81,12 +81,12 @@ static const struct usb_device_descriptor dev = {
 
 //  All USB Interfaces
 static const struct usb_interface interfaces[] = {
-#ifdef INTF_DFU    
+#ifdef USB_INTERFACE_DFU    
     {
         .num_altsetting = 1,
-        .altsetting = &dfu_iface,  //  Index must sync with INTF_DFU.
+        .altsetting = &dfu_iface,  //  Index must sync with USB_INTERFACE_DFU.
     }, 
-#endif  //  INTF_DFU
+#endif  //  USB_INTERFACE_DFU
 #ifdef USB_INTERFACE_MSC    
     {
         .num_altsetting = 1,
@@ -144,9 +144,9 @@ usbd_device* usb_core_init(void) {
         usbd_control_buffer, sizeof(usbd_control_buffer));
 
 //  The following USB setup functions will call aggregate_register_callback() to register callbacks.
-#ifdef INTF_DFU    
+#ifdef USB_INTERFACE_DFU    
     dfu_setup(usbd_dev, &bootloader_manifest_app, NULL, NULL);
-#endif  //  INTF_DFU
+#endif  //  USB_INTERFACE_DFU
 #ifdef USB_INTERFACE_MSC    
     msc_setup(usbd_dev);
 #endif  //  USB_INTERFACE_MSC
@@ -157,8 +157,8 @@ usbd_device* usb_core_init(void) {
 #ifdef USB21_INTERFACE
     //  Define USB 2.1 BOS interface used by WebUSB.
 	usb21_setup(usbd_dev, &bos_descriptor);
-#ifdef INTF_DFU
-	winusb_setup(usbd_dev, INTF_DFU);
+#ifdef USB_INTERFACE_DFU
+	winusb_setup(usbd_dev, USB_INTERFACE_DFU);
 #else
 	webusb_setup(usbd_dev, origin_url);
 #endif

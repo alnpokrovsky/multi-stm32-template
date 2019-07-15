@@ -6,6 +6,8 @@
 #error "USB lib: Unsupported device"
 #endif
 
+#include "usb_handlers.h"
+
 void usb_init(void);
 
 

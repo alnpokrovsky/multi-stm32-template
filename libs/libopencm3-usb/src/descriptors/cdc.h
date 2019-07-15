@@ -3,6 +3,7 @@
 
 #include <libopencm3/usb/usbd.h>
 
+
 void cdc_setup(usbd_device* usbd_dev);
 
 extern const struct usb_iface_assoc_descriptor cdc_iface_assoc;

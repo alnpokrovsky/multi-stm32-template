@@ -19,7 +19,7 @@
 #include "usb21_standard.h"
 #include <stdint.h>
 #include <string.h>
-#include "core/aggregate.h"
+#include "basic/aggregate.h"
 #include "minmax.h"
 
 #define DESCRIPTOR_CALLBACK_TYPE (USB_REQ_TYPE_IN | USB_REQ_TYPE_STANDARD | USB_REQ_TYPE_DEVICE)

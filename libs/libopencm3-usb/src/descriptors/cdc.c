@@ -1,15 +1,29 @@
 //  CDC code from https://github.com/Apress/Beg-STM32-Devel-FreeRTOS-libopencm3-GCC/blob/master/rtos/usbcdcdemo/usbcdc.c
 #include "cdc.h"
+
 #include <libopencm3/usb/cdc.h>
-#include "core/aggregate.h"
-#include "UsbConfig.h"
 #include <stdlib.h>
+
+#include "basic/aggregate.h"
+#include "UsbConfig.h"
+#include "usb_handlers.h"
+#include "usb_funcs.h"
+
+
+static void null_handler(char * buf, uint16_t len)
+{
+	/* echo by default */
+	usb_cdc_tx(buf, len);
+}
+
+#pragma weak usb_cdc_rx_handler = null_handler
+
 
 #ifdef USB_INTERFACE_CDC_COMM
 
-#define DATA_OUT                0x03
-#define DATA_IN                 0x84
-#define COMM_IN                 0x85
+#define ENDP_DATA_OUT                USB_INTERFACE_CDC_DATA
+#define ENDP_DATA_IN                 ( 0x81 + USB_INTERFACE_CDC_DATA )
+#define ENDP_COMM_IN                 ( 0x81 + USB_INTERFACE_CDC_COMM )
 
 #define CONTROL_CALLBACK_TYPE (USB_REQ_TYPE_CLASS | USB_REQ_TYPE_INTERFACE)
 #define CONTROL_CALLBACK_MASK (USB_REQ_TYPE_TYPE | USB_REQ_TYPE_RECIPIENT)
@@ -35,7 +49,7 @@ static const struct usb_endpoint_descriptor comm_endp[] = {
 	{
 		.bLength = USB_DT_ENDPOINT_SIZE,
 		.bDescriptorType = USB_DT_ENDPOINT,
-		.bEndpointAddress = COMM_IN,
+		.bEndpointAddress = ENDP_COMM_IN,
 		.bmAttributes = USB_ENDPOINT_ATTR_INTERRUPT,
 		.wMaxPacketSize = USB_CDC_PACKET_SIZE,  //  Smaller than others
 		.bInterval = 255,
@@ -46,14 +60,14 @@ static const struct usb_endpoint_descriptor data_endp[] = {
 	{
 		.bLength = USB_DT_ENDPOINT_SIZE,
 		.bDescriptorType = USB_DT_ENDPOINT,
-		.bEndpointAddress = DATA_OUT,
+		.bEndpointAddress = ENDP_DATA_OUT,
 		.bmAttributes = USB_ENDPOINT_ATTR_BULK,
 		.wMaxPacketSize = USB_MAX_PACKET_SIZE,
 		.bInterval = 1,
 	}, {
 		.bLength = USB_DT_ENDPOINT_SIZE,
 		.bDescriptorType = USB_DT_ENDPOINT,
-		.bEndpointAddress = DATA_IN,
+		.bEndpointAddress = ENDP_DATA_IN,
 		.bmAttributes = USB_ENDPOINT_ATTR_BULK,
 		.wMaxPacketSize = USB_MAX_PACKET_SIZE,
 		.bInterval = 1,
@@ -184,10 +198,11 @@ static enum usbd_request_return_codes cdcacm_control_request(
 	return USBD_REQ_NEXT_CALLBACK;  //  Previously USBD_REQ_NOTSUPP
 }
 
-//  TODO: TX Up to USB_MAX_PACKET_SIZE
-//  usbd_ep_write_packet(usbd_dev, DATA_IN, txbuf, txlen)
+/**
+ * rx buffer
+ */
+static char cdcbuf[USB_MAX_PACKET_SIZE + 1];
 
-static char cdcbuf[USB_MAX_PACKET_SIZE + 1];   // rx buffer
 
 /*
  * USB Receive Callback:
@@ -195,14 +210,15 @@ static char cdcbuf[USB_MAX_PACKET_SIZE + 1];   // rx buffer
 static void
 cdcacm_data_rx_cb(
   usbd_device *usbd_dev,
-  uint8_t ep __attribute__((unused))
+  uint8_t ep
 ) {
-	uint16_t len = usbd_ep_read_packet(usbd_dev, DATA_OUT, cdcbuf, USB_MAX_PACKET_SIZE);
-    if (len == 0) { return; }
-    uint16_t pos = (len < USB_MAX_PACKET_SIZE) ? len : USB_MAX_PACKET_SIZE;
-    cdcbuf[pos] = 0;
+	(void) ep;
 
-	usbd_ep_write_packet(usbd_dev, DATA_IN, cdcbuf, pos); ////  Echo the packet.
+	uint16_t len = usbd_ep_read_packet(usbd_dev, ENDP_DATA_OUT, cdcbuf, USB_MAX_PACKET_SIZE);
+    if (len == 0) { return; }
+    len = (len < USB_MAX_PACKET_SIZE) ? len : USB_MAX_PACKET_SIZE;
+
+	usb_cdc_rx_handler(cdcbuf, len);
 }
 
 static void
@@ -223,10 +239,9 @@ cdcacm_set_config(
   uint16_t wValue __attribute__((unused))
 ) {
 	//  From https://github.com/libopencm3/libopencm3-examples/blob/master/examples/stm32/f3/stm32f3-discovery/usb_cdcacm/cdcacm.c
-    //  debug_println("*** cdcacm_set_config"); ////
-	usbd_ep_setup(usbd_dev, DATA_OUT, USB_ENDPOINT_ATTR_BULK, USB_MAX_PACKET_SIZE, cdcacm_data_rx_cb);
-	usbd_ep_setup(usbd_dev, DATA_IN, USB_ENDPOINT_ATTR_BULK, USB_MAX_PACKET_SIZE, NULL);
-	usbd_ep_setup(usbd_dev, COMM_IN, USB_ENDPOINT_ATTR_INTERRUPT, USB_CDC_PACKET_SIZE, cdcacm_comm_cb);
+	usbd_ep_setup(usbd_dev, ENDP_DATA_OUT, USB_ENDPOINT_ATTR_BULK, USB_MAX_PACKET_SIZE, cdcacm_data_rx_cb);
+	usbd_ep_setup(usbd_dev, ENDP_DATA_IN, USB_ENDPOINT_ATTR_BULK, USB_MAX_PACKET_SIZE, NULL);
+	usbd_ep_setup(usbd_dev, ENDP_COMM_IN, USB_ENDPOINT_ATTR_INTERRUPT, USB_CDC_PACKET_SIZE, cdcacm_comm_cb);
 	int status = aggregate_register_callback(
 		usbd_dev,
 		CONTROL_CALLBACK_TYPE,
@@ -238,8 +253,14 @@ cdcacm_set_config(
 	}
 }
 
+static usbd_device* cdcd_dev;
+
+void usb_cdc_tx(char* data, uint16_t len){
+	usbd_ep_write_packet(cdcd_dev, ENDP_DATA_IN, data, len);
+}
 
 void cdc_setup(usbd_device* usbd_dev) {
+	cdcd_dev = usbd_dev;
 	int status = aggregate_register_config_callback(usbd_dev, cdcacm_set_config);
 	if (status < 0) {
 		// debug_println("*** cdc_setup failed");

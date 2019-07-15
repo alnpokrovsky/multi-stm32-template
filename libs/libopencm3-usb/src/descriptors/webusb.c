@@ -23,7 +23,7 @@
 #include "webusb.h"
 
 #include <string.h>
-#include "core/aggregate.h"
+#include "basic/aggregate.h"
 #include "winusb.h"  //  For WINUSB_MS_VENDOR_CODE
 #include "usb21_standard.h"
 #include "minmax.h"

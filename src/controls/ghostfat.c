@@ -1,10 +1,6 @@
 #include "ghostfat.h"
-
 #include <string.h>
 
-#include "memflash.h"
-#include "bootloader.h"
-#include "uf2.h"
 
 #define FILE_NAME_SIZE      8
 #define FILE_EXT_SIZE       3
@@ -80,6 +76,9 @@ static void fat16_boot_sector(uint8_t *data)
     data[GHOSTFAT_SECTOR_SIZE-1] = 0xaa;
 }
 
+void ghostfat_init(void) {
+    GHOSTFAT_FLASH_INIT();
+}
 
 int ghostfat_read_block(uint32_t block_no, uint8_t *data)
 {
@@ -87,7 +86,7 @@ int ghostfat_read_block(uint32_t block_no, uint8_t *data)
         // загрузочный сектор
         fat16_boot_sector(data);
     } else {
-        memflash_read_block(block_no - 1, data);
+        GHOSTFAT_FLASH_READ_BLOCK(block_no - 1, data);
     }
 
     return 0;
@@ -100,7 +99,7 @@ int ghostfat_write_block(uint32_t block_no, const uint8_t *data)
         // не даем перезаписывать загрузочный сектор
         return 0;
     } else {
-        memflash_write_block(block_no - 1, data);
+        GHOSTFAT_FLASH_WRITE_BLOCK(block_no - 1, data);
     }
 
     return 0;

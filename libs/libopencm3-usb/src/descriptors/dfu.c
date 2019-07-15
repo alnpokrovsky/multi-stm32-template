@@ -19,7 +19,7 @@
 #include "dfu.h"
 #include "UsbConfig.h"
 #include "DeviceConfig.h"
-#include "core/aggregate.h"
+#include "basic/aggregate.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -27,7 +27,7 @@
 #include <libopencm3/usb/usbd.h>
 #include <libopencm3/usb/dfu.h>
 
-#ifdef INTF_DFU
+#ifdef USB_INTERFACE_DFU
 
 struct dfu_getstatus_response {
     uint8_t bStatus;
@@ -145,7 +145,7 @@ static enum usbd_request_return_codes dfu_control_class_request(
     uint8_t **buf, uint16_t *len,
     usbd_control_complete_callback* complete
 ) {
-    if (req->wIndex != INTF_DFU) {
+    if (req->wIndex != USB_INTERFACE_DFU) {
         return USBD_REQ_NEXT_CALLBACK;
     }
     int status = USBD_REQ_HANDLED;
@@ -307,7 +307,7 @@ static void dfu_set_config(usbd_device* usbd_dev, uint16_t wValue) {
 const struct usb_interface_descriptor dfu_iface = {
     .bLength = USB_DT_INTERFACE_SIZE,
     .bDescriptorType = USB_DT_INTERFACE,
-    .bInterfaceNumber = INTF_DFU,
+    .bInterfaceNumber = USB_INTERFACE_DFU,
     .bAlternateSetting = 0,
     .bNumEndpoints = 0,
     .bInterfaceClass = 0xFE,

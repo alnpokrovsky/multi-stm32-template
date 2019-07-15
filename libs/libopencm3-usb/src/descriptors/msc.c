@@ -31,16 +31,15 @@
 #include <libopencm3/usb/usbd.h>
 #include <libopencm3/usb/msc.h>
 
-#include "core/aggregate.h"
+#include "basic/aggregate.h"
 #include "minmax.h"
-#include "controls/ghostfat.h"
 
 
 #ifdef USB_INTERFACE_MSC
 
 //  USB Endpoints.
-#define MSC_OUT                 0x01
-#define MSC_IN                  0x82
+#define ENDP_MSC_OUT                 USB_INTERFACE_MSC
+#define ENDP_MSC_IN                  ( 0x81 + USB_INTERFACE_MSC )
 
 #define MSC_PRODUCT_REVISION_LEVEL "2.1"  //  Max 4 chars
 
@@ -178,7 +177,7 @@ struct usb_msc_trans {
 	uint32_t block_count;
 	uint32_t current_block;
 
-	uint8_t msd_buf[GHOSTFAT_SECTOR_SIZE];
+	uint8_t msd_buf[USB_MSC_SECTOR_SIZE];
 
 	bool csw_valid;
 	uint8_t csw_sent;		/* Write until 13 bytes */
@@ -971,14 +970,14 @@ static usbd_mass_storage *custom_usb_msc_init(
 static const struct usb_endpoint_descriptor msc_endp[] = {{
 	.bLength = USB_DT_ENDPOINT_SIZE,
 	.bDescriptorType = USB_DT_ENDPOINT,
-	.bEndpointAddress = MSC_OUT,
+	.bEndpointAddress = ENDP_MSC_OUT,
 	.bmAttributes = USB_ENDPOINT_ATTR_BULK,
 	.wMaxPacketSize = USB_MAX_PACKET_SIZE,
 	.bInterval = 0,
 }, {
 	.bLength = USB_DT_ENDPOINT_SIZE,
 	.bDescriptorType = USB_DT_ENDPOINT,
-	.bEndpointAddress = MSC_IN,
+	.bEndpointAddress = ENDP_MSC_IN,
 	.bmAttributes = USB_ENDPOINT_ATTR_BULK,
 	.wMaxPacketSize = USB_MAX_PACKET_SIZE,
 	.bInterval = 0,
@@ -1002,17 +1001,11 @@ const struct usb_interface_descriptor msc_iface = {
 
 
 void msc_setup(usbd_device* usbd_dev0) {
-#ifdef RAM_DISK
-    ramdisk_init();
-#endif  //  RAM_DISK
+	USB_MSC_INIT();
     
-    custom_usb_msc_init(usbd_dev0, MSC_IN, USB_MAX_PACKET_SIZE, MSC_OUT, USB_MAX_PACKET_SIZE, 
-        USB_MSC_VENDOR_ID, USB_MSC_PRODUCT_ID, MSC_PRODUCT_REVISION_LEVEL, 
-#ifdef RAM_DISK    
-        ramdisk_blocks(), ramdisk_read, ramdisk_write,
-#else
-        GHOSTFAT_TOTAL_SECTORS, GHOSTFAT_SECTOR_SIZE, ghostfat_read_block, ghostfat_write_block,        
-#endif  //  RAM_DISK        
+    custom_usb_msc_init(usbd_dev0, ENDP_MSC_IN, USB_MAX_PACKET_SIZE, ENDP_MSC_OUT, USB_MAX_PACKET_SIZE, 
+        USB_MSC_VENDOR_ID, USB_MSC_PRODUCT_ID, MSC_PRODUCT_REVISION_LEVEL,
+        USB_MSC_TOTAL_SECTORS, USB_MSC_SECTOR_SIZE, USB_MSC_READ_BLOCK, USB_MSC_WRITE_BLOCK,
         USB_INTERFACE_MSC
     );
 }
