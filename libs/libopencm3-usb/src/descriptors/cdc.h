@@ -1,5 +1,5 @@
-#ifndef __LIB_USB_PRIVATE_CDC_H__
-#define __LIB_USB_PRIVATE_CDC_H__
+#ifndef __LIB_USB_DESCRIPTORS_CDC_H__
+#define __LIB_USB_DESCRIPTORS_CDC_H__
 
 #include <libopencm3/usb/usbd.h>
 
@@ -10,4 +10,4 @@ extern const struct usb_iface_assoc_descriptor cdc_iface_assoc;
 extern const struct usb_interface_descriptor comm_iface;
 extern const struct usb_interface_descriptor data_iface;
 
-#endif  //  __LIB_USB_PRIVATE_CDC_H__
+#endif  //  __LIB_USB_DESCRIPTORS_CDC_H__

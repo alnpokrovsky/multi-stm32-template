@@ -1,5 +1,5 @@
-#ifndef __HARDWARE_USB_H__
-#define __HARDWARE_USB_H__
+#ifndef __LIB_USB_PRIVATE_SETUP_H__
+#define __LIB_USB_PRIVATE_SETUP_H__
 
 #include <libopencm3/usb/usbd.h>
 
@@ -11,4 +11,4 @@ usbd_device * usb_setup(
 );
 
 
-#endif
+#endif //  __LIB_USB_PRIVATE_SETUP_H__

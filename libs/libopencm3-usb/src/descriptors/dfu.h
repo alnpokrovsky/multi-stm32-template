@@ -16,8 +16,8 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef __LIB_USB_PRIVATE_DFU_H__
-#define __LIB_USB_PRIVATE_DFU_H__
+#ifndef __LIB_USB_DESCRIPTORS_DFU_H__
+#define __LIB_USB_DESCRIPTORS_DFU_H__
 
 #include <libopencm3/usb/usbd.h>
 #include <libopencm3/usb/dfu.h>
@@ -37,4 +37,4 @@ void dfu_setup(
 extern const struct usb_dfu_descriptor dfu_function;
 extern const struct usb_interface_descriptor dfu_iface;
 
-#endif
+#endif //  __LIB_USB_DESCRIPTORS_DFU_H__

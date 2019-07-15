@@ -1,5 +1,5 @@
-#ifndef __LIB_USB_PRIVATE_CORE_AGGREGATE_H__
-#define __LIB_USB_PRIVATE_CORE_AGGREGATE_H__
+#ifndef __LIB_USB_DESCRIPTORS_BASIC_AGGREGATE_H__
+#define __LIB_USB_DESCRIPTORS_BASIC_AGGREGATE_H__
 
 #include <libopencm3/usb/usbd.h>
 
@@ -29,4 +29,4 @@ void aggregate_set_callback (
     uint16_t wValue
 );
 
-#endif
+#endif //  __LIB_USB_DESCRIPTORS_BASIC_AGGREGATE_H__

@@ -16,8 +16,8 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef __LIB_USB_PRIVATE_WEBUSB_H__
-#define __LIB_USB_PRIVATE_WEBUSB_H__
+#ifndef __LIB_USB_DESCRIPTORS_WEBUSB_H__
+#define __LIB_USB_DESCRIPTORS_WEBUSB_H__
 
 #include <libopencm3/usb/usbd.h>
 
@@ -26,4 +26,4 @@ extern const struct usb_bos_descriptor bos_descriptor;
 
 void webusb_setup(usbd_device* usbd_dev, const char* https_url);
 
-#endif
+#endif //  __LIB_USB_DESCRIPTORS_WEBUSB_H__

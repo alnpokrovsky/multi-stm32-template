@@ -16,11 +16,11 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef __LIB_USB_PRIVATE_WINUSB_H__
-#define __LIB_USB_PRIVATE_WINUSB_H__
+#ifndef __LIB_USB_DESCRIPTORS_WINUSB_H__
+#define __LIB_USB_DESCRIPTORS_WINUSB_H__
 
 #include <libopencm3/usb/usbd.h>
 
 void winusb_setup(usbd_device* usbd_dev, uint8_t interface);
 
-#endif
+#endif //  __LIB_USB_DESCRIPTORS_WINUSB_H__

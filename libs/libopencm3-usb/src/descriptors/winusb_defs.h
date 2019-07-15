@@ -16,8 +16,8 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef __LIB_USB_PRIVATE_WINUSB_DEFS_H__
-#define __LIB_USB_PRIVATE_WINUSB_DEFS_H__
+#ifndef __LIB_USB_DESCRIPTORS_WINUSB_DEFS_H__
+#define __LIB_USB_DESCRIPTORS_WINUSB_DEFS_H__
 
 #include <stdint.h>
 
@@ -199,4 +199,4 @@ struct winusb_extended_properties_descriptor {
 	struct winusb_extended_properties_feature_descriptor features[];
 } __attribute__((packed));
 
-#endif
+#endif //  __LIB_USB_DESCRIPTORS_WINUSB_DEFS_H__

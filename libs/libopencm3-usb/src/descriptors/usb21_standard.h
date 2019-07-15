@@ -16,8 +16,8 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef __LIB_USB_PRIVATE_USB21_STANDARD_H__
-#define __LIB_USB_PRIVATE_USB21_STANDARD_H__
+#ifndef __LIB_USB_DESCRIPTORS_USB21_STANDARD_H__
+#define __LIB_USB_DESCRIPTORS_USB21_STANDARD_H__
 
 #include <libopencm3/usb/usbd.h>
 
@@ -47,4 +47,4 @@ struct usb_bos_descriptor {
 
 extern void usb21_setup(usbd_device* usbd_dev, const struct usb_bos_descriptor* binary_object_store);
 
-#endif
+#endif //  __LIB_USB_DESCRIPTORS_USB21_STANDARD_H__
