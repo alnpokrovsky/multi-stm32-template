@@ -8,5 +8,4 @@
 
 #define FLASH_PAGE_SIZE  1024
 
-
 #endif

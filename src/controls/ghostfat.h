@@ -1,18 +1,18 @@
+/**
+ * Обертка над memflash
+ * Выдает нулевым блоком дескриптор FAT16
+ */
+
 #ifndef __GHOST_FAT_H__
 #define __GHOST_FAT_H__
 
 #include <stdint.h>
 #include "memflash.h"
 
+#define GHOSTFAT_VOLUME_LABEL       "CONFIG"
 #define GHOSTFAT_SECTOR_SIZE        MEMFLASH_SECTOR_SIZE
-#define GHOSTFAT_TOTAL_SECTORS      MEMFLASH_SECTORS
+#define GHOSTFAT_TOTAL_SECTORS      MEMFLASH_SECTORS + 1 /* NOT LESS THAN 8!!! */
 #define GHOSTFAT_TOTAL_SIZE         ( GHOSTFAT_SECTOR_SIZE * GHOSTFAT_TOTAL_SECTORS )
-
-
-#define PRODUCT_NAME            "STM32BLUEPILL"
-#define BOARD_ID                "STM32BLUEPILL"
-#define INDEX_URL               "https://visualbluepill.github.io"
-#define VOLUME_LABEL            "BLUEPILL"
 
 
 int ghostfat_write_block(uint32_t lba, const uint8_t *copy_from);

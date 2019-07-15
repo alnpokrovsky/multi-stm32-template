@@ -1,3 +1,5 @@
+#if defined(STM32F1)
+
 /*
  * Copyright (c) 2016, Devan Lai
  *
@@ -41,3 +43,5 @@ uint32_t backup_read(enum BackupRegister reg) {
                    | ((uint32_t)RTC_BKP_DR((int)reg*2) << 0);
     return value;
 }
+
+#endif

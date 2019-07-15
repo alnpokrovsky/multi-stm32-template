@@ -1,3 +1,5 @@
+#if 0
+
 #include "uf2.h"
 #include <string.h>
 #include "memflash.h"
@@ -206,3 +208,5 @@ inline bool uf2_is_valid(const void *data) {
     return ((bl->flags & UF2_FLAG_FAMILYID_PRESENT) == 0) 
         || (bl->familyID == UF2_FAMILY);
 }
+
+#endif

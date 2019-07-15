@@ -19,7 +19,5 @@ bool uf2_is_valid(const void *data);
 void uf2_read_flash_sector(uint8_t *data, uint32_t sectionIdx);
 void uf2_write_flash_sector(const uint8_t *data, bool quiet, WriteState *state);
 
-void ghostfat_1ms(void);
-
 
 #endif
