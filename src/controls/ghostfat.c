@@ -72,8 +72,8 @@ static void fat16_boot_sector(uint8_t *data)
     memcpy(data, &BootBlock, sizeof(BootBlock));
     /* bootSignature 0x55AA 
     * - конец загрузочного сектора */
-    data[GHOSTFAT_SECTOR_SIZE-2] = 0x55;
-    data[GHOSTFAT_SECTOR_SIZE-1] = 0xaa;
+    data[510] = 0x55;
+    data[511] = 0xaa;
 }
 
 void ghostfat_init(void) {
