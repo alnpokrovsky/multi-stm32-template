@@ -3,6 +3,7 @@
 PROJECT := techPult
 
 ###### Create binary ###########
+BUILD := debug
 all: elf
 
 

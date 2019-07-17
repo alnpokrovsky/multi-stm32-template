@@ -27,9 +27,9 @@ Q			:= @
 NULL		:= 2>/dev/null
 endif
 
-# 'make BUILD=release' will compile with optimization 
-# By default builds debug version with debugging symbols
-ifeq ($(BUILD),release)
+# 'make BUILD=debug' will compile with debugging symbols 
+# By default builds release version with optimization 
+ifeq ($(BUILD),debug)
 OPT	  := -O0
 DEBUG := -ggdb3
 DEFS  += -DDEBUG
@@ -136,9 +136,9 @@ images: $(PROJECT).images
 flash: $(PROJECT).flash
 
 
-%.elf %.map: $release) $(LDSCRIPT) $(LIBS_A)
-ifeq ($(BUIL debug*)"
-D),release	@printf " .elf\n
+%.elf %.map: $(OBJS) $(LDSCRIPT) $(LIBS_A)
+	@printf "  LD \t$(*).elf\n"
+ifeq ($(BUILD),debug)
 	@printf "     \tBUILDING WITH DEBUG SIMBOLS\n"
 endif
 	$(Q)$(LD) $(TGT_LDFLAGS) $(LDFLAGS) $(OBJS) $(LDLIBS) -o $(*).elf
