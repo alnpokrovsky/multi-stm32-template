@@ -52,7 +52,7 @@ static inline uint32_t memflash_page_addr(uint8_t block) {
 }
 
 
-static sector cash[MEMFLASH_SECTORS];
+static sector cash[MEMFLASH_SECTORS * FLASH_CASH];
 static bool initedFlag = false;
 
 void memflash_init(void) {
