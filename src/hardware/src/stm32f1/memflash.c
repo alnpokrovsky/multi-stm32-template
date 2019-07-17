@@ -4,6 +4,7 @@
 #include <libopencm3/stm32/flash.h>
 #include <libopencm3/stm32/desig.h>
 #include <string.h>
+#include "DeviceConfig.h"
 #include "tim.h"
 
 #define MEMFLASH_FLUSH_TIM       TIM_4
