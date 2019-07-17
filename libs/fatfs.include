@@ -1,5 +1,7 @@
 # fatfs
 
+DEFS += -DFATFS_LIB
+
 INC += libs/fatfs/include
 
 SRC += $(shell find libs/fatfs -name "*.c")

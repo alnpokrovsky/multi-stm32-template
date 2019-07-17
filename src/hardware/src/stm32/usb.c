@@ -1,9 +1,14 @@
+#if defined(STM32F1)||defined(STM32F3)||defined(STM32F4)
+
+#ifndef OCM3_USB_LIB
+#error "You did not include USB library"
+#endif
+
 #include "usb.h"
 #include "usb_core.h"
 #include <libopencm3/stm32/desig.h>
 #include "UsbConfig.h"
 #include "delay.h"
-
 
 
 void usb_init(void) {
@@ -15,3 +20,5 @@ void usb_init(void) {
 
     delay_some();
 }
+
+#endif
