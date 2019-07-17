@@ -52,14 +52,19 @@ static inline uint32_t memflash_page_addr(uint8_t block) {
 
 
 static sector cash[MEMFLASH_SECTORS];
+static bool initedFlag = false;
 
 void memflash_init(void) {
-    for (uint8_t block = 0; block < MEMFLASH_SECTORS; ++block) {
-        uint32_t page_addr = memflash_page_addr(block);
-        memcpy(&cash[block], (uint8_t *)page_addr, FLASH_PAGE_SIZE);
-    }
+    if (!initedFlag) { 
+        initedFlag = true;
 
-    tim_init(MEMFLASH_FLUSH_TIM, 50000, MICROSEC);
+        for (uint8_t block = 0; block < MEMFLASH_SECTORS; ++block) {
+            uint32_t page_addr = memflash_page_addr(block);
+            memcpy(&cash[block], (uint8_t *)page_addr, FLASH_PAGE_SIZE);
+        }
+
+        tim_init(MEMFLASH_FLUSH_TIM, 50000, MICROSEC);
+    }
 }
 
 /**
