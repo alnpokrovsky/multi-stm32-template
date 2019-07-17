@@ -1,18 +1,20 @@
-#include "usb/hid.h"
+#include "hid.h"
+#include "usb_hid.h"
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/usb/usbd.h>
 #include <libopencm3/usb/hid.h>
 #include <libopencm3/cm3/nvic.h>
-#include "delay.h"
-#include "usb/private/setup.h"
+#include "basic/aggregate.h"
+#include "../private/setup.h"
 #include "UsbConfig.h"
 #include <stdlib.h>
 
+#ifdef USB_INTERFACE_HID
 
-#define ENDPOINT_ADDRESS_IN     (0x81)
-#define ENDPOINT_ADDRESS_OUT    (0x01)
-#define MAXPACKETSIZEIN         16
-#define MAXPACKETSIZEOUT        8
+#define ENDP_ADDRESS_IN     ( 0x81 + USB_INTERFACE_HID )
+#define ENDP_ADDRESS_OUT    ( USB_INTERFACE_HID )
+#define MAXPACKETSIZEIN     16
+#define MAXPACKETSIZEOUT    8
 
 static void null_handler(uint8_t * buf, uint16_t len)
 {
@@ -20,24 +22,8 @@ static void null_handler(uint8_t * buf, uint16_t len)
 	usb_hid_send(buf, len);
 }
 
-#pragma weak usb_hid_read_handler = null_handler
+#pragma weak usb_hid_recv_handler = null_handler
 
-static const struct usb_device_descriptor dev_descriptor = {
-    .bLength = USB_DT_DEVICE_SIZE,
-    .bDescriptorType = USB_DT_DEVICE,
-    .bcdUSB = 0x0200,
-    .bDeviceClass = 0,
-    .bDeviceSubClass = 0,
-    .bDeviceProtocol = 0,
-    .bMaxPacketSize0 = 64,
-    .idVendor  = USB_VID,
-    .idProduct = USB_PID,
-    .bcdDevice = 0x0200,
-    .iManufacturer = 1,
-    .iProduct = 2,
-    .iSerialNumber = 3,
-    .bNumConfigurations = 1,
-};
 
 static const uint8_t hid_report_descriptor[] =
 {
@@ -78,7 +64,7 @@ static const struct {
 static const struct usb_endpoint_descriptor hid_endpoints[] = {{
     .bLength = USB_DT_ENDPOINT_SIZE,
     .bDescriptorType = USB_DT_ENDPOINT,
-    .bEndpointAddress = ENDPOINT_ADDRESS_IN,      //0x81
+    .bEndpointAddress = ENDP_ADDRESS_IN,
     .bmAttributes = USB_ENDPOINT_ATTR_INTERRUPT,
     .wMaxPacketSize = MAXPACKETSIZEIN,
     .bInterval = 1,
@@ -86,13 +72,13 @@ static const struct usb_endpoint_descriptor hid_endpoints[] = {{
 {
     .bLength = USB_DT_ENDPOINT_SIZE,
     .bDescriptorType = USB_DT_ENDPOINT,
-    .bEndpointAddress = ENDPOINT_ADDRESS_OUT,    //0x01
+    .bEndpointAddress = ENDP_ADDRESS_OUT,
     .bmAttributes = USB_ENDPOINT_ATTR_INTERRUPT,
     .wMaxPacketSize = MAXPACKETSIZEOUT,
     .bInterval = 1,
 }};
 
-static const struct usb_interface_descriptor hid_iface = {
+const struct usb_interface_descriptor hid_iface = {
     .bLength = USB_DT_INTERFACE_SIZE,
     .bDescriptorType = USB_DT_INTERFACE,
     .bInterfaceNumber = 0,
@@ -101,7 +87,7 @@ static const struct usb_interface_descriptor hid_iface = {
     .bInterfaceClass = USB_CLASS_HID,
     .bInterfaceSubClass = 0, /* no boot */
     .bInterfaceProtocol = 0, /* user (no mouse, keyboard, etc...)*/
-    .iInterface = 0,
+    .iInterface = USB_STRINGS_HID,
 
     .endpoint = hid_endpoints,
 
@@ -109,29 +95,6 @@ static const struct usb_interface_descriptor hid_iface = {
     .extralen = sizeof(hid_function),
 };
 
-static const struct usb_interface ifaces[] = {{
-    .num_altsetting = 1,
-    .altsetting = &hid_iface
-}};
-
-static const struct usb_config_descriptor config_descriptor = {
-    .bLength = USB_DT_CONFIGURATION_SIZE,
-    .bDescriptorType = USB_DT_CONFIGURATION,
-    .wTotalLength = 0,
-    .bNumInterfaces = 1,
-    .bConfigurationValue = 1,
-    .iConfiguration = 0,
-    .bmAttributes = 0xC0,
-    .bMaxPower = 0x32,
-
-    .interface = ifaces,
-};
-
-static const char *usb_strings[] = {
-    "Kill Soft",
-    "HID - ADC Demo",
-    "DEMO",
-};
 
 //This function looks identical in all examples.
 //And it is as I understand monitors all inbound hid-requests.
@@ -141,7 +104,7 @@ static enum usbd_request_return_codes hid_control_request(usbd_device *usbd_dev,
     (void)complete;
     (void)usbd_dev;
 
-    if((req->bmRequestType != ENDPOINT_ADDRESS_IN) ||
+    if((req->bmRequestType != ENDP_ADDRESS_IN) ||
        (req->bRequest != USB_REQ_GET_DESCRIPTOR) ||
        (req->wValue != 0x2200))
         return USBD_REQ_NOTSUPP;
@@ -161,9 +124,9 @@ static void data_rx(usbd_device *dev, uint8_t ep)
     //gpio_toggle(LED_PORT, LED_PIN);
 
     uint8_t buf[MAXPACKETSIZEIN];
-    int len = usbd_ep_read_packet(dev, ENDPOINT_ADDRESS_OUT, buf, MAXPACKETSIZEOUT);
+    int len = usbd_ep_read_packet(dev, ENDP_ADDRESS_OUT, buf, MAXPACKETSIZEOUT);
     
-    usb_hid_read_handler(buf, len);
+    usb_hid_recv_handler(buf, len);
 }
 
 //In this function, configure the endpoints and callbacks.
@@ -171,31 +134,28 @@ static void hid_set_config(usbd_device *dev, uint16_t wValue)
 {
     (void)wValue;
 
-    usbd_ep_setup(dev, ENDPOINT_ADDRESS_IN, USB_ENDPOINT_ATTR_INTERRUPT, MAXPACKETSIZEIN, NULL);
-    usbd_ep_setup(dev, ENDPOINT_ADDRESS_OUT, USB_ENDPOINT_ATTR_INTERRUPT, MAXPACKETSIZEOUT, data_rx);
+    usbd_ep_setup(dev, ENDP_ADDRESS_IN, USB_ENDPOINT_ATTR_INTERRUPT, MAXPACKETSIZEIN, NULL);
+    usbd_ep_setup(dev, ENDP_ADDRESS_OUT, USB_ENDPOINT_ATTR_INTERRUPT, MAXPACKETSIZEOUT, data_rx);
 
-    usbd_register_control_callback(
+    aggregate_register_callback(
                 dev,
                 USB_REQ_TYPE_STANDARD | USB_REQ_TYPE_INTERFACE,
                 USB_REQ_TYPE_TYPE | USB_REQ_TYPE_RECIPIENT,
                 hid_control_request);
 }
 
+static usbd_device *hidd_dev;
 
-static uint8_t usbd_control_buffer[128];
-static usbd_device *usbd_dev;
-
-void usb_hid_init(void)
+void hid_setup(usbd_device *usbd_dev)
 {
-    usbd_dev = usb_setup(
-        &dev_descriptor, &config_descriptor, usb_strings, 3,
-        usbd_control_buffer, sizeof(usbd_control_buffer));
-	usbd_register_set_config_callback(usbd_dev, hid_set_config);
-    delay_some();
+    hidd_dev = usbd_dev;
+	aggregate_register_config_callback(usbd_dev, hid_set_config);
 }
 
 
 void usb_hid_send(const uint8_t * buf, uint16_t len)
 {
-    usbd_ep_write_packet(usbd_dev, ENDPOINT_ADDRESS_IN, buf, len);    
+    usbd_ep_write_packet(hidd_dev, ENDP_ADDRESS_IN, buf, len);    
 }
+
+#endif

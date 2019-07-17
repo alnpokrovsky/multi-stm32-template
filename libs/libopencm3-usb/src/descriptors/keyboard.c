@@ -3,7 +3,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include "delay.h"
 #include <libopencm3/usb/hid.h>
 #include "UsbConfig.h"
 #include "basic/aggregate.h"

@@ -24,17 +24,17 @@
 #include <string.h>
 
 #include <libopencm3/usb/usbd.h>
+#include "basic/aggregate.h"
+#include "../private/setup.h"
 
 #include "dfu.h"
 #include "cdc.h"
 #include "keyboard.h"
+#include "hid.h"
 #include "webusb.h"
 #include "winusb.h"
 #include "usb21_standard.h"
-#include "../private/setup.h"
-#include "bootloader.h"
 #include "msc.h"
-#include "basic/aggregate.h"
 
 
 static char serial_number[USB_SERIAL_NUM_LENGTH+1];
@@ -100,6 +100,12 @@ static const struct usb_interface interfaces[] = {
 	    .altsetting = &keyboard_iface,
     },
 #endif
+#ifdef USB_INTERFACE_HID
+    {
+        .num_altsetting = 1,
+        .altsetting = &hid_iface
+    },
+#endif
 };
 
 //  USB Config
@@ -148,6 +154,9 @@ usbd_device* usb_core_init(void) {
 #endif  //  USB_INTERFACE_CDC_COMM
 #ifdef USB_INTERFACE_KEYBOARD
 	keyboard_setup(usbd_dev);
+#endif
+#ifdef USB_INTERFACE_HID
+    hid_setup(usbd_dev);
 #endif
 #ifdef USB21_INTERFACE
     //  Define USB 2.1 BOS interface used by WebUSB.

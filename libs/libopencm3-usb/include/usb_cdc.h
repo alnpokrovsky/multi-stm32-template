@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-void usb_cdc_tx(char * data, uint16_t len);
+void usb_cdc_tx(const char * data, uint16_t len);
 void usb_cdc_rx_handler(char * data, uint16_t len);
 
 #endif

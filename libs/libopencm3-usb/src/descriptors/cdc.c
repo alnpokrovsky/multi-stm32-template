@@ -18,7 +18,7 @@ static void null_handler(char * buf, uint16_t len)
 #pragma weak usb_cdc_rx_handler = null_handler
 
 
-#ifdef USB_INTERFACE_CDC_COMM
+#if defined(USB_INTERFACE_CDC_COMM) && defined(USB_INTERFACE_CDC_DATA)
 
 #define ENDP_DATA_OUT                USB_INTERFACE_CDC_DATA
 #define ENDP_DATA_IN                 ( 0x81 + USB_INTERFACE_CDC_DATA )
@@ -254,7 +254,7 @@ cdcacm_set_config(
 
 static usbd_device* cdcd_dev;
 
-void usb_cdc_tx(char* data, uint16_t len){
+void usb_cdc_tx(const char* data, uint16_t len){
 	usbd_ep_write_packet(cdcd_dev, ENDP_DATA_IN, data, len);
 }
 
