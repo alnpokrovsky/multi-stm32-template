@@ -13,8 +13,7 @@
 
 #define ENDP_ADDRESS_IN     ( 0x81 + USB_INTERFACE_HID )
 #define ENDP_ADDRESS_OUT    ( USB_INTERFACE_HID )
-#define MAXPACKETSIZEIN     16
-#define MAXPACKETSIZEOUT    8
+
 
 static void null_handler(uint8_t * buf, uint16_t len)
 {
@@ -27,17 +26,41 @@ static void null_handler(uint8_t * buf, uint16_t len)
 
 static const uint8_t hid_report_descriptor[] =
 {
-      0x06, 0xFF, 0xFF,         // 04|2   , Usage Page (vendordefined?)
-      0x09, 0x01,               // 08|1   , Usage      (vendordefined
-      0xA1, 0x01,               // A0|1   , Collection (Application)
-      // Feature report
-      0x09, 0x06,               // 08|1   , Usage      (vendordefined)
-      0x09, 0x07,               // 08|1   , Usage      (vendordefined)
-      0x15, 0x00,               // 14|1   , LogicalMinimum(0 for signed byte)
-      0x75, 0x0F,               // 74|1   , Report Size(16) =field size in bits = 1 byte
-      0x95, 0x08,               //_0x04,               // 94|1:ReportCount
-      0xB1, 0x02,               // B0|1:   Feature report
-      0xC0                      // C0|0    , End Collection
+       // Usage Page = 0xFF00 (Vendor Defined Page 1)
+    0x06, 0x00, 0xFF,
+    // Usage (Vendor Usage 1)
+    0x09, 0x01,
+    // Collection (Application)
+    0xA1, 0x01,
+    //   Usage Minimum
+    0x19, 0x01,
+    //   Usage Maximum. 64 input usages total (0x01 to USB_HID_DATA_SIZE (prev 0x40)).
+    0x29, USB_HID_DATA_SIZE,
+    //   Logical Minimum (data bytes in the report may have minimum value =
+    //   0x00).
+    0x15, 0x00,
+    //   Logical Maximum (data bytes in the report may have
+    //     maximum value = 0x00FF = unsigned 255).
+    // TODO: Can this be one byte?
+    0x26, 0xFF, 0x00,
+    //   Report Size: 8-bit field size
+    0x75, 0x08,
+    //   Report Count: Make sixty-four 8-bit fields (the next time the parser
+    //     hits an "Input", "Output", or "Feature" item).
+    0x95, USB_HID_DATA_SIZE,
+    //   Input (Data, Array, Abs): Instantiates input packet fields based on the
+    //     above report size, count, logical min/max, and usage.
+    0x81, 0x00,
+    //   Usage Minimum
+    0x19, 0x01,
+    //   Usage Maximum. 64 output usages total (0x01 to 0x40)
+    0x29, USB_HID_DATA_SIZE,
+    //   Output (Data, Array, Abs): Instantiates output packet fields. Uses same
+    //     report size and count as "Input" fields, since nothing new/different
+    //     was specified to the parser since the "Input" item.
+    0x91, 0x00,
+    // End Collection
+    0xC0,
  };
 
 
@@ -66,16 +89,16 @@ static const struct usb_endpoint_descriptor hid_endpoints[] = {{
     .bDescriptorType = USB_DT_ENDPOINT,
     .bEndpointAddress = ENDP_ADDRESS_IN,
     .bmAttributes = USB_ENDPOINT_ATTR_INTERRUPT,
-    .wMaxPacketSize = MAXPACKETSIZEIN,
-    .bInterval = 1,
+    .wMaxPacketSize = USB_HID_DATA_SIZE,
+    .bInterval = 10,
 },
 {
     .bLength = USB_DT_ENDPOINT_SIZE,
     .bDescriptorType = USB_DT_ENDPOINT,
     .bEndpointAddress = ENDP_ADDRESS_OUT,
     .bmAttributes = USB_ENDPOINT_ATTR_INTERRUPT,
-    .wMaxPacketSize = MAXPACKETSIZEOUT,
-    .bInterval = 1,
+    .wMaxPacketSize = USB_HID_DATA_SIZE,
+    .bInterval = 10,
 }};
 
 const struct usb_interface_descriptor hid_iface = {
@@ -87,7 +110,7 @@ const struct usb_interface_descriptor hid_iface = {
     .bInterfaceClass = USB_CLASS_HID,
     .bInterfaceSubClass = 0, /* no boot */
     .bInterfaceProtocol = 0, /* user (no mouse, keyboard, etc...)*/
-    .iInterface = USB_STRINGS_HID,
+    .iInterface = 0, // A string representing this interface. Zero means not provided.
 
     .endpoint = hid_endpoints,
 
@@ -104,16 +127,28 @@ static enum usbd_request_return_codes hid_control_request(usbd_device *usbd_dev,
     (void)complete;
     (void)usbd_dev;
 
-    if((req->bmRequestType != ENDP_ADDRESS_IN) ||
-       (req->bRequest != USB_REQ_GET_DESCRIPTOR) ||
-       (req->wValue != 0x2200))
+    // This request is asking for information sent to the host using request
+    // GET_DESCRIPTOR.
+    if ((req->bmRequestType & USB_REQ_TYPE_DIRECTION) == USB_REQ_TYPE_IN &&
+        (req->bRequest == USB_REQ_GET_DESCRIPTOR)) {
+
+        // - High byte: Descriptor type is HID report (0x22)
+        // - Low byte: Index 0
+        if (req->wValue == 0x2200) {
+            // Send the HID report descriptor.
+            *buf = (uint8_t *)hid_report_descriptor;
+            *len = sizeof(hid_report_descriptor);
+            return USBD_REQ_HANDLED;
+        } else if (req->wValue == 0x2100) {
+            *buf = (uint8_t *)&hid_function;
+            *len = sizeof(hid_function);
+            return USBD_REQ_HANDLED;
+        }
+
         return USBD_REQ_NOTSUPP;
+    }
 
-    /* Handle the HID report descriptor. */
-    *buf = (uint8_t *)hid_report_descriptor;
-    *len = sizeof(hid_report_descriptor);
-
-    return USBD_REQ_HANDLED;
+    return USBD_REQ_NOTSUPP;
 }
 
 //This callback that is executed when the endpoint "OUT" request arrives.
@@ -123,8 +158,8 @@ static void data_rx(usbd_device *dev, uint8_t ep)
 
     //gpio_toggle(LED_PORT, LED_PIN);
 
-    uint8_t buf[MAXPACKETSIZEIN];
-    int len = usbd_ep_read_packet(dev, ENDP_ADDRESS_OUT, buf, MAXPACKETSIZEOUT);
+    uint8_t buf[USB_HID_DATA_SIZE];
+    int len = usbd_ep_read_packet(dev, ENDP_ADDRESS_OUT, buf, USB_HID_DATA_SIZE);
     
     usb_hid_recv_handler(buf, len);
 }
@@ -134,8 +169,8 @@ static void hid_set_config(usbd_device *dev, uint16_t wValue)
 {
     (void)wValue;
 
-    usbd_ep_setup(dev, ENDP_ADDRESS_IN, USB_ENDPOINT_ATTR_INTERRUPT, MAXPACKETSIZEIN, NULL);
-    usbd_ep_setup(dev, ENDP_ADDRESS_OUT, USB_ENDPOINT_ATTR_INTERRUPT, MAXPACKETSIZEOUT, data_rx);
+    usbd_ep_setup(dev, ENDP_ADDRESS_IN, USB_ENDPOINT_ATTR_INTERRUPT, USB_HID_DATA_SIZE, NULL);
+    usbd_ep_setup(dev, ENDP_ADDRESS_OUT, USB_ENDPOINT_ATTR_INTERRUPT, USB_HID_DATA_SIZE, data_rx);
 
     aggregate_register_callback(
                 dev,

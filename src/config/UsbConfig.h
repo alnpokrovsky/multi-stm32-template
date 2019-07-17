@@ -40,6 +40,10 @@
 #define USB_MSC_READ_BLOCK    ghostfat_read_block
 #endif
 
+#ifdef USB_INTERFACE_HID
+#define USB_HID_DATA_SIZE     16
+#endif
+
 #ifdef USB21_INTERFACE
 #define USB21_URL "https://visualbluepill.github.io"
 #endif
