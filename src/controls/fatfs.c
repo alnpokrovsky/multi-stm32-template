@@ -31,7 +31,7 @@ DSTATUS disk_initialize (
 {
 	(void) pdrv;
 	ghostfat_init();
-	return 0;
+	return RES_OK;
 }
 
 
@@ -49,7 +49,8 @@ DRESULT disk_read (
 {
 	(void) pdrv;
 	for (UINT i = 0; i < count; ++i) {
-		ghostfat_read_block(sector + i, buff + i*GHOSTFAT_SECTOR_SIZE);
+		ghostfat_read_block(sector + i, buff);
+		buff += GHOSTFAT_SECTOR_SIZE;
 	}
 	return RES_OK;
 }
@@ -70,7 +71,8 @@ DRESULT disk_write (
 ) {
 	(void)pdrv;
 	for (UINT i = 0; i < count; ++i) {
-		ghostfat_write_block(sector + i, buff + i*GHOSTFAT_SECTOR_SIZE);
+		ghostfat_write_block(sector + i, buff);
+		buff += GHOSTFAT_SECTOR_SIZE;
 	}
 	return RES_OK;
 }
