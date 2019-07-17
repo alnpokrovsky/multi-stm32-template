@@ -138,6 +138,9 @@ flash: $(PROJECT).flash
 
 %.elf %.map: $(OBJS) $(LDSCRIPT) $(LIBS_A)
 	@printf "  LD \t$(*).elf\n"
+ifeq ($(BUILD),debug)
+	@printf "     \tBUILDING WITH DEBUG SIMBOLS\n"
+endif
 	$(Q)$(LD) $(TGT_LDFLAGS) $(LDFLAGS) $(OBJS) $(LDLIBS) -o $(*).elf
 
 %.images: %.bin %.hex %.list %.map
@@ -198,13 +201,15 @@ endif
 
 oocd:
 	$(OOCD) -f interface/$(OOCD_INTERFACE).cfg \
-		-f target/$(OOCD_TARGET).cfg
+		-f target/$(OOCD_TARGET).cfg \
+		-c "init"
 
-debug: elf
-	@printf "  DEBUGING\t$<\n"
+debug: $(PROJECT).elf
+	@printf "  DEBUGING $<\n"
 	$(GDB) $< \
 		-ex 'target remote localhost:3333' \
-		-ex 'monitor reset halt'
+		-ex 'monitor reset halt' \
+		-ex 'monitor poll'
 
 
 clean:
