@@ -4,8 +4,8 @@
 #include "controls/ghostfat.h"
 
 
-#define USB_VID                 0x1209
-#define USB_PID                 0xdb41
+#define USB_VID                 0x120A
+#define USB_PID                 0xdb42
 
 #define USB_MSC_VENDOR_ID       "BluePill"
 #define USB_MSC_PRODUCT_ID      "MSC Config"
@@ -14,7 +14,6 @@
 #define USB_SERIAL_NUM_LENGTH   24
 #define USB_CONTROL_BUF_SIZE    256
 #define USB_MAX_PACKET_SIZE     64
-#define USB_CDC_PACKET_SIZE     16
 
 
 //  Index of each USB interface.  Must be consecutive and must sync with interfaces[].
@@ -24,11 +23,11 @@
 // #define USB_INTERFACE_CDC_DATA    3
 // #define USB_INTERFACE_KEYBOARD    4
 #define USB_INTERFACE_HID         5
-#define USB21_INTERFACE              /* Enable USB 2.1 with WebUSB and BOS support.*/
+//#define USB21_INTERFACE              /* Enable USB 2.1 with WebUSB and BOS support.*/
 
 #ifdef USB_INTERFACE_DFU
 // DFU loader config
-#define USB_DFU_UPLOAD_AVAILABLE 1
+#define USB_DFU_UPLOAD_AVAILABLE   1
 #define USB_DFU_DOWNLOAD_AVAILABLE 1
 #endif
 
@@ -38,6 +37,10 @@
 #define USB_MSC_INIT()          ghostfat_init()
 #define USB_MSC_WRITE_BLOCK     ghostfat_write_block
 #define USB_MSC_READ_BLOCK      ghostfat_read_block
+#endif
+
+#ifdef USB_INTERFACE_CDC_DATA
+#define USB_CDC_PACKET_SIZE     16
 #endif
 
 #ifdef USB_INTERFACE_HID
