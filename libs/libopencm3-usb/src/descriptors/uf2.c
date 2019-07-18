@@ -1,11 +1,10 @@
-#if 0
-
 #include "uf2.h"
 #include <string.h>
 #include "memflash.h"
 #include "DeviceConfig.h"
 #include "bootloader.h"
 
+#if 0 /// @todo
 
 // All entries are little endian.
 #define UF2_MAGIC_START0            0x0A324655UL // "UF2\n"
