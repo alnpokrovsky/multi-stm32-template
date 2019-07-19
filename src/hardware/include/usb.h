@@ -7,7 +7,7 @@
 #endif
 
 
-void usb_init(void);
+void usb_init(const char* name);
 
 
 #endif
