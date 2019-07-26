@@ -11,6 +11,7 @@ int main(void) {
     rcc_init();
 
     digitalpin_mode(LED, DIGITALPIN_OUTPUT);
+
     // digitalpin_toggle(LED);
     
     // // mount the default drive

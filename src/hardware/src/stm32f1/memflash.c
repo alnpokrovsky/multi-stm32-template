@@ -4,6 +4,7 @@
 #include <libopencm3/stm32/flash.h>
 #include <libopencm3/stm32/desig.h>
 #include <string.h>
+#include <stdlib.h>
 #include "DeviceConfig.h"
 #include "tim.h"
 
@@ -52,13 +53,13 @@ static inline uint32_t memflash_page_addr(uint8_t block) {
 }
 
 
-static sector cash[MEMFLASH_SECTORS * FLASH_CASH];
+static sector * cash;
 static bool initedFlag = false;
 
 void memflash_init(void) {
     if (!initedFlag) { 
         initedFlag = true;
-
+        cash = malloc(sizeof(sector) * MEMFLASH_SECTORS);
         for (uint8_t block = 0; block < MEMFLASH_SECTORS; ++block) {
             uint32_t page_addr = memflash_page_addr(block);
             memcpy(&cash[block], (uint8_t *)page_addr, FLASH_PAGE_SIZE);

@@ -7,6 +7,5 @@
 #define APP_BASE_ADDRESS 0x08004000
 
 #define FLASH_PAGE_SIZE  1024
-#define FLASH_CASH       1
 
 #endif

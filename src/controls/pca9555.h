@@ -6,10 +6,6 @@
 
 struct PCA9555;
 
-typedef enum {
-   PCA9555_PIN_OUTPUT = 0,
-   PCA9555_PIN_INPUT  = 1,
-} PCA9555_PIN_MODE;
 
 struct PCA9555 * pca9555_init(IIC_PORT iic, uint8_t address);
 
