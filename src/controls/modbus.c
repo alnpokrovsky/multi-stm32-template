@@ -6,18 +6,15 @@
 #include <assert.h>
 #include <string.h>
 #include "word.h"
+#include "FreeModbusConfig.h"
 
-static uint16_t Hreg_table[10];
-#define TABLE_HREG_SIZE ( sizeof(Hreg_table) / sizeof(Hreg_table[0]) )
+static uint16_t Hreg_table[MODBUS_TABLE_HREG_SIZE];
 
-static uint8_t Coils_table[10];
-#define TABLE_COILS_SIZE ( sizeof(Coils_table) * sizeof(Coils_table[0]) )
+static uint8_t Coils_table[MODBUS_TABLE_COILS_SIZE/sizeof(uint8_t)];
 
-static uint8_t Ists_table[10];
-#define TABLE_ISTS_SIZE ( sizeof(Ists_table) * sizeof(Ists_table[0]) )
+static uint8_t Ists_table[MODBUS_TABLE_ISTS_SIZE/sizeof(uint8_t)];
 
-static uint16_t Ireg_table[10];
-#define TABLE_IREG_SIZE ( sizeof(Ireg_table) / sizeof(Ireg_table[0]) )
+static uint16_t Ireg_table[MODBUS_TABLE_IREG_SIZE];
 
 
 uint16_t modbus_Hreg(uint16_t addr) {
@@ -56,7 +53,7 @@ eMBErrorCode eMBRegInputCB(UCHAR * pucRegBuffer, USHORT usAddress,
     uint16_t * buf = (uint16_t*) pucRegBuffer;
 
     /* check if we away of table size */
-    if (usAddress + usNRegs > TABLE_IREG_SIZE) {
+    if (usAddress + usNRegs > MODBUS_TABLE_IREG_SIZE) {
         return MB_ENOREG;
     }
 
@@ -75,7 +72,7 @@ eMBErrorCode eMBRegHoldingCB(UCHAR * pucRegBuffer, USHORT usAddress,
     uint16_t * buf = (uint16_t*) pucRegBuffer;
 
     /* check if we away of table size */
-    if (usAddress + usNRegs > TABLE_HREG_SIZE) {
+    if (usAddress + usNRegs > MODBUS_TABLE_HREG_SIZE) {
         return MB_ENOREG;
     }
 
@@ -102,7 +99,7 @@ eMBErrorCode eMBRegCoilsCB(UCHAR * pucRegBuffer, USHORT usAddress,
 	usAddress -= 1; /* to c-style address */
 
     /* check if we away of table size */
-    if (usAddress + usNCoils > TABLE_COILS_SIZE) {
+    if (usAddress + usNCoils > MODBUS_TABLE_COILS_SIZE) {
         return MB_ENOREG;
     }
 
@@ -131,7 +128,7 @@ eMBErrorCode eMBRegDiscreteCB(UCHAR * pucRegBuffer, USHORT usAddress,
 	usAddress -= 1; /* to c-style address */
 
     /* check if we away of table size */
-    if (usAddress + usNDiscrete > TABLE_ISTS_SIZE) {
+    if (usAddress + usNDiscrete > MODBUS_TABLE_ISTS_SIZE) {
         return MB_ENOREG;
     }
 

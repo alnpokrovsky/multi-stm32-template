@@ -12,4 +12,10 @@
 
 #define RS485_TXE_PIN            PA_4
 
+#define MODBUS_TABLE_HREG_SIZE   10
+#define MODBUS_TABLE_IREG_SIZE   10
+#define MODBUS_TABLE_COILS_SIZE  80
+#define MODBUS_TABLE_ISTS_SIZE   80
+
+
 #endif
