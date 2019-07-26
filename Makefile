@@ -25,6 +25,7 @@ INC += src/third-party/ugui
 include libs/freemodbus.include
 include libs/fatfs.include
 include libs/libopencm3-usb.include
+include libs/saxml.include
 
 ########### BUILD DEVICE ##############
 LDSCRIPT := make/stm32/f1/stm32f103xB.ld
