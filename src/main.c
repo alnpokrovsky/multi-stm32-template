@@ -1,50 +1,37 @@
 #include "rcc.h"
 #include "digitalpin.h"
 #include "usb.h"
-#include "delay.h"
-#include "ff.h"
+#include "encoder.h"
+#include "iic.h"
+#include "controls/modbus.h"
+#include "controls/pca9555.h"
 
-//#define LED PC_2
 #define LED PC_13
+#define BOOT1 PB_2
+
 
 int main(void) {
     rcc_init();
-
     digitalpin_mode(LED, DIGITALPIN_OUTPUT);
+    digitalpin_mode(BOOT1, DIGITALPIN_INPUT);
 
-    // digitalpin_toggle(LED);
-    
-    // // mount the default drive
-    // FATFS fs;
-    // FRESULT res;
-    // f_mount(&fs, "", 0);
-
-    // FIL fin;
-    // res = f_open(&fin, "board.cnf", FA_READ);
-    // if (res != FR_OK) {
-        
-    // }
-    // // write file
-    // res = f_open(&logFile, "log.txt", FA_OPEN_APPEND | FA_WRITE);
-    // if ( (res==13) ) {
-    //     // digitalpin_toggle(LED);
-    // }
-    
-    // unsigned int bytesWritten;
-    // char writeBuff[] = "Hello, world!";
-    // f_write(&logFile, writeBuff, sizeof(writeBuff), &bytesWritten);
-    // f_close(&logFile);
-    // // Unmount
-    // f_mount(0, "", 0);
-
-    usb_init("POU");
-
-    while (1) {
+    if (digitalpin_get(BOOT1)) {
         digitalpin_toggle(LED);
-        delay_some();
-        delay_some();
-        delay_some();
-        delay_some();
-        delay_some();
+        usb_init("POU");
+        while (1);        
+    }
+
+    encoder_init();
+    iic_init(IIC_1);
+    struct PCA9555 * expanderIn = pca9555_init(IIC_1, 0x20);
+    struct PCA9555 * expanderOut = pca9555_init(IIC_1, 0x26);
+    
+    modbus_init(0x01, 115200);
+    
+    while (1) {
+        modbus_set_Ireg(0, encoder_get());
+        pca9555_write(expanderOut, modbus_Coil_word(0));
+        modbus_set_Ists_word(0, pca9555_read(expanderIn));
+        modbus_poll();
     }
 }

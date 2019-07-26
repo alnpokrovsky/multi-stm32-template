@@ -2,6 +2,7 @@
 #define __HARDWARE_DIGITALPIN_H__
 
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef enum {
     DIGITALPIN_INPUT,
@@ -24,7 +25,7 @@ void digitalpin_mode(DIGITALPIN_NAME pn, DIGITALPIN_MODE pmode);
 /**
  * set pin state (bool)
  */
-void digitalpin_set(DIGITALPIN_NAME pn, uint16_t state);
+void digitalpin_set(DIGITALPIN_NAME pn, bool state);
 
 /**
  * toggle pin state
@@ -34,6 +35,6 @@ void digitalpin_toggle(DIGITALPIN_NAME pn);
 /**
  * get pin state (bool)
  */
-uint16_t digitalpin_get(DIGITALPIN_NAME pn);
+bool digitalpin_get(DIGITALPIN_NAME pn);
 
 #endif

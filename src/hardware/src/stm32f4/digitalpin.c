@@ -76,8 +76,8 @@ void digitalpin_mode(DIGITALPIN_NAME pn, DIGITALPIN_MODE pmode) {
     }
 }
 
-void digitalpin_set(DIGITALPIN_NAME pn, uint16_t state) {
-    if (state != 0) {
+void digitalpin_set(DIGITALPIN_NAME pn, bool state) {
+    if (state) {
         gpio_set(DIGITALPINS[pn].port, DIGITALPINS[pn].pin);
     } else {
         gpio_clear(DIGITALPINS[pn].port, DIGITALPINS[pn].pin);
@@ -88,7 +88,7 @@ void digitalpin_toggle(DIGITALPIN_NAME pn) {
     gpio_toggle(DIGITALPINS[pn].port, DIGITALPINS[pn].pin);
 }
 
-uint16_t digitalpin_get(DIGITALPIN_NAME pn) {
+bool digitalpin_get(DIGITALPIN_NAME pn) {
     return gpio_get(DIGITALPINS[pn].port, DIGITALPINS[pn].pin);
 }
 

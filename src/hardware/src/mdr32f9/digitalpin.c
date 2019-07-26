@@ -84,7 +84,7 @@ void digitalpin_mode(DIGITALPIN_NAME pn, DIGITALPIN_MODE pmode) {
     }
 }
 
-void digitalpin_set(DIGITALPIN_NAME pn, uint16_t state) {
+void digitalpin_set(DIGITALPIN_NAME pn, bool state) {
     if (state)
         DIGITALPINS[pn].port->RXTX |= (1UL << DIGITALPINS[pn].pin_pos);
     else
@@ -95,7 +95,7 @@ void digitalpin_toggle(DIGITALPIN_NAME pn) {
     DIGITALPINS[pn].port->RXTX ^= (1UL << DIGITALPINS[pn].pin_pos);
 }
 
-uint16_t digitalpin_get(DIGITALPIN_NAME pn) {
+bool digitalpin_get(DIGITALPIN_NAME pn) {
     return DIGITALPINS[pn].port->RXTX;
 }
 
