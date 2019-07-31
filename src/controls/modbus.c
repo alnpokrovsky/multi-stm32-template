@@ -34,6 +34,11 @@ void modbus_set_Coil(uint16_t addr, bool val) {
     xMBUtilSetBits(Coils_table, addr, 1, val ? 1 : 0);
 }
 
+void modbus_set_Coil_word(uint16_t addr16, uint16_t val16) {
+    word_to_bytes(val16, Coils_table, addr16);
+}
+
+
 void modbus_set_Ists(uint16_t addr, bool val) {
     xMBUtilSetBits(Ists_table, addr, 1, val ? 1 : 0);
 }

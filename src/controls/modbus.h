@@ -26,6 +26,7 @@ void modbus_set_Hreg(uint16_t addr, uint16_t val);
 bool modbus_Coil(uint16_t addr);
 uint16_t modbus_Coil_word(uint16_t addr16);
 void modbus_set_Coil(uint16_t addr, bool val);
+void modbus_set_Coil_word(uint16_t addr16, uint16_t val16);
 
 /**
  * Input Status (Digital Input) / read only
