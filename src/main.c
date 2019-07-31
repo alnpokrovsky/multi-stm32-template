@@ -6,6 +6,7 @@
 #include "controls/modbus.h"
 #include "controls/pca9555.h"
 #include "controls/pouconfig.h"
+#include "delay.h"
 
 #define BOOT1 PB_2
 
@@ -38,6 +39,9 @@ int main(void) {
             pca9555_write(ioExpanders[i], modbus_Coil_word(i));
             modbus_set_Coil_word(i, pca9555_read(ioExpanders[i]));
         }
+
+        delay_a_bit();
         modbus_poll();
+        delay_a_bit();
     }
 }
