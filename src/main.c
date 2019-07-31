@@ -5,33 +5,39 @@
 #include "iic.h"
 #include "controls/modbus.h"
 #include "controls/pca9555.h"
+#include "controls/pouconfig.h"
 
-#define LED PC_13
 #define BOOT1 PB_2
 
 
 int main(void) {
     rcc_init();
-    digitalpin_mode(LED, DIGITALPIN_OUTPUT);
+    
     digitalpin_mode(BOOT1, DIGITALPIN_INPUT);
 
     if (digitalpin_get(BOOT1)) {
-        digitalpin_toggle(LED);
         usb_init("POU");
         while (1);        
     }
 
-    encoder_init();
+    // encoder_init();
+
+    pouconfig_init();
+
     iic_init(IIC_1);
-    struct PCA9555 * expanderIn = pca9555_init(IIC_1, 0x20);
-    struct PCA9555 * expanderOut = pca9555_init(IIC_1, 0x26);
-    
+    struct PCA9555* ioExpanders[pouconfig_ioCnt];
+    for (int i = 0; i < pouconfig_ioCnt; ++i) {
+        ioExpanders[i] = pca9555_init(pouconfig_get_io(i));
+    }    
+
     modbus_init(0x01, 115200);
     
     while (1) {
-        modbus_set_Ireg(0, encoder_get());
-        pca9555_write(expanderOut, modbus_Coil_word(0));
-        modbus_set_Ists_word(0, pca9555_read(expanderIn));
+        // modbus_set_Ireg(0, encoder_get());
+        for (int i = 0; i < pouconfig_ioCnt; ++i) {
+            pca9555_write(ioExpanders[i], modbus_Coil_word(i));
+            modbus_set_Coil_word(i, pca9555_read(ioExpanders[i]));
+        }
         modbus_poll();
     }
 }
