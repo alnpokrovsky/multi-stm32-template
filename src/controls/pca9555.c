@@ -13,27 +13,28 @@
 struct PCA9555 {
     IIC_PORT iic;
     uint8_t address;
-    WORD2BYTES config;
+    WORD2BYTES io;
     WORD2BYTES value;
 };
 
-struct PCA9555 * pca9555_init(IIC_PORT iic, uint8_t address)
+static void pca9555_io(struct PCA9555 * dev, uint16_t io)
+{
+    dev->io.word = io;
+
+    iic_send(dev->iic, dev->address, NXP_CONFIG0, dev->io.byte_low);
+    iic_send(dev->iic, dev->address, NXP_CONFIG1, dev->io.byte_high);
+}
+
+struct PCA9555 * pca9555_init(PCA9555_config * conf)
 {
     struct PCA9555 * dev = malloc(sizeof(*dev));
-    dev->iic = iic;
-    dev->address = address;
+    dev->iic = conf->iicPort;
+    dev->address = conf->iicAddr;
     pca9555_write(dev, 0x0000);    
-    pca9555_config(dev, 0x0000);
+    pca9555_io(dev, conf->io);
     return dev;
 }
 
-void pca9555_config(struct PCA9555 * dev, uint16_t config)
-{
-    dev->config.word = config;
-
-    iic_send(dev->iic, dev->address, NXP_CONFIG0, dev->config.byte_low);
-    iic_send(dev->iic, dev->address, NXP_CONFIG1, dev->config.byte_high);
-}
 
 void pca9555_write(struct PCA9555 * dev, uint16_t value)
 {
