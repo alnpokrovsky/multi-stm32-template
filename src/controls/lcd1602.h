@@ -11,21 +11,23 @@
 	lcd1602_put('E');
  */
 
-void lcd1602_init(
-    DIGITALPIN_NAME rs,
-    DIGITALPIN_NAME en,
-    DIGITALPIN_NAME db4,
-    DIGITALPIN_NAME db5,
-    DIGITALPIN_NAME db6,
-    DIGITALPIN_NAME db7
-);
+typedef struct {
+    DIGITALPIN_NAME rs;
+    DIGITALPIN_NAME en;
+    DIGITALPIN_NAME db4;
+    DIGITALPIN_NAME db5;
+    DIGITALPIN_NAME db6;
+    DIGITALPIN_NAME db7;
+} LCD1602;
 
-void lcd1602_pos(uint8_t row, uint8_t col);
+void lcd1602_init(LCD1602 * lcd);
 
-void lcd1602_put(char ch);
+void lcd1602_pos(LCD1602 * lcd, uint8_t row, uint8_t col);
 
-void lcd1602_put_str(char * str);
+void lcd1602_put(LCD1602 * lcd, char ch);
 
-void lcd1602_clear(void);
+void lcd1602_put_str(LCD1602 * lcd, char * str);
+
+void lcd1602_clear(LCD1602 * lcd);
 
 #endif
