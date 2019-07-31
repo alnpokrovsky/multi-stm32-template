@@ -10,6 +10,7 @@
 #include "GhostFatConfig.h"
 
 void ghostfat_init(void);
+void ghostfat_deinit(void);
 
 int ghostfat_write_block(uint32_t lba, const uint8_t *copy_from);
 

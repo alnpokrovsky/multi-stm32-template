@@ -8,7 +8,8 @@
 #define GHOSTFAT_TOTAL_SECTORS      ( MEMFLASH_SECTORS + 1 ) /* NOT LESS THAN 8!!! */
 #define GHOSTFAT_TOTAL_SIZE         ( GHOSTFAT_SECTOR_SIZE * GHOSTFAT_TOTAL_SECTORS )
 
-#define GHOSTFAT_FLASH_INIT()                   memflash_init()    
+#define GHOSTFAT_FLASH_INIT()                   memflash_init()
+#define GHOSTFAT_FLASH_DEINIT()                 memflash_deinit()
 #define GHOSTFAT_FLASH_WRITE_BLOCK(b_no, dat)   memflash_write_block(b_no, dat)
 #define GHOSTFAT_FLASH_READ_BLOCK(b_no, dat)    memflash_read_block(b_no, dat)
 

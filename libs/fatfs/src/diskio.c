@@ -20,7 +20,7 @@ DSTATUS disk_status (
 
 
 /*-----------------------------------------------------------------------*/
-/* Inidialize a Drive                                                    */
+/* Initialize a Drive                                                    */
 /*-----------------------------------------------------------------------*/
 
 DSTATUS disk_initialize (
@@ -28,6 +28,7 @@ DSTATUS disk_initialize (
 )
 {
 	(void) pdrv;
+	
 	ghostfat_init();
 	return RES_OK;
 }
@@ -46,6 +47,7 @@ DRESULT disk_read (
 )
 {
 	(void) pdrv;
+
 	for (UINT i = 0; i < count; ++i) {
 		ghostfat_read_block(sector + i, buff);
 		buff += GHOSTFAT_SECTOR_SIZE;
@@ -68,6 +70,7 @@ DRESULT disk_write (
 	UINT count			/* Number of sectors to write */
 ) {
 	(void)pdrv;
+
 	for (UINT i = 0; i < count; ++i) {
 		ghostfat_write_block(sector + i, buff);
 		buff += GHOSTFAT_SECTOR_SIZE;
@@ -89,10 +92,14 @@ DRESULT disk_ioctl (
 ) {
 	(void) pdrv;
 	(void) buff;
-	if(cmd == CTRL_SYNC) {
-        return RES_OK;
-    } else {
-        // should never be called
-        return RES_ERROR;
-    }
+
+	switch(cmd) {
+		case CTRL_SYNC:
+	        return RES_OK;
+		case CTRL_EJECT:
+			ghostfat_deinit();
+			return RES_OK;
+		default:
+	        return RES_ERROR;
+	}
 }

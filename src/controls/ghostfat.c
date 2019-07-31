@@ -80,6 +80,10 @@ void ghostfat_init(void) {
     GHOSTFAT_FLASH_INIT();
 }
 
+void ghostfat_deinit(void) {
+    GHOSTFAT_FLASH_DEINIT();
+}
+
 int ghostfat_read_block(uint32_t block_no, uint8_t *data)
 {
     if (block_no == 0) {
