@@ -54,9 +54,10 @@ static inline uint32_t memflash_page_addr(uint8_t block) {
 
 
 static sector * cash;
-static bool initedFlag = false;
 
 void memflash_init(void) {
+    static bool initedFlag = false;
+
     if (!initedFlag) { 
         initedFlag = true;
         cash = malloc(sizeof(sector) * MEMFLASH_SECTORS);

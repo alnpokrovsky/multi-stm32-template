@@ -1,5 +1,3 @@
-#ifdef FATFS_LIB
-
 #include "ff.h"			/* Obtains integer types */
 #include "diskio.h"		/* Declarations of disk functions */
 
@@ -98,5 +96,3 @@ DRESULT disk_ioctl (
         return RES_ERROR;
     }
 }
-
-#endif
