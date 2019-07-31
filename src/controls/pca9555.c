@@ -13,16 +13,16 @@
 struct PCA9555 {
     IIC_PORT iic;
     uint8_t address;
-    WORD2BYTES io;
+    WORD2BYTES ioset;
     WORD2BYTES value;
 };
 
-static void pca9555_io(struct PCA9555 * dev, uint16_t io)
+static void pca9555_ioset(struct PCA9555 * dev, uint16_t ioset)
 {
-    dev->io.word = io;
+    dev->ioset.word = ioset;
 
-    iic_send(dev->iic, dev->address, NXP_CONFIG0, dev->io.byte_low);
-    iic_send(dev->iic, dev->address, NXP_CONFIG1, dev->io.byte_high);
+    iic_send(dev->iic, dev->address, NXP_CONFIG0, dev->ioset.byte_low);
+    iic_send(dev->iic, dev->address, NXP_CONFIG1, dev->ioset.byte_high);
 }
 
 struct PCA9555 * pca9555_init(PCA9555_config * conf)
@@ -31,7 +31,7 @@ struct PCA9555 * pca9555_init(PCA9555_config * conf)
     dev->iic = conf->iicPort;
     dev->address = conf->iicAddr;
     pca9555_write(dev, 0x0000);    
-    pca9555_io(dev, conf->io);
+    pca9555_ioset(dev, conf->ioSet);
     return dev;
 }
 
