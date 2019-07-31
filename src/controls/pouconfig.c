@@ -8,50 +8,78 @@
 #include <string.h>
 
 
-#define IO_ELEM "IO"
-#define IO_PARAM_ADDR "iicAddr"
-#define IO_PARAM_IOSET "ioSet"
+#define MODBUS_ELEM          "MODBUS"
+#define MODBUS_ATTR_ID       "id"
+#define MODBUS_ATTR_BOUDRATE "boudrate"
+
+#define IO_ELEM              "IO"
+#define IO_ATTR_ADDR         "iicAddr"
+#define IO_ATTR_IOSET        "ioSet"
+
+static modbus_Conf mbConfig;
 
 #define IO_EXPANDERS_MAX 4
-static PCA9555_config ioConfigs[IO_EXPANDERS_MAX];
+static pca9555_Conf ioConfigs[IO_EXPANDERS_MAX];
 uint8_t pouconfig_ioCnt = 0;
 
 static const char buf[] = " \
-<?xml version=\"1.0\"?> \
-<POUConf> \
-    <IIC1> \
-        <IO iicAddr=\"32\" ioSet=\"240\" /> \
-    </IIC1> \
-</POUConf> \
+<?xml version=\"1.0\"?> \n\
+<POUConf> \n\
+    <MODBUS \n\
+        id=\"1\" \n\
+        boudrate=\"115200\" \n\
+        dataBits=\"8\" \n\
+        stopBits=\"1\" \n\
+        parity=\"none\" \n\
+    /> \n\
+    <IIC1> \n\
+        <IO iicAddr=\"32\" ioSet=\"240\" /> \n\
+    </IIC1> \n\
+</POUConf> \n\
 ";
 
-static void xml_startElem(const saxml_Element *elem) {
-    if (strcmp(elem->elem, IO_ELEM) == 0) {
+static bool xml_startElem(const saxml_Element *elem) {
+    if (strcmp(elem->elem, MODBUS_ELEM) == 0) {
+        int8_t p = saxml_attr_pos(elem, MODBUS_ATTR_ID);
+        if (p == -1) return false;
+        mbConfig.id = atoi(elem->attrs[p].val);
+        
+        p = saxml_attr_pos(elem, MODBUS_ATTR_BOUDRATE);
+        if (p == -1) return false;
+        mbConfig.boudrate = atoi(elem->attrs[p].val);
+    }
+    else if (strcmp(elem->elem, IO_ELEM) == 0) {
         ioConfigs[pouconfig_ioCnt].iicPort = IIC_1;
-        for (uint8_t i = 0; i < elem->attrsN; ++i) {
-            if (strcmp(elem->attrs[i].name, IO_PARAM_ADDR) == 0) {
-                ioConfigs[pouconfig_ioCnt].iicAddr = atoi(elem->attrs[i].val);
-            } else if (strcmp(elem->attrs[i].name, IO_PARAM_IOSET) == 0) {
-                ioConfigs[pouconfig_ioCnt].ioSet = atoi(elem->attrs[i].val);
-            }
-        }
+
+        int8_t p = saxml_attr_pos(elem, IO_ATTR_ADDR);
+        if (p == -1) return false;
+        ioConfigs[pouconfig_ioCnt].iicAddr = atoi(elem->attrs[p].val);
+
+        p = saxml_attr_pos(elem, IO_ATTR_IOSET);
+        if (p == -1) return false;
+        ioConfigs[pouconfig_ioCnt].ioSet = atoi(elem->attrs[p].val);
+
         ++pouconfig_ioCnt;
     }
+    return true;
 }
 
-static void xml_endElem(void) {
-
+static bool xml_endElem(void) {
+    return true;
 }
 
-void pouconfig_init(void) {
+bool pouconfig_init(void) {
     saxml_Config saxml_conf = {xml_startElem, xml_endElem};
-    saxml_process(&saxml_conf, buf);
+    return saxml_process(&saxml_conf, buf);
 }
 
-PCA9555_config* pouconfig_get_io(uint8_t expanderNum) {
+pca9555_Conf* pouconfig_get_io(uint8_t expanderNum) {
     return &ioConfigs[expanderNum];
 }
 
+modbus_Conf* pouconfig_get_modbus(void) {
+    return &mbConfig;
+}
 
 
 // // mount the default drive

@@ -31,8 +31,7 @@ int main(void) {
         ioExpanders[i] = pca9555_init(pouconfig_get_io(i));
     }    
 
-    modbus_Conf conf = {0x01, 115200};
-    modbus_init(&conf);
+    modbus_init(pouconfig_get_modbus());
     
     while (1) {
         // modbus_set_Ireg(0, encoder_get());
