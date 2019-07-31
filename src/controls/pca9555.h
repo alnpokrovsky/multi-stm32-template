@@ -10,9 +10,9 @@ typedef struct {
     IIC_PORT iicPort;
     uint8_t iicAddr;
     uint16_t ioSet;
-} PCA9555_config;
+} pca9555_Conf;
 
-struct PCA9555 * pca9555_init(PCA9555_config * conf);
+struct PCA9555 * pca9555_init(pca9555_Conf * conf);
 
 //void pca9555_ioset(struct PCA9555 * dev, uint16_t ioset);
 

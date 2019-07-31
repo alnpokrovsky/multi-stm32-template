@@ -4,10 +4,15 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+typedef struct {
+    uint8_t id;
+    uint32_t boudrate;
+} modbus_Conf;
+
 /**
  * initializing hardware rs485 and freemodbus
  */
-void modbus_init(uint8_t id, uint32_t baudrate);
+void modbus_init(modbus_Conf * conf);
 
 /**
  * periodically call it to serve freemodbus

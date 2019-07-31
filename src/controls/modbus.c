@@ -145,12 +145,10 @@ eMBErrorCode eMBRegDiscreteCB(UCHAR * pucRegBuffer, USHORT usAddress,
 	return MB_ENOERR;
 }
 
-#include "digitalpin.h"
-
-void modbus_init(uint8_t id, uint32_t baudrate) {
+void modbus_init(modbus_Conf * conf) {
     eMBErrorCode eStatus = MB_ENOERR;
     (void) eStatus;
-	eStatus = eMBInit(MB_RTU, id, 1, baudrate, MB_PAR_NONE);
+	eStatus = eMBInit(MB_RTU, conf->id, 1, conf->boudrate, MB_PAR_NONE);
     assert(eStatus == MB_ENOERR);
 
 	const char *report_data = "karlwashere";

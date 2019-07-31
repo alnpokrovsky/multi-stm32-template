@@ -13,17 +13,17 @@
 
 int main(void) {
     rcc_init();
+    pouconfig_init();
     
     digitalpin_mode(BOOT1, DIGITALPIN_INPUT);
 
     if (digitalpin_get(BOOT1)) {
         usb_init("POU");
-        while (1);        
+        while (1);
     }
 
     // encoder_init();
 
-    pouconfig_init();
 
     iic_init(IIC_1);
     struct PCA9555* ioExpanders[pouconfig_ioCnt];
@@ -31,7 +31,8 @@ int main(void) {
         ioExpanders[i] = pca9555_init(pouconfig_get_io(i));
     }    
 
-    modbus_init(0x01, 115200);
+    modbus_Conf conf = {0x01, 115200};
+    modbus_init(&conf);
     
     while (1) {
         // modbus_set_Ireg(0, encoder_get());
