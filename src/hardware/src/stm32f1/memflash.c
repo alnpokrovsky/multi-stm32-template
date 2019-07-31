@@ -54,10 +54,10 @@ static inline uint32_t memflash_page_addr(uint8_t block) {
 
 
 static sector * cash;
+static bool initedFlag = false;
+
 
 void memflash_init(void) {
-    static bool initedFlag = false;
-
     if (!initedFlag) { 
         initedFlag = true;
         cash = malloc(sizeof(sector) * MEMFLASH_SECTORS);
@@ -70,6 +70,11 @@ void memflash_init(void) {
     }
 }
 
+void memflash_deinit(void) {
+    free(cash);
+    initedFlag = false;
+}
+
 /**
  * read from cashed memory
  * 
@@ -78,6 +83,7 @@ void memflash_init(void) {
  */
 void memflash_read_block(uint8_t block_no, uint8_t *data)
 {
+    if (!initedFlag) return;
     memcpy(data, &cash[block_no], FLASH_PAGE_SIZE);
 }
 
@@ -90,6 +96,7 @@ void memflash_read_block(uint8_t block_no, uint8_t *data)
  */
 void memflash_write_block(uint8_t block_no, const uint8_t *data)
 {
+    if (!initedFlag) return;
     memcpy(&cash[block_no], data, FLASH_PAGE_SIZE);
     
     tim_stop(MEMFLASH_FLUSH_TIM);

@@ -12,6 +12,11 @@
  */
 void memflash_init(void);
 
+/** 
+ * deinit free RAM cash
+ */
+void memflash_deinit(void);
+
 void memflash_read_block(uint8_t block_no, uint8_t *data);
 void memflash_write_block(uint8_t block_no, const uint8_t *data);
 
