@@ -22,7 +22,9 @@ bool saxml_process(saxml_Config * config, const char * xml_str) {
         case YXML_ELEMSTART: /* Start of an element: '<Tag ..'   */
         {
             if (flagEE) { // emit previous elem if it wasn't ended
-                config->startElement(&elem);
+                if (!config->startElement(&elem)) { // if wrong element logic
+                    return false;
+                }
             }
             flagEE = true;
             if (strlen(yxml.elem) < SAXML_ELEM_NAME_SIZE) {
@@ -45,10 +47,14 @@ bool saxml_process(saxml_Config * config, const char * xml_str) {
         case YXML_ELEMEND: /* End of an element: '.. />' or '</Tag>' */
         {
             if (flagEE) { // emit elem
-                config->startElement(&elem);
+                if (!config->startElement(&elem)) { // if wrong element logic
+                    return false;
+                }
             }
             flagEE = false;
-            config->endElement();
+            if (!config->endElement()) { // if wrong element logic
+                return false;
+            }
             break;
         }
         case YXML_ATTRSTART: /* Attribute:  'Name=..'  */
@@ -93,4 +99,14 @@ bool saxml_process(saxml_Config * config, const char * xml_str) {
     }
 
     return yxml_eof(&yxml) == YXML_OK;
+}
+
+
+int8_t saxml_attr_pos(const saxml_Element *elem, const char* attr) {
+    for (uint8_t i = 0; i < elem->attrsN; ++i) {
+        if (strcmp(attr, elem->attrs[i].name) == 0) {
+            return i;
+        }
+    }
+    return -1;
 }

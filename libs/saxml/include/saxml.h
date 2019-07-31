@@ -4,12 +4,14 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+
 #define SAXML_BUF_SIZE            256
 #define SAXML_ELEM_NAME_SIZE      10
 #define SAXML_ELEM_MAX_ATTR       8
 #define SAXML_ELEM_CONTENT_SIZE   16
-#define SAXML_ATTR_NAME_SIZE      8
-#define SAXML_ATTR_VAL_SIZE       16
+#define SAXML_ATTR_NAME_SIZE      10
+#define SAXML_ATTR_VAL_SIZE       8
+
 
 typedef struct {
     char name[SAXML_ATTR_NAME_SIZE];
@@ -24,10 +26,13 @@ typedef struct {
 } saxml_Element;
 
 typedef struct {
-    void (*startElement)(const saxml_Element *elem);
-    void (*endElement)(void);
+    bool (*startElement)(const saxml_Element *elem);
+    bool (*endElement)(void);
 } saxml_Config;
 
+
 bool saxml_process(saxml_Config * config, const char * xml_str);
+
+int8_t saxml_attr_pos(const saxml_Element *elem, const char* attr);
 
 #endif // SAXML_H
