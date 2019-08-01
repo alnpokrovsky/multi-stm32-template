@@ -13,14 +13,13 @@
 
 int main(void) {
     rcc_init();
-    if (!pouconfig_init()) {
-        pouconfig_save_default();
-    }
+    
+    const POUCONFIG * config = pouconfig_init();
     
     // digitalpin_mode(BOOT1, DIGITALPIN_INPUT);
 
     // if (digitalpin_get(BOOT1)) {
-    usb_init(pouconfig_get_usb());
+    usb_init(config->usb_name);
         // while (1);
     // }
 
@@ -28,16 +27,16 @@ int main(void) {
 
 
     iic_init(IIC_1);
-    struct PCA9555* ioExpanders[pouconfig_get_ioCnt()];
-    for (int i = 0; i < pouconfig_get_ioCnt(); ++i) {
-        ioExpanders[i] = pca9555_init(pouconfig_get_io(i));
+    struct PCA9555* ioExpanders[config->ioCnt];
+    for (int i = 0; i < config->ioCnt; ++i) {
+        ioExpanders[i] = pca9555_init(&config->io[i]);
     }    
 
-    modbus_init(pouconfig_get_modbus());
+    modbus_init(&config->modbus);
     
     while (1) {
         // modbus_set_Ireg(0, encoder_get());
-        for (int i = 0; i < pouconfig_get_ioCnt(); ++i) {
+        for (int i = 0; i < config->ioCnt; ++i) {
             pca9555_write(ioExpanders[i], modbus_Coil_word(i));
             modbus_set_Coil_word(i, pca9555_read(ioExpanders[i]));
         }

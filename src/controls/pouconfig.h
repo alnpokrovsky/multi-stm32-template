@@ -2,20 +2,24 @@
 #define __CONTROLS_POUCONFIG_H__
 
 #include <stdint.h>
-#include <stdbool.h>
 #include "controls/pca9555.h"
 #include "controls/modbus.h"
 
-bool pouconfig_init(void);
+#define POUCONFIG_MAX_IO  4
 
-void pouconfig_save_default(void);
+typedef struct {
+    char usb_name[10];
+    modbus_Conf modbus;
+    uint8_t ioCnt;
+    pca9555_Conf io[POUCONFIG_MAX_IO];
+} POUCONFIG;
+
+
+const POUCONFIG * pouconfig_init(void);
+
+void pouconfig_save(const POUCONFIG * conf);
 
 const char* pouconfig_get_usb(void);
 
-const modbus_Conf* pouconfig_get_modbus(void);
-
-const pca9555_Conf* pouconfig_get_io(uint8_t expanderNum);
-
-uint8_t pouconfig_get_ioCnt(void);
 
 #endif
