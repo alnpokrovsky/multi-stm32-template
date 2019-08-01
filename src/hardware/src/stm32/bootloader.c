@@ -10,6 +10,10 @@ static const uint32_t CMD_APP = 0x3f82722aUL;
 
 void bootloader_manifest_app(void) {
     backup_write(BKP0, CMD_APP);
+    bootloader_reboot();
+}
+
+void bootloader_reboot(void) {
     scb_reset_system();
 }
 

@@ -25,7 +25,7 @@ static void pca9555_ioset(struct PCA9555 * dev, uint16_t ioset)
     iic_send(dev->iic, dev->address, NXP_CONFIG1, dev->ioset.byte_high);
 }
 
-struct PCA9555 * pca9555_init(pca9555_Conf * conf)
+struct PCA9555 * pca9555_init(const pca9555_Conf * conf)
 {
     struct PCA9555 * dev = malloc(sizeof(*dev));
     dev->iic = conf->iicPort;

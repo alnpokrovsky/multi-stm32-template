@@ -12,7 +12,7 @@ typedef struct {
     uint16_t ioSet;
 } pca9555_Conf;
 
-struct PCA9555 * pca9555_init(pca9555_Conf * conf);
+struct PCA9555 * pca9555_init(const pca9555_Conf * conf);
 
 //void pca9555_ioset(struct PCA9555 * dev, uint16_t ioset);
 

@@ -12,7 +12,7 @@ typedef struct {
 /**
  * initializing hardware rs485 and freemodbus
  */
-void modbus_init(modbus_Conf * conf);
+void modbus_init(const modbus_Conf * conf);
 
 /**
  * periodically call it to serve freemodbus

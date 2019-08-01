@@ -145,7 +145,7 @@ eMBErrorCode eMBRegDiscreteCB(UCHAR * pucRegBuffer, USHORT usAddress,
 	return MB_ENOERR;
 }
 
-void modbus_init(modbus_Conf * conf) {
+void modbus_init(const modbus_Conf * conf) {
     eMBErrorCode eStatus = MB_ENOERR;
     (void) eStatus;
 	eStatus = eMBInit(MB_RTU, conf->id, 1, conf->boudrate, MB_PAR_NONE);
