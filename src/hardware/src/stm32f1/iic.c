@@ -9,7 +9,7 @@
 typedef struct 
 {
 	uint32_t i2c_base;
-	uint32_t i2c_rcc;
+	uint16_t i2c_rcc;
 	uint32_t gpio_pins;
 } iic_descr;
 

@@ -9,7 +9,7 @@
 
 typedef struct {
     uint32_t spi_base;
-    uint32_t spi_rcc;
+    uint16_t spi_rcc;
     uint32_t gpio_port;
     uint16_t gpio_port_rcc;
     uint32_t gpio_output_pins;

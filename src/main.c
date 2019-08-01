@@ -16,15 +16,14 @@ int main(void) {
     
     const POUCONFIG * config = pouconfig_init();
     
-    // digitalpin_mode(BOOT1, DIGITALPIN_INPUT);
+    digitalpin_mode(BOOT1, DIGITALPIN_INPUT);
+    if (digitalpin_get(BOOT1)) {
+        usb_init(config->usb_name);
+        while (1);
+    }
 
-    // if (digitalpin_get(BOOT1)) {
-    usb_init(config->usb_name);
-        // while (1);
-    // }
 
-    // encoder_init();
-
+    encoder_init();
 
     iic_init(IIC_1);
     struct PCA9555* ioExpanders[config->ioCnt];
@@ -35,7 +34,7 @@ int main(void) {
     modbus_init(&config->modbus);
     
     while (1) {
-        // modbus_set_Ireg(0, encoder_get());
+        modbus_set_Ireg(0, encoder_get());
         for (int i = 0; i < config->ioCnt; ++i) {
             pca9555_write(ioExpanders[i], modbus_Coil_word(i));
             modbus_set_Coil_word(i, pca9555_read(ioExpanders[i]));
@@ -43,6 +42,6 @@ int main(void) {
 
         delay_a_bit();
         modbus_poll();
-        delay_a_bit();
+        modbus_poll();
     }
 }
