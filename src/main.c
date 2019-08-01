@@ -13,12 +13,14 @@
 
 int main(void) {
     rcc_init();
-    pouconfig_init();
+    if (!pouconfig_init()) {
+        pouconfig_save_default();
+    }
     
     // digitalpin_mode(BOOT1, DIGITALPIN_INPUT);
 
     // if (digitalpin_get(BOOT1)) {
-        usb_init(pouconfig_get_usb());
+    usb_init(pouconfig_get_usb());
         // while (1);
     // }
 

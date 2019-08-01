@@ -1,12 +1,11 @@
-//#if defined(SAXML_LIB) && defined(FATFS_LIB)
+//#if defined(SAXML_LIB)
 
 #include "pouconfig.h"
-#include "ff.h"
 #include "saxml.h"
 #include "controls/pca9555.h"
-#include "bootloader.h"
 #include <stdlib.h>
 #include <string.h>
+#include "controls/fatfs.h"
 
 #define FILE_BOARD_CONFIG    "board.cnf"
 #define BUFFER_SIZE          1024
@@ -83,47 +82,25 @@ static bool xml_endElem(void) {
     return true;
 }
 
-static bool fat_read(char * buf) {
-    FIL fin;
-    FRESULT res = f_open(&fin, FILE_BOARD_CONFIG, FA_OPEN_EXISTING | FA_READ);
-    if (res != FR_OK) { // if file doesnt exists
-        return false;
-    }
 
-    unsigned int bytesRead;
-    f_read(&fin, buf, BUFFER_SIZE, &bytesRead);
-    f_close(&fin);
-    return true;
-}
-
-static void fat_write(const char * buf) {
-    FIL fout;
-    f_open(&fout, FILE_BOARD_CONFIG, FA_CREATE_ALWAYS | FA_WRITE);
-    unsigned int bytesWritten;
-    f_write(&fout, buf, strlen(buf), &bytesWritten);
-    f_close(&fout);
-}
-
-void pouconfig_init(void) {
+bool pouconfig_init(void) {
     char buf[BUFFER_SIZE];
+    bool result = true;
 
-    // mount the default drive
-    FATFS fs;
-    f_mount(&fs, "", 1);
+    fatfs_init();
 
-    if (!fat_read(buf)) {
-        fat_write(DEFAULT_CONFIG);
+    if (!fatfs_read(FILE_BOARD_CONFIG, buf, BUFFER_SIZE)) {
         strcpy(buf, DEFAULT_CONFIG);
+        result = false;
     }
 
     saxml_Config saxml_conf = {xml_startElem, xml_endElem};
-    if (!saxml_process(&saxml_conf, buf)) {
-        fat_write(DEFAULT_CONFIG);
-        bootloader_reboot();
-    }
+    result &= saxml_process(&saxml_conf, buf);
+    return result;
+}
 
-    // Unmount
-    f_mount(0, "", 0);
+void pouconfig_save_default(void) {
+    fatfs_write(FILE_BOARD_CONFIG, DEFAULT_CONFIG);
 }
 
 const char* pouconfig_get_usb(void) {
