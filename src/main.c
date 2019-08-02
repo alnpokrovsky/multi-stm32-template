@@ -2,6 +2,7 @@
 #include "digitalpin.h"
 #include "usb.h"
 #include "encoder.h"
+#include "adc.h"
 #include "iic.h"
 #include "controls/modbus.h"
 #include "controls/pca9555.h"
@@ -22,8 +23,9 @@ int main(void) {
         while (1);
     }
 
-
     encoder_init();
+    adc_init(ADC_1);
+    adc_init(ADC_2);
 
     iic_init(IIC_1);
     struct PCA9555* ioExpanders[config->ioCnt];
@@ -35,6 +37,10 @@ int main(void) {
     
     while (1) {
         modbus_set_Ireg(0, encoder_get());
+        
+        modbus_set_Ireg(1, adc_read_blocking_channel(ADC_1, 1));
+        modbus_set_Ireg(2, adc_read_blocking_channel(ADC_2, 2));
+
         for (int i = 0; i < config->ioCnt; ++i) {
             pca9555_write(ioExpanders[i], modbus_Coil_word(i));
             modbus_set_Coil_word(i, pca9555_read(ioExpanders[i]));

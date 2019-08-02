@@ -15,6 +15,9 @@ static const adc_descript ADCS[] = {
     {
         ADC1, RCC_ADC1,
     },
+    {
+        ADC2, RCC_ADC2,
+    },
 };
 
 static void calibrate(ADC_NUM adc) {
@@ -24,6 +27,7 @@ static void calibrate(ADC_NUM adc) {
 }
 
 void adc_init(ADC_NUM adc) {
+    rcc_periph_clock_enable(RCC_GPIOA);
     rcc_periph_clock_enable(ADCS[adc].adc_rcc);
     adc_power_off(ADCS[adc].adc_base);
 
