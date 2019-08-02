@@ -29,7 +29,7 @@ int main(void) {
     struct PCA9555* ioExpanders[config->ioCnt];
     for (int i = 0; i < config->ioCnt; ++i) {
         ioExpanders[i] = pca9555_init(&config->io[i]);
-    }    
+    }
 
     modbus_init(&config->modbus);
     

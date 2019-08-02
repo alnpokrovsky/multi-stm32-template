@@ -30,9 +30,12 @@ static const POUCONFIG DEFAULT_CONFIG = {
     .modbus = {
         .id = 0x01, .boudrate = 115200
     },
-    .ioCnt = 1,
+    .ioCnt = 4,
     .io = {
         {.iicPort = IIC_1, .iicAddr = 0x20, .ioSet = 0x00f0},
+        {.iicPort = IIC_1, .iicAddr = 0x22, .ioSet = 0x0000},
+        {.iicPort = IIC_1, .iicAddr = 0x24, .ioSet = 0xffff},
+        {.iicPort = IIC_1, .iicAddr = 0x26, .ioSet = 0xffff},
     },
 };
 
