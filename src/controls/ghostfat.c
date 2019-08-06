@@ -1,5 +1,10 @@
 #include "ghostfat.h"
+#include "tim.h"
 #include <string.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <assert.h>
 
 
 #define FILE_NAME_SIZE      8
@@ -76,12 +81,26 @@ static void fat16_boot_sector(uint8_t *data)
     data[511] = 0xaa;
 }
 
+typedef uint8_t sector[GHOSTFAT_SECTOR_SIZE];
+
+static sector * cache;
+static bool initedCache = false;
+
 void ghostfat_init(void) {
-    GHOSTFAT_FLASH_INIT();
+    if (!initedCache) { 
+        initedCache = true;
+        cache = malloc(sizeof(sector) * MEMFLASH_SECTORS);
+        for (uint8_t block = 0; block < MEMFLASH_SECTORS; ++block) {
+            GHOSTFAT_FLASH_READ_BLOCK(block, cache[block]);
+        }
+
+        tim_init(GHOSTFAT_FLUSH_TIM, 50000, MICROSEC);
+    }
 }
 
 void ghostfat_deinit(void) {
-    GHOSTFAT_FLASH_DEINIT();
+    free(cache);
+    initedCache = false;
 }
 
 int ghostfat_read_block(uint32_t block_no, uint8_t *data)
@@ -89,22 +108,39 @@ int ghostfat_read_block(uint32_t block_no, uint8_t *data)
     if (block_no == 0) {
         // загрузочный сектор
         fat16_boot_sector(data);
+    } else if(initedCache) {
+        memcpy(data, &cache[block_no-1], GHOSTFAT_SECTOR_SIZE);
     } else {
-        GHOSTFAT_FLASH_READ_BLOCK(block_no - 1, data);
+        GHOSTFAT_FLASH_READ_BLOCK(block_no-1, data);        
     }
 
     return 0;
 }
 
-
+/**
+ * write to cache and restart flush timer
+ * when timer is ready, write cache to flash
+ */
 int ghostfat_write_block(uint32_t block_no, const uint8_t *data)
 {
     if (block_no == 0) {
         // не даем перезаписывать загрузочный сектор
         return 0;
+    } else if (initedCache) {
+        assert(initedCache);    
+        memcpy(&cache[block_no-1], data, GHOSTFAT_SECTOR_SIZE);
+        
+        tim_stop(GHOSTFAT_FLUSH_TIM);
+        tim_start_once(GHOSTFAT_FLUSH_TIM);
     } else {
-        GHOSTFAT_FLASH_WRITE_BLOCK(block_no - 1, data);
+        GHOSTFAT_FLASH_WRITE_BLOCK(block_no-1, data);
     }
 
     return 0;
+}
+
+void GHOSTFAT_FLUSH_HANDLER() {
+    for (uint8_t block = 0; block < MEMFLASH_SECTORS; ++block) {
+        GHOSTFAT_FLASH_WRITE_BLOCK(block, cache[block]);
+    }
 }

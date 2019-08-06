@@ -48,6 +48,5 @@ int main(void) {
 
         delay_a_bit();
         modbus_poll();
-        modbus_poll();
     }
 }

@@ -4,18 +4,10 @@
 #include <libopencm3/stm32/flash.h>
 #include <libopencm3/stm32/desig.h>
 #include <string.h>
-#include <stdlib.h>
 #include "DeviceConfig.h"
-#include "tim.h"
-
-#define MEMFLASH_FLUSH_TIM       TIM_4
-#define MEMFLASH_FLUSH_HANDLER   tim4_handler
 
 
-typedef uint8_t sector[MEMFLASH_SECTOR_SIZE];
-
-
-static bool memflash_write_page(uint32_t page_address, const sector data)
+static bool memflash_write_page(uint32_t page_address, const uint8_t data[])
 {
     // проверяем: если данные не изменились, перезаписывать их не будем
     if (memcmp(data, (uint8_t *)page_address, MEMFLASH_SECTOR_SIZE) == 0)
@@ -53,62 +45,27 @@ static inline uint32_t memflash_page_addr(uint8_t block) {
 }
 
 
-static sector * cash;
-static bool initedFlag = false;
-
-
-void memflash_init(void) {
-    if (!initedFlag) { 
-        initedFlag = true;
-        cash = malloc(sizeof(sector) * MEMFLASH_SECTORS);
-        for (uint8_t block = 0; block < MEMFLASH_SECTORS; ++block) {
-            uint32_t page_addr = memflash_page_addr(block);
-            memcpy(&cash[block], (uint8_t *)page_addr, FLASH_PAGE_SIZE);
-        }
-
-        tim_init(MEMFLASH_FLUSH_TIM, 50000, MICROSEC);
-    }
-}
-
-void memflash_deinit(void) {
-    free(cash);
-    initedFlag = false;
-}
-
 /**
- * read from cashed memory
+ * read from inner flash memory
  * 
  * \param block_no номер блока флеш-памяти микроконтроллера 
  * \param[out] data массив размера MEMFLASH_SECTOR_SIZE
  */
 void memflash_read_block(uint8_t block_no, uint8_t *data)
 {
-    if (!initedFlag) return;
-    memcpy(data, &cash[block_no], FLASH_PAGE_SIZE);
+    uint32_t page_addr = memflash_page_addr(block_no);
+    memcpy(data, (uint8_t *)page_addr, FLASH_PAGE_SIZE);
 }
 
 /**
- * write to cash and restart flush timer
- * when timer is ready, write cash to flash
- * 
  * \param block_no номер блока флеш-памяти микроконтроллера 
  * \param[in] data массив размера MEMFLASH_SECTOR_SIZE
  */
 void memflash_write_block(uint8_t block_no, const uint8_t *data)
 {
-    if (!initedFlag) return;
-    memcpy(&cash[block_no], data, FLASH_PAGE_SIZE);
-    
-    tim_stop(MEMFLASH_FLUSH_TIM);
-    tim_start_once(MEMFLASH_FLUSH_TIM);
-}
-
-void MEMFLASH_FLUSH_HANDLER() {
+    uint32_t page_addr = memflash_page_addr(block_no);
     flash_unlock();
-    for (uint8_t block = 0; block < MEMFLASH_SECTORS; ++block) {
-        uint32_t page_addr = memflash_page_addr(block);
-        memflash_write_page(page_addr, cash[block]);
-    }
+    memflash_write_page(page_addr, data);
     flash_lock();
 }
 

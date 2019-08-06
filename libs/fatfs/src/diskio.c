@@ -28,8 +28,6 @@ DSTATUS disk_initialize (
 )
 {
 	(void) pdrv;
-	
-	ghostfat_init();
 	return RES_OK;
 }
 
@@ -96,9 +94,6 @@ DRESULT disk_ioctl (
 	switch(cmd) {
 		case CTRL_SYNC:
 	        return RES_OK;
-		case CTRL_EJECT:
-			ghostfat_deinit();
-			return RES_OK;
 		default:
 	        return RES_ERROR;
 	}
