@@ -1,0 +1,7 @@
+# std containers
+
+DEFS += -DSTD_CONTAINERS_LIB
+
+INC += libs/stdcontainers/include
+
+SRC += $(shell find libs/stdcontainers -name "*.c")

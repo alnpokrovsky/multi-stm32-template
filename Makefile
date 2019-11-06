@@ -23,14 +23,16 @@ INC += src/third-party/ugui
 
 ########### LIBRARIES ###############
 include libs/freertos.include
-include libs/freemodbus.include
-include libs/fatfs.include
-include libs/libopencm3-usb.include
-include libs/saxml.include
+# include libs/freemodbus.include
+# include libs/fatfs.include
+# include libs/libopencm3-usb.include
+# include libs/saxml.include
 
 ########### BUILD DEVICE ##############
-LDSCRIPT := make/stm32/f1/stm32f103x8.ld
-include make/stm32/f1.mk
+#LDSCRIPT := make/stm32/f1/stm32f103x8.ld
+#include make/stm32/f1.mk
+LDSCRIPT := make/stm32/f1/stm32f334.ld
+include make/stm32/f3.mk
 #LDSCRIPT := make/stm32/f4/stm32f407.ld
 #include make/stm32/f4.mk
 #include make/mdr1986/ve9.mk
