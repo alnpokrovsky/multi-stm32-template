@@ -4,6 +4,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#ifndef STM32F3
+#error "not supported by other than stm32f3 series"
+#endif
+
 /**
  * A8  -> HRTIM1_CHA1, A9  -> HRTIM1_CHA2
  * A10 -> HRTIM1_CHB1, A11 -> HRTIM1_CHB2

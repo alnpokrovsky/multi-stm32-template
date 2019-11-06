@@ -1,4 +1,4 @@
-// #if defined(FATFS_LIB)
+#if defined(FATFS_LIB)
 
 #include "fatfs.h"
 #include "ff.h"
@@ -41,3 +41,5 @@ bool fatfs_read(const char * filename, char * buf, size_t bufSize) {
     f_close(&fin);
     return true;
 }
+
+#endif

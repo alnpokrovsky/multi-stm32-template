@@ -42,6 +42,10 @@
 
 #if defined(STM32F1)
 #include "FreeRTOS/STM32F1.h"
+#elif defined(STM32F3)
+#include "FreeRTOS/STM32F3.h"
+#else
+#error "You have no FreeRTOS config for this device"
 #endif
 
 #endif /* FREERTOS_CONFIG_H */

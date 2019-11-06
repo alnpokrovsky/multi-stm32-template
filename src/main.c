@@ -1,19 +1,13 @@
 #include "rcc.h"
 #include "digitalpin.h"
-#include "usb.h"
-#include "encoder.h"
-#include "adc.h"
-#include "iic.h"
-#include "bootloader.h"
-#include "controls/modbus.h"
-#include "controls/pca9555.h"
-#include "controls/pouconfig.h"
 #include "controls/rtos.h"
+#include "controls/stm32f3/hrpwm.h"
 
 #define BOOT1 PB_2
 
 static void vSinTask(void * arg) {
-    
+    (void)arg;
+    hrpwm_init();
 }
 
 

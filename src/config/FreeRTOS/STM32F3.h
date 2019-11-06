@@ -1,4 +1,4 @@
-/* stm32f1 freeRTOS configs */
+/* stm32f3 freeRTOS configs */
 
 #define configUSE_PREEMPTION		1
 #define configUSE_IDLE_HOOK			0

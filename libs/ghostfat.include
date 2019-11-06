@@ -1,0 +1,7 @@
+# ghostfat
+
+DEFS += -DGHOSTFAT_LIB
+
+INC += libs/ghostfat/include
+
+SRC += $(shell find libs/ghostfat -name "*.c")

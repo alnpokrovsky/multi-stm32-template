@@ -1,6 +1,7 @@
 #ifndef __GHOSTFAT_CONFIG_H__
 #define __GHOSTFAT_CONFIG_H__
 
+
 #include "memflash.h"
 
 #define GHOSTFAT_VOLUME_LABEL       "CONFIG"

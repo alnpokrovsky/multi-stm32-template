@@ -1,3 +1,5 @@
+#if defined(OCM3_USB_LIB)
+
 #include "pinboard.h"
 #include "digitalpin.h"
 #include "usb_keyboard.h"
@@ -97,3 +99,5 @@ uint8_t pinboard_next() {
 uint8_t pinboard_modifiers() {
     return digitalpin_get(CTRL) ? KEY_CTRL : 0;
 }
+
+#endif

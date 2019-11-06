@@ -1,6 +1,10 @@
 #ifndef __HARDWARE_MEMFLASH_H__
 #define __HARDWARE_MEMFLASH_H__
 
+#ifndef STM32F1
+#error "supported only STM32F1 for now"
+#endif
+
 #include <stdint.h>
 #include "DeviceConfig.h"
 
