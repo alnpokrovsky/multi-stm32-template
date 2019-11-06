@@ -8,6 +8,7 @@
 #include "word.h"
 #include "FreeModbusConfig.h"
 
+
 static uint16_t Hreg_table[MODBUS_TABLE_HREG_SIZE];
 
 static uint8_t Coils_table[MODBUS_TABLE_COILS_SIZE/sizeof(uint8_t)];
@@ -25,25 +26,25 @@ void modbus_set_Hreg(uint16_t addr, uint16_t val) {
 }
 
 bool modbus_Coil(uint16_t addr) {
-    return xMBUtilGetBits(Coils_table, addr, 1);
+    return xMBUtilGetBits((uint8_t*)Coils_table, addr, 1);
 }
 uint16_t modbus_Coil_word(uint16_t addr16) {
-    return word_from_bytes(Coils_table, addr16);
+    return word_from_bytes((uint8_t*)Coils_table, addr16);
 }
 void modbus_set_Coil(uint16_t addr, bool val) {
-    xMBUtilSetBits(Coils_table, addr, 1, val ? 1 : 0);
+    xMBUtilSetBits((uint8_t*)Coils_table, addr, 1, val ? 1 : 0);
 }
 
 void modbus_set_Coil_word(uint16_t addr16, uint16_t val16) {
-    word_to_bytes(val16, Coils_table, addr16);
+    word_to_bytes(val16, (uint8_t*)Coils_table, addr16);
 }
 
 
 void modbus_set_Ists(uint16_t addr, bool val) {
-    xMBUtilSetBits(Ists_table, addr, 1, val ? 1 : 0);
+    xMBUtilSetBits((uint8_t*)Ists_table, addr, 1, val ? 1 : 0);
 }
 void modbus_set_Ists_word(uint16_t addr16, uint16_t val16) {
-    word_to_bytes(val16, Ists_table, addr16);
+    word_to_bytes(val16, (uint8_t*)Ists_table, addr16);
 }
 
 void modbus_set_Ireg(uint16_t addr, uint16_t val) {
@@ -113,12 +114,12 @@ eMBErrorCode eMBRegCoilsCB(UCHAR * pucRegBuffer, USHORT usAddress,
         case MB_REG_WRITE:
             for (int i = 0; i < usNCoils; i++) {
                 UCHAR wbit = xMBUtilGetBits(pucRegBuffer, i, 1 );
-                xMBUtilSetBits( Coils_table, usAddress+i, 1, wbit );
+                xMBUtilSetBits( (uint8_t*)Coils_table, usAddress+i, 1, wbit );
             }
             break;
         case MB_REG_READ:
             for (int i = 0; i < usNCoils; i++) {
-                UCHAR rbit = xMBUtilGetBits( Coils_table, usAddress+i, 1 );
+                UCHAR rbit = xMBUtilGetBits( (uint8_t*)Coils_table, usAddress+i, 1 );
                 xMBUtilSetBits( pucRegBuffer, i, 1, rbit );
             }
             break;
@@ -138,7 +139,7 @@ eMBErrorCode eMBRegDiscreteCB(UCHAR * pucRegBuffer, USHORT usAddress,
     }
 
     for (int i = 0; i < usNDiscrete; i++) {
-        UCHAR rbit = xMBUtilGetBits( Ists_table, usAddress+i, 1 );
+        UCHAR rbit = xMBUtilGetBits( (uint8_t*)Ists_table, usAddress+i, 1 );
         xMBUtilSetBits( pucRegBuffer, i, 1, rbit );
     }
 
@@ -148,7 +149,7 @@ eMBErrorCode eMBRegDiscreteCB(UCHAR * pucRegBuffer, USHORT usAddress,
 void modbus_init(const modbus_Conf * conf) {
     eMBErrorCode eStatus = MB_ENOERR;
     (void) eStatus;
-	eStatus = eMBInit(MB_RTU, conf->id, 1, conf->boudrate, MB_PAR_NONE);
+	eStatus = eMBInit(MB_RTU, conf->id, 1, conf->baudrate, MB_PAR_NONE);
     assert(eStatus == MB_ENOERR);
 
 	const char *report_data = "karlwashere";

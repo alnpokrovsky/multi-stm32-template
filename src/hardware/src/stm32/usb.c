@@ -12,14 +12,10 @@
 #include <stdlib.h>
 
 
-void usb_init(const char* name) {
-    if (name != NULL) {
-        usb_core_set_serial_number(name);
-    } else {
-        char serialN[USB_SERIAL_NUM_LENGTH+1];
-        desig_get_unique_id_as_string(serialN, USB_SERIAL_NUM_LENGTH+1);
-        usb_core_set_serial_number(serialN);
-    }
+void usb_init() {
+    char serialN[USB_SERIAL_NUM_LENGTH+1];
+    desig_get_unique_id_as_string(serialN, USB_SERIAL_NUM_LENGTH+1);
+    usb_core_set_serial_number(serialN);
 
     usb_core_init();
 

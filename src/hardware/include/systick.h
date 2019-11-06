@@ -1,5 +1,9 @@
+#ifndef FREERTOS_LIB
+
+
 #ifndef __HARDWARE_SYSTICK_H__
 #define __HARDWARE_SYSTICK_H__
+
 
 #include <stdint.h>
 
@@ -16,5 +20,8 @@ typedef enum {
 void systick_start_interrupt(uint32_t ticks, SYSTICK_UNITS units);
 
 void systick_handler(void);
+
+
+#endif
 
 #endif

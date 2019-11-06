@@ -6,7 +6,7 @@
 
 typedef struct {
     uint8_t id;
-    uint32_t boudrate;
+    uint32_t baudrate;
 } modbus_Conf;
 
 /**
@@ -43,7 +43,6 @@ void modbus_set_Ists_word(uint16_t addr16, uint16_t val16);
  * Input Register (Analog Input) / read only
  */
 void modbus_set_Ireg(uint16_t addr, uint16_t val);
-
 
 
 #endif

@@ -1,5 +1,5 @@
 /*
- * FreeRTOS Kernel V10.2.0
+ * FreeRTOS Kernel V10.2.1
  * Copyright (C) 2019 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -202,8 +202,8 @@ not necessary for to use this port.  They are defined so the common demo files
 #endif
 /*-----------------------------------------------------------*/
 
-BaseType_t xIsPrivileged( void ) __attribute__ (( naked ));
-void vResetPrivilege( void )     __attribute__ (( naked ));
+extern BaseType_t xIsPrivileged( void );
+extern void vResetPrivilege( void );
 
 /**
  * @brief Checks whether or not the processor is privileged.
@@ -291,6 +291,7 @@ portFORCE_INLINE static void vPortSetBASEPRI( uint32_t ulNewMaskValue )
 }
 /*-----------------------------------------------------------*/
 
+#define portMEMORY_BARRIER() __asm volatile( "" ::: "memory" )
 
 #ifdef __cplusplus
 }

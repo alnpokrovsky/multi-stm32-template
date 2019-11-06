@@ -22,6 +22,7 @@ INC += src/third-party/ugui
 
 
 ########### LIBRARIES ###############
+include libs/freertos.include
 include libs/freemodbus.include
 include libs/fatfs.include
 include libs/libopencm3-usb.include

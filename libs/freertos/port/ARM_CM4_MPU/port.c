@@ -1,5 +1,7 @@
+#if defined(STM32F3) || defined(STM32F4)
+
 /*
- * FreeRTOS Kernel V10.2.0
+ * FreeRTOS Kernel V10.2.1
  * Copyright (C) 2019 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -28,8 +30,6 @@
 /*-----------------------------------------------------------
  * Implementation of functions defined in portable.h for the ARM CM3 port.
  *----------------------------------------------------------*/
-
-#if defined(STM32F3) || defined(STM32F4)
 
 /* Defining MPU_WRAPPERS_INCLUDED_FROM_API_FILE prevents task.h from redefining
 all the API functions to use the MPU wrappers.  That should only be done when
@@ -154,6 +154,23 @@ static void prvSVCHandler( uint32_t *pulRegisters ) __attribute__(( noinline )) 
  * Function to enable the VFP.
  */
  static void vPortEnableVFP( void ) __attribute__ (( naked ));
+
+/**
+ * @brief Checks whether or not the processor is privileged.
+ *
+ * @return 1 if the processor is already privileged, 0 otherwise.
+ */
+BaseType_t xIsPrivileged( void ) __attribute__ (( naked ));
+
+/**
+ * @brief Lowers the privilege level by setting the bit 0 of the CONTROL
+ * register.
+ *
+ * Bit 0 of the CONTROL register defines the privilege level of Thread Mode.
+ *  Bit[0] = 0 --> The processor is running privileged
+ *  Bit[0] = 1 --> The processor is running unprivileged.
+ */
+void vResetPrivilege( void ) __attribute__ (( naked ));
 
 /**
  * @brief Calls the port specific code to raise the privilege.
@@ -559,16 +576,14 @@ static void vPortEnableVFP( void )
 }
 /*-----------------------------------------------------------*/
 
+static void prvSetupMPU( void )
+{
 extern uint32_t __privileged_functions_end__[];
 extern uint32_t __FLASH_segment_start__[];
 extern uint32_t __FLASH_segment_end__[];
-extern uint32_t __SRAM_segment_start__[];
-extern uint32_t __SRAM_segment_end__[];
 extern uint32_t __privileged_data_start__[];
 extern uint32_t __privileged_data_end__[];
 
-static void prvSetupMPU( void )
-{
 	/* Check the expected MPU is present. */
 	if( portMPU_TYPE_REG == portEXPECTED_MPU_TYPE_VALUE )
 	{
@@ -680,8 +695,12 @@ void vResetPrivilege( void ) /* __attribute__ (( naked )) */
 
 void vPortStoreTaskMPUSettings( xMPU_SETTINGS *xMPUSettings, const struct xMEMORY_REGION * const xRegions, StackType_t *pxBottomOfStack, uint32_t ulStackDepth )
 {
-	int32_t lIndex;
-	uint32_t ul;
+extern uint32_t __SRAM_segment_start__[];
+extern uint32_t __SRAM_segment_end__[];
+extern uint32_t __privileged_data_start__[];
+extern uint32_t __privileged_data_end__[];
+int32_t lIndex;
+uint32_t ul;
 
 	if( xRegions == NULL )
 	{
@@ -830,5 +849,6 @@ void vPortStoreTaskMPUSettings( xMPU_SETTINGS *xMPUSettings, const struct xMEMOR
 
 #endif /* configASSERT_DEFINED */
 /*-----------------------------------------------------------*/
+
 
 #endif

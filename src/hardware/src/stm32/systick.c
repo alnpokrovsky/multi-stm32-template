@@ -1,3 +1,4 @@
+#ifndef FREERTOS_LIB
 #if defined(STM32F1)||defined(STM32F3)||defined(STM32F4)
 
 #include "systick.h"
@@ -13,7 +14,7 @@ static void null_handler(void)
 #pragma weak systick_handler = null_handler
 
 static const uint32_t PRESCAL_UNITS[] = {
-    10000,    /* MILLISEC */
+    1000,     /* MILLISEC */
     1000000,  /* MICROSEC */
 };
 
@@ -33,4 +34,5 @@ void sys_tick_handler(void) {
 	systick_handler();
 }
 
+#endif
 #endif

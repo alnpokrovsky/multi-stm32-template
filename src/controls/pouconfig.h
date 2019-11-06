@@ -8,14 +8,13 @@
 #define POUCONFIG_MAX_IO  4
 
 typedef struct {
-    char usb_name[10];
     modbus_Conf modbus;
     uint8_t ioCnt;
     pca9555_Conf io[POUCONFIG_MAX_IO];
 } POUCONFIG;
 
 
-const POUCONFIG * pouconfig_init(void);
+POUCONFIG * pouconfig_init(void);
 
 void pouconfig_save(const POUCONFIG * conf);
 

@@ -1,5 +1,7 @@
 # freertos
 
+DEFS += -DFREERTOS_LIB
+
 INC += libs/freertos/include
 
 SRC += $(shell find libs/freertos -name "*.c")

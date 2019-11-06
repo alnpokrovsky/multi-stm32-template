@@ -10,43 +10,37 @@
 #define NXP_CONFIG0    6
 #define NXP_CONFIG1    7
 
-struct PCA9555 {
-    IIC_PORT iic;
-    uint8_t address;
-    WORD2BYTES ioset;
-    WORD2BYTES value;
-};
 
-static void pca9555_ioset(struct PCA9555 * dev, uint16_t ioset)
+static void pca9555_ioset(pca9555_Conf * dev, uint16_t ioset)
 {
-    dev->ioset.word = ioset;
+    dev->ioSet = ioset;
+    WORD2BYTES w2b;
+    w2b.word = ioset;
 
-    iic_send(dev->iic, dev->address, NXP_CONFIG0, dev->ioset.byte_low);
-    iic_send(dev->iic, dev->address, NXP_CONFIG1, dev->ioset.byte_high);
+    iic_send(dev->iicPort, dev->iicAddr, NXP_CONFIG0, w2b.byte_low);
+    iic_send(dev->iicPort, dev->iicAddr, NXP_CONFIG1, w2b.byte_high);
 }
 
-struct PCA9555 * pca9555_init(const pca9555_Conf * conf)
+void pca9555_init(pca9555_Conf * dev)
 {
-    struct PCA9555 * dev = malloc(sizeof(*dev));
-    dev->iic = conf->iicPort;
-    dev->address = conf->iicAddr;
-    pca9555_write(dev, 0x0000);    
-    pca9555_ioset(dev, conf->ioSet);
-    return dev;
+    pca9555_write(dev, dev->ioDefault);    
+    pca9555_ioset(dev, dev->ioSet);
 }
 
 
-void pca9555_write(struct PCA9555 * dev, uint16_t value)
+void pca9555_write(pca9555_Conf * dev, uint16_t value)
 {
-    dev->value.word = value;
-    iic_send(dev->iic, dev->address, NXP_OUTPUT0, dev->value.byte_low);
-    iic_send(dev->iic, dev->address, NXP_OUTPUT1, dev->value.byte_high);
+    WORD2BYTES w2b;
+    w2b.word = value;
+
+    iic_send(dev->iicPort, dev->iicAddr, NXP_OUTPUT0, w2b.byte_low);
+    iic_send(dev->iicPort, dev->iicAddr, NXP_OUTPUT1, w2b.byte_high);
 }
 
-uint16_t pca9555_read(struct PCA9555 * dev)
+uint16_t pca9555_read(pca9555_Conf * dev)
 {
     uint16_t inputData = 0;
-    inputData = iic_recv(dev->iic, dev->address, NXP_INPUT0);
-    inputData |= iic_recv(dev->iic, dev->address, NXP_INPUT1) << 8;
+    inputData = iic_recv(dev->iicPort, dev->iicAddr, NXP_INPUT0);
+    inputData |= iic_recv(dev->iicPort, dev->iicAddr, NXP_INPUT1) << 8;
     return inputData;
 }
