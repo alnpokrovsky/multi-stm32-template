@@ -35,17 +35,17 @@ void hrtim_deadtime_channel(HRPWM_CHANNEL ch,
 
 void hrtim_duty_channel(HRPWM_CHANNEL ch, uint16_t val);
 
-void hrtim_start_channels(HRPWM_CHANNEL ch[], uint16_t n);
+void hrtim_start_channels(const HRPWM_CHANNEL ch[], uint16_t n);
 
-void hrtim_dma_init_channel(HRPWM_CHANNEL ch, uint16_t * waveform);
+void hrtim_dma_init_channel(HRPWM_CHANNEL ch, const uint16_t * waveform);
 
 void hrtim_dma_start_once_channel(HRPWM_CHANNEL ch, uint16_t len);
 
-void hrtim_dma_start_circular_channel(HRPWM_CHANNEL ch, uint16_t len);
+void hrtim_dma_start_cyclic_channel(HRPWM_CHANNEL ch, uint16_t len);
 
 void hrtim_dma_init_burst_start(
     HRPWM_CHANNEL chs[], uint16_t n,
-    uint16_t * waveform, uint16_t len
+    const uint16_t * waveform, uint16_t len
 );
 
 #endif

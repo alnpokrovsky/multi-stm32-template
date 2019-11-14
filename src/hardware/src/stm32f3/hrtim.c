@@ -107,10 +107,11 @@ void hrtim_init_channel(HRPWM_CHANNEL ch, uint16_t prescaler, uint16_t period) {
     HRTIM_TIMx_TIMCR(CHANNELS[ch].tim_base) |= TIMx_CK_PSC(prescaler);
     HRTIM_TIMx_PER(CHANNELS[ch].tim_base) = period;
     HRTIM_TIMx_CMP1(CHANNELS[ch].tim_base) = 0;
+    HRTIM_TIMx_CMP2(CHANNELS[ch].tim_base) = 0;
 
     /* set 101 */
-    HRTIM_TIMx_SET1(CHANNELS[ch].tim_base) |= HRTIM_TIMx_SETy_PER;
-    HRTIM_TIMx_RST1(CHANNELS[ch].tim_base) |= HRTIM_TIMx_RSTy_CMP1;
+    HRTIM_TIMx_SET1(CHANNELS[ch].tim_base) |= HRTIM_TIMx_SETy_CMP1;
+    HRTIM_TIMx_RST1(CHANNELS[ch].tim_base) |= HRTIM_TIMx_RSTy_CMP2 | HRTIM_TIMx_RSTy_PER;
 
     /* tim in continuous mode */
     HRTIM_TIMx_TIMCR(CHANNELS[ch].tim_base) |= HRTIM_TIMx_CR_CONT | HRTIM_TIMx_CR_RETRIG;
@@ -149,7 +150,7 @@ void hrtim_duty_channel(HRPWM_CHANNEL ch, uint16_t val) {
     HRTIM_TIMx_CMP1(CHANNELS[ch].tim_base) = val;
 }
 
-inline void hrtim_start_channels(HRPWM_CHANNEL chs[], uint16_t n) {
+inline void hrtim_start_channels(const HRPWM_CHANNEL chs[], uint16_t n) {
     uint32_t en = HRTIM_MCR_MCEN;
     for (int i = 0; i < n; i++) {
         en |= CHANNELS[chs[i]].tim_en;
@@ -158,7 +159,7 @@ inline void hrtim_start_channels(HRPWM_CHANNEL chs[], uint16_t n) {
     HRTIM_MCR |= en;
 }
 
-void hrtim_dma_init_channel(HRPWM_CHANNEL ch, uint16_t * waveform) {
+void hrtim_dma_init_channel(HRPWM_CHANNEL ch, const uint16_t * waveform) {
 	dma_mem2periph_init(CHANNELS[ch].dma, 
         (uint32_t) waveform, 
         (uint32_t) &HRTIM_TIMx_CMP1(CHANNELS[ch].tim_base) );
@@ -170,13 +171,13 @@ void hrtim_dma_start_once_channel(HRPWM_CHANNEL ch, uint16_t len) {
     dma_start_once(CHANNELS[ch].dma, len);
 }
 
-void hrtim_dma_start_circular_channel(HRPWM_CHANNEL ch, uint16_t len) {
+void hrtim_dma_start_cyclic_channel(HRPWM_CHANNEL ch, uint16_t len) {
     dma_start_cyclic(CHANNELS[ch].dma, len);
 }
 
 void hrtim_dma_init_burst_start(
     HRPWM_CHANNEL chs[], uint16_t n,
-    uint16_t * waveform, uint16_t len
+    const uint16_t * waveform, uint16_t len
 ) {
     /* special master tim DMA channel */
     dma_mem2periph_init(DMA_CH2, 
@@ -200,7 +201,7 @@ void hrtim_dma_init_burst_start(
         /* the update occurs on the update event following the DMA burst transfer completion */
         HRTIM_TIMx_TIMCR(CHANNELS[chs[i]].tim_base) |= HRTIM_TIMx_CR_UPDGAT_DMA_POST;
         /* write to register cmp1 for tim ch */
-        HRTIM_BDTxUPR(CHANNELS[chs[i]].tim_base) |= HRTIM_BDTxUPR_TIMxCMP1;
+        HRTIM_BDTxUPR(CHANNELS[chs[i]].tim_base) |= HRTIM_BDTxUPR_TIMxCMP1 | HRTIM_BDTxUPR_TIMxCMP2;
     }
     
     /* dma on master repetition */
