@@ -3,6 +3,7 @@
 #include "tim.h"
 #include <MDR32F9Qx_rst_clk.h>
 #include <MDR32F9Qx_timer.h>
+#include <MDR32F9Qx_it.h>
 
 static void null_handler(void) {}
 
@@ -69,7 +70,6 @@ void tim_stop(TIM tim) {
 
 
 
-void Timer2_IRQHandler(void);
 void Timer2_IRQHandler(void) {
     if(TIMER_GetITStatus(MDR_TIMER2, TIMER_STATUS_CNT_ARR))
     {
@@ -79,7 +79,6 @@ void Timer2_IRQHandler(void) {
     }
 }
 
-void Timer3_IRQHandler(void);
 void Timer3_IRQHandler(void) {
     if(TIMER_GetITStatus(MDR_TIMER3, TIMER_STATUS_CNT_ARR))
     {

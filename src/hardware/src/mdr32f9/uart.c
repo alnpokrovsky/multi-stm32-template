@@ -5,7 +5,8 @@
 #include <MDR32Fx.h>
 #include <MDR32F9Qx_uart.h>
 #include <MDR32F9Qx_rst_clk.h>
-#include <assert.h>
+#include <MDR32F9Qx_it.h>
+
 
 static void null_handler1(void) {}
 static bool null_handler2(void) { return false; }
@@ -80,9 +81,9 @@ void uart_init(
     UART_InitStructure.UART_FIFOMode                = UART_FIFO_OFF;
     UART_InitStructure.UART_HardwareFlowControl     = UART_HardwareFlowControl_RXE | UART_HardwareFlowControl_TXE;
 
-    assert(((ucDataBits == 8) && (parity == PAR_NONE))
-        || ((ucDataBits == 7) && (parity != PAR_NONE))
-    );
+    // assert(((ucDataBits == 8) && (parity == PAR_NONE))
+    //     || ((ucDataBits == 7) && (parity != PAR_NONE))
+    // );
 
     /* разрешаем прерываение */
     NVIC_EnableIRQ(UARTS[port].uart_irq);
@@ -130,7 +131,6 @@ void uart_send(UART_PORT port, char c) {
     UART_SendData(UARTS[port].uart_base, c);
 }
 
-void UART1_IRQHandler(void);
 void UART1_IRQHandler(void) {
     /* Check if we were called because of RXNE. */
     if ((MDR_UART1->MIS & UART_MIS_RXMIS) != 0)
@@ -156,7 +156,6 @@ void UART1_IRQHandler(void) {
     }
 }
 
-void UART2_IRQHandler(void);
 void UART2_IRQHandler(void) {
     /* Check if we were called because of RXNE. */
     if ((MDR_UART2->MIS & UART_MIS_RXMIS) != 0)

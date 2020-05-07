@@ -3,6 +3,7 @@
 
 #include "systick.h"
 #include <MDR32Fx.h>
+#include <MDR32F9Qx_it.h>
 
 static void null_handler(void)
 {
@@ -25,8 +26,6 @@ void systick_start_interrupt(uint32_t ticks, SYSTICK_UNITS units) {
                 (0 << 2); //источник синхросигнала = LSI
 }
 
-// assembler defined vector
-void SysTick_Handler(void);
 void SysTick_Handler(void)
 {
     systick_handler();
