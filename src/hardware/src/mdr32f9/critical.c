@@ -1,3 +1,4 @@
+#ifndef FREERTOS_LIB
 #if defined(USE_MDR1986VE9x)
 
 #include "critical.h"
@@ -23,4 +24,5 @@ void critical_exit( void )
 	}
 }
 
+#endif
 #endif

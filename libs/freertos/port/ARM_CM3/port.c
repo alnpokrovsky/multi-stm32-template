@@ -1,4 +1,4 @@
-#if defined(STM32F0) || defined(STM32F1)
+#if defined(STM32F0) || defined(STM32F1) || defined(USE_MDR1986VE9x)
 
 /*
  * FreeRTOS Kernel V10.2.1

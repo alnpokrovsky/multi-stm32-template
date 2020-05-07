@@ -44,6 +44,8 @@
 #include "FreeRTOS/STM32F1.h"
 #elif defined(STM32F3)
 #include "FreeRTOS/STM32F3.h"
+#elif defined(USE_MDR1986VE9x)
+#include "FreeRTOS/MDR1986VE9.h"
 #else
 #error "You have no FreeRTOS config for this device"
 #endif

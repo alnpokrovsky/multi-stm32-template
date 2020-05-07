@@ -5,6 +5,8 @@
 #include <system_MDR32F9Qx.h>
 
 void rcc_init(void) {
+    /* выставляем rcc на 80МГц */
+
     /* init ticks generator */
     SystemInit();
 

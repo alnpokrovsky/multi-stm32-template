@@ -12,7 +12,11 @@ typedef enum {
     RTOS_LOW_PRIORITY = 1,
 } RTOS_TASK_PRIORITY;
 
-#define RTOS_TASK(vTask, arg, priority) xTaskCreate(&vTask, #vTask, configMINIMAL_STACK_SIZE, arg, priority, NULL) 
+#ifndef configMINIMAL_STACK_SIZE
+#define configMINIMAL_STACK_SIZE 128
+#endif
+ 
+#define RTOS_TASK(priority, vTask, arg) xTaskCreate(&vTask, #vTask, configMINIMAL_STACK_SIZE, arg, priority, NULL)
 #define RTOS_START() vTaskStartScheduler()
 
 #endif

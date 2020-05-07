@@ -54,7 +54,7 @@ void tim_init(TIM tim, uint16_t val, TIM_UNITS units) {
     NVIC_SetPriority(TIMS[tim].tim_irq, 0);
 }
 
-void tim_start(TIM tim) {
+void tim_start_cyclic(TIM tim) {
     TIMER_SetCounter(TIMS[tim].tim_base, 1);
     /* Включение прерывания при равенстве нулю */
     TIMER_ITConfig(TIMS[tim].tim_base, TIMER_STATUS_CNT_ARR, ENABLE);

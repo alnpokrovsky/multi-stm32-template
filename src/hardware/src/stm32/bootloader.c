@@ -1,3 +1,4 @@
+#if defined(STM32F1)||defined(STM32F3)||defined(STM32F4)
 
 #include "bootloader.h"
 #include <stdint.h>
@@ -45,3 +46,5 @@ bool bootloader_force_boot(void) {
 
     return force;
 }
+
+#endif 

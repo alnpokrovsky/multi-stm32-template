@@ -1,7 +1,7 @@
 #include "critical.h"
 
 
-#if defined FREERTOS_LIB
+#if defined(FREERTOS_LIB)
 
 #include "FreeRTOS.h"
 

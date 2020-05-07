@@ -1,15 +1,28 @@
 #if defined(USE_MDR1986VE9x)
 
-#include "usb/cdc.h"
 #include "delay.h"
 #include <MDR32Fx.h>
 #include <MDR32F9Qx_usb_handlers.h>
 #include <MDR32F9Qx_rst_clk.h>
 #include <assert.h>
 
+
+void usb_cdc_send(const uint8_t * buf, int len);
+void usb_cdc_init(void);
+void usb_cdc_read_handler(uint8_t* Buffer, uint32_t Length);
+
+
 // Буфер для USB
 #define BUFFER_LENGTH 64
 static uint8_t USB_Buffer[BUFFER_LENGTH];
+
+static void null_handler(uint8_t * buf, int len)
+{
+	/* echo by default */
+	usb_cdc_send(buf, len);
+}
+
+#pragma weak usb_cdc_read_handler = null_handler
 
 
 #ifdef USB_CDC_LINE_CODING_SUPPORTED
@@ -51,14 +64,6 @@ USB_Result USB_CDC_SetLineCoding(uint16_t wINDEX, const USB_CDC_LineCoding_TypeD
     return USB_SUCCESS;
 }
 #endif /* USB_CDC_LINE_CODING_SUPPORTED */
-
-static void null_handler(char * buf, int len)
-{
-	/* echo by default */
-	usb_cdc_send(buf, len);
-}
-
-#pragma weak usb_cdc_read_handler = null_handler
 
 /* Задание конфигурации последовательной линии связи которую может прочитать хост*/
 static void VCom_Configuration(void)
@@ -116,7 +121,7 @@ void usb_cdc_init(void) {
         delay_some();
 }
 
-void usb_cdc_send(const char * buf, int len) {
+void usb_cdc_send(const uint8_t * buf, int len) {
     USB_CDC_SendData((uint8_t*)buf, len);
 }
 
@@ -124,7 +129,7 @@ void usb_cdc_send(const char * buf, int len) {
 // Данная процедура автоматически вызывается при приеме данных по USB.
 USB_Result USB_CDC_RecieveData(uint8_t* Buffer, uint32_t Length)
 {
-    usb_cdc_read_handler((char*)Buffer, Length);
+    usb_cdc_read_handler(Buffer, Length);
     return USB_SUCCESS;
 }
 
