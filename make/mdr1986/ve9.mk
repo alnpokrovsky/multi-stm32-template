@@ -22,4 +22,4 @@ INC += $(INC_MDR_VE9)
 
 LDSCRIPT := $(LD_MDR_VE9)
 
-include rules.mk
+include make/rules.mk

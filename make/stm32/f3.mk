@@ -22,4 +22,4 @@ BMP_PORT	?=
 
 
 include core/libopencm3.include
-include rules.mk
+include make/rules.mk
