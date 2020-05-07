@@ -2,14 +2,14 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 		<meta http-equiv="Access-Control-Allow-Origin" content="*"> 
-		<title>Настройка CPU</title>
+		<title>РќР°СЃС‚СЂРѕР№РєР° CPU</title>
     <style type="text/css">
       body {
-      	background-color:#fff; /* задаем цвет фона*/
-      	color:#993300; /* задаем цвет текста*/
-      	font-size:12px; /* задаем размер шрифта на странице */
-      	font-style:normal; /* начертание шрифта (нормальное) */
-      	font-family:Arial, Helvetica, sans-serif; /* устанавливаем шрифт */
+      	background-color:#fff; /* Р·Р°РґР°РµРј С†РІРµС‚ С„РѕРЅР°*/
+      	color:#993300; /* Р·Р°РґР°РµРј С†РІРµС‚ С‚РµРєСЃС‚Р°*/
+      	font-size:12px; /* Р·Р°РґР°РµРј СЂР°Р·РјРµСЂ С€СЂРёС„С‚Р° РЅР° СЃС‚СЂР°РЅРёС†Рµ */
+      	font-style:normal; /* РЅР°С‡РµСЂС‚Р°РЅРёРµ С€СЂРёС„С‚Р° (РЅРѕСЂРјР°Р»СЊРЅРѕРµ) */
+      	font-family:Arial, Helvetica, sans-serif; /* СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј С€СЂРёС„С‚ */
       }
 			u {
 				font-weight: bold;
@@ -81,7 +81,7 @@
 					case 4: HCLK = LSI; break;
 				}
         if (HCLK > 80000000){
-					alert("Превышение допустимой частоты процессора!");
+					alert("РџСЂРµРІС‹С€РµРЅРёРµ РґРѕРїСѓСЃС‚РёРјРѕР№ С‡Р°СЃС‚РѕС‚С‹ РїСЂРѕС†РµСЃСЃРѕСЂР°!");
 					document.cpu.hclkHz.select();
 					document.cpu.hclkHz.value = "";
 				}
@@ -125,25 +125,25 @@
         
         if ((CPU_C1_SEL == 2) || (CPU_C1_SEL == 3)){
 				
-					OutCod += '&nbsp;&nbsp;<i>//Необходимая пауза для работы Flash-памяти программ</i><br>';
+					OutCod += '&nbsp;&nbsp;<i>//РќРµРѕР±С…РѕРґРёРјР°СЏ РїР°СѓР·Р° РґР»СЏ СЂР°Р±РѕС‚С‹ Flash-РїР°РјСЏС‚Рё РїСЂРѕРіСЂР°РјРј</i><br>';
 					OutCod += '&nbsp;&nbsp;MDR_EEPROM->CMD |= ('+DelEeprom +' << 3);';
 					if (CLK_MHz > 80) 
-						OutCod += ' <i>//Работа микросхемы не гарантируется</i>';
+						OutCod += ' <i>//Р Р°Р±РѕС‚Р° РјРёРєСЂРѕСЃС…РµРјС‹ РЅРµ РіР°СЂР°РЅС‚РёСЂСѓРµС‚СЃСЏ</i>';
 					OutCod += '<br><br>';
 					
-          OutCod += '&nbsp;&nbsp;MDR_RST_CLK->HS_CONTROL = 0x01; <i>// вкл. HSE осцилятора </i><br>';
-          OutCod += '&nbsp;&nbsp;<b>while</b> ((MDR_RST_CLK->CLOCK_STATUS & (1 << 2)) == 0x00); <i>// ждем пока HSE выйдет в рабочий режим </i><br>';
+          OutCod += '&nbsp;&nbsp;MDR_RST_CLK->HS_CONTROL = 0x01; <i>// РІРєР». HSE РѕСЃС†РёР»СЏС‚РѕСЂР° </i><br>';
+          OutCod += '&nbsp;&nbsp;<b>while</b> ((MDR_RST_CLK->CLOCK_STATUS & (1 << 2)) == 0x00); <i>// Р¶РґРµРј РїРѕРєР° HSE РІС‹Р№РґРµС‚ РІ СЂР°Р±РѕС‡РёР№ СЂРµР¶РёРј </i><br>';
         }
         if (PLL_CPU_MUL){
-          OutCod += '<br>&nbsp;&nbsp;MDR_RST_CLK->PLL_CONTROL = (('+PLL_CPU_ON+' << 2) | ('+PLL_CPU_MUL+' << 8));	<i>//вкл. PLL  | коэф. умножения = '+(PLL_CPU_MUL+1)+'</i><br>';
-          OutCod += '&nbsp;&nbsp;<b>while</b>((MDR_RST_CLK->CLOCK_STATUS & 0x02) != 0x02); <i>//ждем когда PLL выйдет в раб. режим</i><br>';
+          OutCod += '<br>&nbsp;&nbsp;MDR_RST_CLK->PLL_CONTROL = (('+PLL_CPU_ON+' << 2) | ('+PLL_CPU_MUL+' << 8));	<i>//РІРєР». PLL  | РєРѕСЌС„. СѓРјРЅРѕР¶РµРЅРёСЏ = '+(PLL_CPU_MUL+1)+'</i><br>';
+          OutCod += '&nbsp;&nbsp;<b>while</b>((MDR_RST_CLK->CLOCK_STATUS & 0x02) != 0x02); <i>//Р¶РґРµРј РєРѕРіРґР° PLL РІС‹Р№РґРµС‚ РІ СЂР°Р±. СЂРµР¶РёРј</i><br>';
         }
         
-        OutCod += '<br>&nbsp;&nbsp;MDR_RST_CLK->CPU_CLOCK = ('+CPU_C1_SEL+' <i>//источник для CPU_C1</i><br>&nbsp;&nbsp;| ('+CPU_C2_SEL+' << 2) <i>//источник для CPU_C2</i><br>&nbsp;&nbsp;| ('+CPU_C3_SEL+' << 4) <i>//предделитель для CPU_C3</i><br>&nbsp;&nbsp;| ('+HCLK_SEL+' << 8));<i>//источник для HCLK</i>';
+        OutCod += '<br>&nbsp;&nbsp;MDR_RST_CLK->CPU_CLOCK = ('+CPU_C1_SEL+' <i>//РёСЃС‚РѕС‡РЅРёРє РґР»СЏ CPU_C1</i><br>&nbsp;&nbsp;| ('+CPU_C2_SEL+' << 2) <i>//РёСЃС‚РѕС‡РЅРёРє РґР»СЏ CPU_C2</i><br>&nbsp;&nbsp;| ('+CPU_C3_SEL+' << 4) <i>//РїСЂРµРґРґРµР»РёС‚РµР»СЊ РґР»СЏ CPU_C3</i><br>&nbsp;&nbsp;| ('+HCLK_SEL+' << 8));<i>//РёСЃС‚РѕС‡РЅРёРє РґР»СЏ HCLK</i>';
         
 				
-				OutCod += '<br>&nbsp;&nbsp;MDR_BKP->REG_0E |= ('+LOW_BKP +' << 0); <i>//режим встроенного регулятора напряжения DUcc(в зависимости от частоты МК)</i><br>';
-				OutCod += '&nbsp;&nbsp;MDR_BKP->REG_0E |= ('+LOW_BKP +' << 3); <i>//выбор доп.стабилизирующей нагрузки</i><br>';
+				OutCod += '<br>&nbsp;&nbsp;MDR_BKP->REG_0E |= ('+LOW_BKP +' << 0); <i>//СЂРµР¶РёРј РІСЃС‚СЂРѕРµРЅРЅРѕРіРѕ СЂРµРіСѓР»СЏС‚РѕСЂР° РЅР°РїСЂСЏР¶РµРЅРёСЏ DUcc(РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ С‡Р°СЃС‚РѕС‚С‹ РњРљ)</i><br>';
+				OutCod += '&nbsp;&nbsp;MDR_BKP->REG_0E |= ('+LOW_BKP +' << 3); <i>//РІС‹Р±РѕСЂ РґРѕРї.СЃС‚Р°Р±РёР»РёР·РёСЂСѓСЋС‰РµР№ РЅР°РіСЂСѓР·РєРё</i><br>';
 				
         OutCod += '<br>}';
         
@@ -154,13 +154,13 @@
     </script>
 	</head>
 	<body>
-    <span><h2>Расчет частоты тактирования CPU</h2></span><br>
+    <span><h2>Р Р°СЃС‡РµС‚ С‡Р°СЃС‚РѕС‚С‹ С‚Р°РєС‚РёСЂРѕРІР°РЅРёСЏ CPU</h2></span><br>
     <form name="cpu">
 			<table width="60%" border="0" cellpadding="7">
-<!--Выбор источник синхросигнала-->
+<!--Р’С‹Р±РѕСЂ РёСЃС‚РѕС‡РЅРёРє СЃРёРЅС…СЂРѕСЃРёРіРЅР°Р»Р°-->
 				<tr>
 					<td align="left">
-						<font size="2"><u>Источник синхросигнала</u></font>
+						<font size="2"><u>РСЃС‚РѕС‡РЅРёРє СЃРёРЅС…СЂРѕСЃРёРіРЅР°Р»Р°</u></font>
 					</td>
 					<td align="left">
 						<select name="ist" OnChange="cpu_clk()">
@@ -172,10 +172,10 @@
 		  			</select>
 					</td>
 				</tr>
-<!--Выбор частоты внешенго кварца-->
+<!--Р’С‹Р±РѕСЂ С‡Р°СЃС‚РѕС‚С‹ РІРЅРµС€РµРЅРіРѕ РєРІР°СЂС†Р°-->
 				<tr>
 					<td align="left">
-						<font size="2"><u>Чатота внешнего кварца</u></font>
+						<font size="2"><u>Р§Р°С‚РѕС‚Р° РІРЅРµС€РЅРµРіРѕ РєРІР°СЂС†Р°</u></font>
 					</td>
 					<td align="left">
 						<select name="extq" OnChange="cpu_clk()" disabled>
@@ -200,22 +200,22 @@
 		    			<option>14 318 180</option>
 		    			<option>16 000 000</option>
 		    		</select>
-		    		Гц
+		    		Р“С†
 					</td>
 				</tr>
-<!--Вывод частоты CPU C1-->
+<!--Р’С‹РІРѕРґ С‡Р°СЃС‚РѕС‚С‹ CPU C1-->
 				<tr>
 					<td align="left">
 						<font size="2"><u>CPU C1 = </u></font>
 					</td>
 					<td align="left">
-		  			<input type="text" name="cpuc1Hz" value="" size=10 placeholder="CPU C1"> Гц
+		  			<input type="text" name="cpuc1Hz" value="" size=10 placeholder="CPU C1"> Р“С†
 					</td>
 				</tr>
-<!--Выбор множителя PLL-->
+<!--Р’С‹Р±РѕСЂ РјРЅРѕР¶РёС‚РµР»СЏ PLL-->
 				<tr>
 					<td align="left">
-						<font size="2"><u>Множитель PLL </u></font>
+						<font size="2"><u>РњРЅРѕР¶РёС‚РµР»СЊ PLL </u></font>
 					</td>
 					<td align="left">
 		        <select name="pllmul" OnChange="cpu_clk()">
@@ -239,19 +239,19 @@
 		  			</select>
 					</td>
 				</tr>
-<!--Вывод частоты CPU_PLL-->
+<!--Р’С‹РІРѕРґ С‡Р°СЃС‚РѕС‚С‹ CPU_PLL-->
 				<tr>
 					<td align="left">
 						<font size="2"><u>CPU PLL = </u></font>
 					</td>
 					<td align="left">
-		  			<input type="text" name="pllHz" value="" size=10 placeholder="CPU PLL"> Гц
+		  			<input type="text" name="pllHz" value="" size=10 placeholder="CPU PLL"> Р“С†
 					</td>
 				</tr>
-<!--Выбор источника для CPU_C2-->
+<!--Р’С‹Р±РѕСЂ РёСЃС‚РѕС‡РЅРёРєР° РґР»СЏ CPU_C2-->
 				<tr>
 					<td align="left">
-						<font size="2"><u>Источник для CPU_C2</u></font>
+						<font size="2"><u>РСЃС‚РѕС‡РЅРёРє РґР»СЏ CPU_C2</u></font>
 					</td>
 					<td align="left">
 		  			<select name="cpuc2mul" OnChange="cpu_clk()">
@@ -261,19 +261,19 @@
 						</select>
 					</td>
 				</tr>
-<!--Вывод частоты CPU_C2-->
+<!--Р’С‹РІРѕРґ С‡Р°СЃС‚РѕС‚С‹ CPU_C2-->
 				<tr>
 					<td align="left">
 						<font size="2"><u>CPU C2 = </u></font>
 					</td>
 					<td align="left">
-		  			<input type="text" name="cpuc2Hz" value="" size=10 placeholder="CPU C2"> Гц
+		  			<input type="text" name="cpuc2Hz" value="" size=10 placeholder="CPU C2"> Р“С†
 					</td>
 				</tr>
-<!--Выбор предделителя CPU_C3-->
+<!--Р’С‹Р±РѕСЂ РїСЂРµРґРґРµР»РёС‚РµР»СЏ CPU_C3-->
 				<tr>
 					<td align="left">
-						<font size="2"><u>Предделитель для CPU_C3</u></font>
+						<font size="2"><u>РџСЂРµРґРґРµР»РёС‚РµР»СЊ РґР»СЏ CPU_C3</u></font>
 					</td>
 					<td align="left">
 						<select name="cpuc3div" OnChange="cpu_clk()">
@@ -289,19 +289,19 @@
 						</select>
 					</td>
 				</tr>	
-<!--Вывод частоты CPU_C3-->
+<!--Р’С‹РІРѕРґ С‡Р°СЃС‚РѕС‚С‹ CPU_C3-->
 				<tr>
 					<td align="left">
 						<font size="2"><u>CPU C3 = </u></font>
 					</td>
 					<td align="left">
-		  			<input type="text" name="cpuc3Hz" value="" size=10 placeholder="CPU C3"> Гц
+		  			<input type="text" name="cpuc3Hz" value="" size=10 placeholder="CPU C3"> Р“С†
 					</td>
 				</tr>
-<!--Выбор источника HCLK-->
+<!--Р’С‹Р±РѕСЂ РёСЃС‚РѕС‡РЅРёРєР° HCLK-->
 				<tr>
 					<td align="left">
-						<font size="2"><u>Источник для HCLK</u></font>
+						<font size="2"><u>РСЃС‚РѕС‡РЅРёРє РґР»СЏ HCLK</u></font>
 					</td>
 					<td align="left">
 						<select name="hclkist" OnChange="cpu_clk()">
@@ -313,20 +313,20 @@
 						</select>
 					</td>
 				</tr>
-<!--Вывод частоты HCLK-->
+<!--Р’С‹РІРѕРґ С‡Р°СЃС‚РѕС‚С‹ HCLK-->
 				<tr>
 					<td align="left">
 						<font size="2"><u>HCLK = </u></font>
 					</td>
 					<td align="left">
-		  			<input type="text" name="hclkHz" value="" size=10 placeholder="HCLK"> Гц
+		  			<input type="text" name="hclkHz" value="" size=10 placeholder="HCLK"> Р“С†
 					</td>
 				</tr>
-<!--Кнопки-->
+<!--РљРЅРѕРїРєРё-->
 				<tr>
 					<td align="left"><p><font size="2"></font></p></td>
 					<td align="left">
-						<input type="button" name="bl1" value="Рассчитать" onclick="cpu_clk()">
+						<input type="button" name="bl1" value="Р Р°СЃСЃС‡РёС‚Р°С‚СЊ" onclick="cpu_clk()">
 					</td>
 				</tr>
 			</table>

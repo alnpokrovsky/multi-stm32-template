@@ -2,21 +2,21 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 		<meta http-equiv="Access-Control-Allow-Origin" content="*"> 
-		<title>Простое раздвигающееся вертикальное меню</title>
+		<title>РџСЂРѕСЃС‚РѕРµ СЂР°Р·РґРІРёРіР°СЋС‰РµРµСЃСЏ РІРµСЂС‚РёРєР°Р»СЊРЅРѕРµ РјРµРЅСЋ</title>
 		<link rel="stylesheet" href="menu.css" type="text/css">
     
     <script language="JavaScript">
       function test(page){
 				
         switch (page){
-				/* Раздел Главная */
+				/* Р Р°Р·РґРµР» Р“Р»Р°РІРЅР°СЏ */
           case 'main':  
 												parent.cd.rows = '100%,*,*';
 												parent.mainFrame.location.href = "main.html"; 
                         parent.postFrame.location.href = "none.html";
 												parent.codFrame.location.href = "none.html";
                         break;
-				/* Раздел Процессор */
+				/* Р Р°Р·РґРµР» РџСЂРѕС†РµСЃСЃРѕСЂ */
           case 'cpu':   
 												parent.cd.rows = '*,35,36%';
 												parent.mainFrame.location.href = "cpu.html";
@@ -36,7 +36,7 @@
                         parent.postFrame.location.href = "post.html";
                         break;
 												
-				/* Раздел Периферия */
+				/* Р Р°Р·РґРµР» РџРµСЂРёС„РµСЂРёСЏ */
           case 'port':  
 												parent.cd.rows = '*,35,48%';
 												parent.mainFrame.location.href = "port.html"; 
@@ -91,7 +91,7 @@
 												parent.codFrame.location.href = "cod.html"; 
                         parent.postFrame.location.href = "post.html"; 
                         break;
-				/* Раздел Прочее */
+				/* Р Р°Р·РґРµР» РџСЂРѕС‡РµРµ */
 					case 'bit':		
 												parent.cd.rows = '*,35,60%';
 												parent.mainFrame.location.href = "bit.html";
@@ -104,7 +104,7 @@
 												parent.codFrame.location.href = "none.html"; 
                         parent.postFrame.location.href = "none.html"; 
                         break;
-				/* Раздел История */
+				/* Р Р°Р·РґРµР» РСЃС‚РѕСЂРёСЏ */
 					case 'hist':  
 												parent.cd.rows = '90%,5%,5%';
 												parent.mainFrame.location.href = "hictory.html"; 
@@ -120,15 +120,15 @@
 	<body>
 		<div class="container">
 			<ul id="nav">
-				<li><a href="#" onclick="test('main')">Главная</a></li>
-				<li><a href="#" class="sub" tabindex="1">Процессор</a>
+				<li><a href="#" onclick="test('main')">Р“Р»Р°РІРЅР°СЏ</a></li>
+				<li><a href="#" class="sub" tabindex="1">РџСЂРѕС†РµСЃСЃРѕСЂ</a>
 					<ul>
 						<li><a href="#" onclick="test('cpu')">CPU</a></li>
 						<li><a href="#" onclick="test('sys')">SysTick</a></li>
 						<li><a href="#" onclick="test('pwr')">Power</a></li>
 					</ul>
 				</li>
-				<li><a href="#" class="sub" tabindex="1">Периферия</a>
+				<li><a href="#" class="sub" tabindex="1">РџРµСЂРёС„РµСЂРёСЏ</a>
 					<ul>
 						<li><a href="#" onclick="test('port')">Port</a></li>
 						<li><a href="#" onclick="test('adc')">ADC</a></li>
@@ -141,13 +141,13 @@
 						<li><a href="#" onclick="test('usb')">USB</a></li>
 					</ul>
 				</li>
-				<li><a href="#" class="sub" tabindex="1">Прочее</a>
+				<li><a href="#" class="sub" tabindex="1">РџСЂРѕС‡РµРµ</a>
 					<ul>
 						<li><a href="#" onclick="test('bit')">Bit Banding</a></li>
 						<li><a href="#" onclick="test('btbt')">BitByte</a></li>
 					</ul>
 				</li>
-				<li><a href="#" onclick="test('hist')">История</a></li>
+				<li><a href="#" onclick="test('hist')">РСЃС‚РѕСЂРёСЏ</a></li>
 			</ul>
 		</div>
 	</body>

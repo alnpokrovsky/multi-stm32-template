@@ -2,14 +2,14 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 		<meta http-equiv="Access-Control-Allow-Origin" content="*"> 
-		<title>Настройка UART</title>
+		<title>РќР°СЃС‚СЂРѕР№РєР° UART</title>
     <style type="text/css">
       body {
-      	background-color:#fff; /* задаем цвет фона*/
-      	color:#993300; /* задаем цвет текста*/
-      	font-size:12px; /* задаем размер шрифта на странице */
-      	font-style:normal; /* начертание шрифта (нормальное) */
-      	font-family:Arial, Helvetica, sans-serif; /* устанавливаем шрифт */
+      	background-color:#fff; /* Р·Р°РґР°РµРј С†РІРµС‚ С„РѕРЅР°*/
+      	color:#993300; /* Р·Р°РґР°РµРј С†РІРµС‚ С‚РµРєСЃС‚Р°*/
+      	font-size:12px; /* Р·Р°РґР°РµРј СЂР°Р·РјРµСЂ С€СЂРёС„С‚Р° РЅР° СЃС‚СЂР°РЅРёС†Рµ */
+      	font-style:normal; /* РЅР°С‡РµСЂС‚Р°РЅРёРµ С€СЂРёС„С‚Р° (РЅРѕСЂРјР°Р»СЊРЅРѕРµ) */
+      	font-family:Arial, Helvetica, sans-serif; /* СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј С€СЂРёС„С‚ */
       }
 			u {
 				font-weight: bold;
@@ -131,45 +131,45 @@
 					
 					
 					if (UART_CLK_EN[1]) {
-						OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= (1UL << "+UART_PER[1]+"); <i>//тактирование порта "+UART_PORT[1]+"</i>";
+						OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= (1UL << "+UART_PER[1]+"); <i>//С‚Р°РєС‚РёСЂРѕРІР°РЅРёРµ РїРѕСЂС‚Р° "+UART_PORT[1]+"</i>";
 					}
 					if (UART_CLK_EN[2]) {
 						if (UART_PER[1] != UART_PER[2])
-							OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= (1UL << "+UART_PER[2]+"); <i>//тактирование порта "+UART_PORT[2]+"</i><br>";
+							OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= (1UL << "+UART_PER[2]+"); <i>//С‚Р°РєС‚РёСЂРѕРІР°РЅРёРµ РїРѕСЂС‚Р° "+UART_PORT[2]+"</i><br>";
 					}
 					
 					for (var i = 1; i <= 2; i++){
 						if (UART_CLK_EN[i]){
-							OutCod += "<br>&nbsp;&nbsp;MDR_PORT"+UART_PORT[i]+"->FUNC |= (("+UF_TX[i]+" << "+UART_TX[i]+"*2) | ("+UF_RX[i]+" << "+UART_RX[i]+"*2)); <i>//режим работы порта</i><br>";
-							OutCod += "&nbsp;&nbsp;MDR_PORT"+UART_PORT[i]+"->ANALOG |= ((1 << "+UART_TX[i]+") | (1 << "+UART_RX[i]+")); <i>//цифровой</i><br>";
-							OutCod += "&nbsp;&nbsp;MDR_PORT"+UART_PORT[i]+"->PWR |= ((3 << "+UART_TX[i]+"*2) | (3 << "+UART_RX[i]+"*2)); <i>//максимально быcтрый</i><br>";
+							OutCod += "<br>&nbsp;&nbsp;MDR_PORT"+UART_PORT[i]+"->FUNC |= (("+UF_TX[i]+" << "+UART_TX[i]+"*2) | ("+UF_RX[i]+" << "+UART_RX[i]+"*2)); <i>//СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ РїРѕСЂС‚Р°</i><br>";
+							OutCod += "&nbsp;&nbsp;MDR_PORT"+UART_PORT[i]+"->ANALOG |= ((1 << "+UART_TX[i]+") | (1 << "+UART_RX[i]+")); <i>//С†РёС„СЂРѕРІРѕР№</i><br>";
+							OutCod += "&nbsp;&nbsp;MDR_PORT"+UART_PORT[i]+"->PWR |= ((3 << "+UART_TX[i]+"*2) | (3 << "+UART_RX[i]+"*2)); <i>//РјР°РєСЃРёРјР°Р»СЊРЅРѕ Р±С‹cС‚СЂС‹Р№</i><br>";
 						}
 					}
 					
 					if (UART_CLK_EN[1]) {
-						OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= (1UL << 6); <i>//тактирование UART1</i>";
+						OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= (1UL << 6); <i>//С‚Р°РєС‚РёСЂРѕРІР°РЅРёРµ UART1</i>";
 					}
 						
 					if (UART_CLK_EN[2]) {
-						OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= (1UL << 7); <i>//тактирование UART2</i>";
+						OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= (1UL << 7); <i>//С‚Р°РєС‚РёСЂРѕРІР°РЅРёРµ UART2</i>";
 					}
 					
-					OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->UART_CLOCK = ("+div[1]+" <i>/*установка делителя для UART1 = "+divT[1]+"*/</i><br>&nbsp;&nbsp;|("+div[2]+" << 8) <i>/*установка делителя для UART2 = "+divT[2]+"*/</i><br>&nbsp;&nbsp;|("+UART_CLK_EN[1]+" << 24) <i>/*разрешение тактовой частоты UART1*/</i><br>&nbsp;&nbsp;|("+UART_CLK_EN[2]+" << 25)); <i>/*разрешение тактовой частоты UART2*/</i>\n";
+					OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->UART_CLOCK = ("+div[1]+" <i>/*СѓСЃС‚Р°РЅРѕРІРєР° РґРµР»РёС‚РµР»СЏ РґР»СЏ UART1 = "+divT[1]+"*/</i><br>&nbsp;&nbsp;|("+div[2]+" << 8) <i>/*СѓСЃС‚Р°РЅРѕРІРєР° РґРµР»РёС‚РµР»СЏ РґР»СЏ UART2 = "+divT[2]+"*/</i><br>&nbsp;&nbsp;|("+UART_CLK_EN[1]+" << 24) <i>/*СЂР°Р·СЂРµС€РµРЅРёРµ С‚Р°РєС‚РѕРІРѕР№ С‡Р°СЃС‚РѕС‚С‹ UART1*/</i><br>&nbsp;&nbsp;|("+UART_CLK_EN[2]+" << 25)); <i>/*СЂР°Р·СЂРµС€РµРЅРёРµ С‚Р°РєС‚РѕРІРѕР№ С‡Р°СЃС‚РѕС‚С‹ UART2*/</i>\n";
 					
 					for (var i = 1; i <= 2; i++){
 						if (UART_CLK_EN[i]){
-							OutCod += "<br><br>&nbsp;&nbsp;<i>//Параметры делителя при частоте = "+clkT[i]+"Гц и скорости = "+baudeT[i]+"</i>";
-							OutCod += "<br>&nbsp;&nbsp;MDR_UART"+i+"->IBRD = 0x"+IBRD[i]+"; <i>//целая часть делителя скорости</i><br>";
-							OutCod += "&nbsp;&nbsp;MDR_UART"+i+"->FBRD = 0x"+FBRD[i]+"; <i>//дробная часть делителя скорости</i><br>";
-							OutCod += "&nbsp;&nbsp;MDR_UART"+i+"->LCR_H = (("+PEN[i]+" << 1) <i>/*разрешение проверки четности*/</i><br>&nbsp;&nbsp;|("+EPS[i]+" << 2) <i>/*четность/нечетность ("+parT[i]+")*/</i><br>&nbsp;&nbsp;|("+STP[i]+" << 3) <i>/*стоп-бит = "+stT[i]+"*/</i><br>&nbsp;&nbsp;|("+WLEN[i]+" << 5) <i>/*длина слова = "+wlenT[i]+" бит*/</i><br>&nbsp;&nbsp;|("+SPS[i]+" << 7)); <i>/*передача бита четности*/</i><br>";
+							OutCod += "<br><br>&nbsp;&nbsp;<i>//РџР°СЂР°РјРµС‚СЂС‹ РґРµР»РёС‚РµР»СЏ РїСЂРё С‡Р°СЃС‚РѕС‚Рµ = "+clkT[i]+"Р“С† Рё СЃРєРѕСЂРѕСЃС‚Рё = "+baudeT[i]+"</i>";
+							OutCod += "<br>&nbsp;&nbsp;MDR_UART"+i+"->IBRD = 0x"+IBRD[i]+"; <i>//С†РµР»Р°СЏ С‡Р°СЃС‚СЊ РґРµР»РёС‚РµР»СЏ СЃРєРѕСЂРѕСЃС‚Рё</i><br>";
+							OutCod += "&nbsp;&nbsp;MDR_UART"+i+"->FBRD = 0x"+FBRD[i]+"; <i>//РґСЂРѕР±РЅР°СЏ С‡Р°СЃС‚СЊ РґРµР»РёС‚РµР»СЏ СЃРєРѕСЂРѕСЃС‚Рё</i><br>";
+							OutCod += "&nbsp;&nbsp;MDR_UART"+i+"->LCR_H = (("+PEN[i]+" << 1) <i>/*СЂР°Р·СЂРµС€РµРЅРёРµ РїСЂРѕРІРµСЂРєРё С‡РµС‚РЅРѕСЃС‚Рё*/</i><br>&nbsp;&nbsp;|("+EPS[i]+" << 2) <i>/*С‡РµС‚РЅРѕСЃС‚СЊ/РЅРµС‡РµС‚РЅРѕСЃС‚СЊ ("+parT[i]+")*/</i><br>&nbsp;&nbsp;|("+STP[i]+" << 3) <i>/*СЃС‚РѕРї-Р±РёС‚ = "+stT[i]+"*/</i><br>&nbsp;&nbsp;|("+WLEN[i]+" << 5) <i>/*РґР»РёРЅР° СЃР»РѕРІР° = "+wlenT[i]+" Р±РёС‚*/</i><br>&nbsp;&nbsp;|("+SPS[i]+" << 7)); <i>/*РїРµСЂРµРґР°С‡Р° Р±РёС‚Р° С‡РµС‚РЅРѕСЃС‚Рё*/</i><br>";
 						}
 					}
 					
 					if (UART_CLK_EN[1]) {
-						OutCod += "<br>&nbsp;&nbsp;MDR_UART1->CR = ((1 << 8)|(1 << 9)|1); <i>//передачик и приемник разрешен, разрешение приемопередатчика UART1</i>";
+						OutCod += "<br>&nbsp;&nbsp;MDR_UART1->CR = ((1 << 8)|(1 << 9)|1); <i>//РїРµСЂРµРґР°С‡РёРє Рё РїСЂРёРµРјРЅРёРє СЂР°Р·СЂРµС€РµРЅ, СЂР°Р·СЂРµС€РµРЅРёРµ РїСЂРёРµРјРѕРїРµСЂРµРґР°С‚С‡РёРєР° UART1</i>";
 					}
 					if (UART_CLK_EN[2]) {
-						OutCod += "<br>&nbsp;&nbsp;MDR_UART2->CR = ((1 << 8)|(1 << 9)|1); <i>//передачик и приемник разрешен, разрешение приемопередатчика UART2</i>";
+						OutCod += "<br>&nbsp;&nbsp;MDR_UART2->CR = ((1 << 8)|(1 << 9)|1); <i>//РїРµСЂРµРґР°С‡РёРє Рё РїСЂРёРµРјРЅРёРє СЂР°Р·СЂРµС€РµРЅ, СЂР°Р·СЂРµС€РµРЅРёРµ РїСЂРёРµРјРѕРїРµСЂРµРґР°С‚С‡РёРєР° UART2</i>";
 					}
 					
 					OutCod += "<br>}";
@@ -183,12 +183,12 @@
     </script>
 	</head>
 	<body>
-    <span><h2>Настройка UART</h2></span><br>
+    <span><h2>РќР°СЃС‚СЂРѕР№РєР° UART</h2></span><br>
     	<form name="uart">
 			<table width="90%" border="0" cellpadding="7">
-<!--Выбор UART-->
+<!--Р’С‹Р±РѕСЂ UART-->
 				<tr>
-				<td align="left"><font size="2"><u>Выбор UART</u></font></td>
+				<td align="left"><font size="2"><u>Р’С‹Р±РѕСЂ UART</u></font></td>
 					<td align="left">
 						<input type="checkbox" name="en_uart1" OnChange="uart_clk(1)"><font size="2">UART1</font>
 					</td>
@@ -196,12 +196,12 @@
 						<input type="checkbox" name="en_uart2" OnChange="uart_clk(2)"><font size="2">UART2</font>
 					</td>
 					<td>
-						<font size="2">HCLK = <input type="text" name="hclkHz" size="9" value="24000000"> Гц</font>
+						<font size="2">HCLK = <input type="text" name="hclkHz" size="9" value="24000000"> Р“С†</font>
 					</td>
 				</tr>
-<!--Выбор выводов (UART_TX, UART_RX) для UART1 и UART2-->
+<!--Р’С‹Р±РѕСЂ РІС‹РІРѕРґРѕРІ (UART_TX, UART_RX) РґР»СЏ UART1 Рё UART2-->
 				<tr>
-					<td align="left"><font size="2"><u>Выводы UART TX, UART RX</u></font></td>
+					<td align="left"><font size="2"><u>Р’С‹РІРѕРґС‹ UART TX, UART RX</u></font></td>
 					<td align="left">
 						<select name="uart1port"  OnChange="uart_clk(1)">
 							<option selected>PA7, PA6</option>
@@ -218,9 +218,9 @@
 						</select>
 					</td>
 				</tr>
-<!--Выбор предделитель для UART1 и UART2-->
+<!--Р’С‹Р±РѕСЂ РїСЂРµРґРґРµР»РёС‚РµР»СЊ РґР»СЏ UART1 Рё UART2-->
 				<tr>
-					<td align="left"><font size="2"><u>Предделитель</u></font></td>
+					<td align="left"><font size="2"><u>РџСЂРµРґРґРµР»РёС‚РµР»СЊ</u></font></td>
 					<td align="left">
 						<select name="uart1div" OnChange="uart_clk(1)">
 							<option selected>  1</option>
@@ -246,19 +246,19 @@
 						</select>
 					</td>
 				</tr>
-<!--Вывод UART_CLK-->
+<!--Р’С‹РІРѕРґ UART_CLK-->
 				<tr>
 					<td align="left"><font size="2"><u>UART CLK</u></font></td>
 					<td align="left">
-						<input type="text" name="uart1Hz" value="" size=10 placeholder="UART CLK"> Гц
+						<input type="text" name="uart1Hz" value="" size=10 placeholder="UART CLK"> Р“С†
 					</td>
 					<td align="left">
-						<input type="text" name="uart2Hz" value="" size=10 placeholder="UART CLK"> Гц
+						<input type="text" name="uart2Hz" value="" size=10 placeholder="UART CLK"> Р“С†
 					</td>
 				</tr>
-<!--Выберите скорость для UART1 и UART2-->
+<!--Р’С‹Р±РµСЂРёС‚Рµ СЃРєРѕСЂРѕСЃС‚СЊ РґР»СЏ UART1 Рё UART2-->
 				<tr>
-					<td align="left"><font size="2"><u>Скорость</u></font></td>
+					<td align="left"><font size="2"><u>РЎРєРѕСЂРѕСЃС‚СЊ</u></font></td>
 					<td align="left">
 						<select name="uart1speed" OnChange="uart_clk(1)">
 							<option>2400</option>
@@ -273,7 +273,7 @@
 							<option>115200</option>
 							<option>230400</option>
 							<option>460800</option>
-						</select> бит/с
+						</select> Р±РёС‚/СЃ
 					</td>
 					<td align="left">
 						<select name="uart2speed" OnChange="uart_clk(2)">
@@ -289,19 +289,19 @@
 							<option>115200</option>
 							<option>230400</option>
 							<option>460800</option>
-						</select> бит/с
+						</select> Р±РёС‚/СЃ
 					</td>
 				</tr>
-<!--Выберите длину слова для UART1 и UART2-->
+<!--Р’С‹Р±РµСЂРёС‚Рµ РґР»РёРЅСѓ СЃР»РѕРІР° РґР»СЏ UART1 Рё UART2-->
 				<tr>
-					<td align="left"><font size="2"><u>Длина слова</u></font></td>
+					<td align="left"><font size="2"><u>Р”Р»РёРЅР° СЃР»РѕРІР°</u></font></td>
 					<td align="left">
 						<select name="uart1len" OnChange="uart_clk(1)">
 							<option>5</option>
 							<option>6</option>
 							<option>7</option>
 							<option selected>8</option>
-						</select> бит
+						</select> Р±РёС‚
 					</td>
 					<td align="left">
 						<select name="uart2len" OnChange="uart_clk(2)">
@@ -309,55 +309,55 @@
 							<option>6</option>
 							<option>7</option>
 							<option selected>8</option>
-						</select> бит
+						</select> Р±РёС‚
 					</td>
 				</tr>
-<!--Проверка четности для UART1 и UART2-->
+<!--РџСЂРѕРІРµСЂРєР° С‡РµС‚РЅРѕСЃС‚Рё РґР»СЏ UART1 Рё UART2-->
 				<tr>
-					<td align="left"><font size="2"><u>Проверка четности</u></font></td>
+					<td align="left"><font size="2"><u>РџСЂРѕРІРµСЂРєР° С‡РµС‚РЅРѕСЃС‚Рё</u></font></td>
 					<td align="left">
 						<select name="uart1par" OnChange="uart_clk(1)">
-							<option selected>нет контроля</option>
-							<option>нечетность</option>
-							<option>четность</option>
-							<option>Фикс. 1</option>
-							<option>Фикс. 0</option>
+							<option selected>РЅРµС‚ РєРѕРЅС‚СЂРѕР»СЏ</option>
+							<option>РЅРµС‡РµС‚РЅРѕСЃС‚СЊ</option>
+							<option>С‡РµС‚РЅРѕСЃС‚СЊ</option>
+							<option>Р¤РёРєСЃ. 1</option>
+							<option>Р¤РёРєСЃ. 0</option>
 						</select>
 					</td>
 					<td align="left">
 						<select name="uart2par" OnChange="uart_clk(2)">
-							<option selected>нет контроля</option>
-							<option>нечетность</option>
-							<option>четность</option>
-							<option>Фикс. 1</option>
-							<option>Фикс. 0</option>
+							<option selected>РЅРµС‚ РєРѕРЅС‚СЂРѕР»СЏ</option>
+							<option>РЅРµС‡РµС‚РЅРѕСЃС‚СЊ</option>
+							<option>С‡РµС‚РЅРѕСЃС‚СЊ</option>
+							<option>Р¤РёРєСЃ. 1</option>
+							<option>Р¤РёРєСЃ. 0</option>
 						</select>
 					</td>
 				</tr>
-<!--Количество стоп-бит для UART1 и UART2-->
+<!--РљРѕР»РёС‡РµСЃС‚РІРѕ СЃС‚РѕРї-Р±РёС‚ РґР»СЏ UART1 Рё UART2-->
 				<tr>
-					<td align="left"><font size="2"><u>Стоп-бит</u></font></td>
+					<td align="left"><font size="2"><u>РЎС‚РѕРї-Р±РёС‚</u></font></td>
 					<td align="left">
 						<select name="uart1stop" OnChange="uart_clk(1)">
-							<option selected>1 бит</option>
-							<option>2 бита</option>
+							<option selected>1 Р±РёС‚</option>
+							<option>2 Р±РёС‚Р°</option>
 						</select>
 					</td>
 					<td align="left">
 						<select name="uart2stop" OnChange="uart_clk(2)">
-							<option selected>1 бит</option>
-							<option>2 бита</option>
+							<option selected>1 Р±РёС‚</option>
+							<option>2 Р±РёС‚Р°</option>
 						</select>
 					</td>
 				</tr>
-<!--Кнопки-->
+<!--РљРЅРѕРїРєРё-->
 				<tr>
 					<td align="left"><p><font size="2"></font></p></td>
 					<td align="left">
-						<input type="button" name="bl1" value="Рассчитать" onclick="uart_clk(1)">
+						<input type="button" name="bl1" value="Р Р°СЃСЃС‡РёС‚Р°С‚СЊ" onclick="uart_clk(1)">
 					</td>
 					<td>
-						<input type="button" name="bl2" value="Рассчитать" onclick="uart_clk(2)">
+						<input type="button" name="bl2" value="Р Р°СЃСЃС‡РёС‚Р°С‚СЊ" onclick="uart_clk(2)">
 					</td>
 				</tr>
 			</table>

@@ -2,14 +2,14 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 		<meta http-equiv="Access-Control-Allow-Origin" content="*"> 
-		<title>Настройка USB</title>
+		<title>РќР°СЃС‚СЂРѕР№РєР° USB</title>
     <style type="text/css">
       body {
-      	background-color:#fff; /* задаем цвет фона*/
-      	color:#993300; /* задаем цвет текста*/
-      	font-size:12px; /* задаем размер шрифта на странице */
-      	font-style:normal; /* начертание шрифта (нормальное) */
-      	font-family:Arial, Helvetica, sans-serif; /* устанавливаем шрифт */
+      	background-color:#fff; /* Р·Р°РґР°РµРј С†РІРµС‚ С„РѕРЅР°*/
+      	color:#993300; /* Р·Р°РґР°РµРј С†РІРµС‚ С‚РµРєСЃС‚Р°*/
+      	font-size:12px; /* Р·Р°РґР°РµРј СЂР°Р·РјРµСЂ С€СЂРёС„С‚Р° РЅР° СЃС‚СЂР°РЅРёС†Рµ */
+      	font-style:normal; /* РЅР°С‡РµСЂС‚Р°РЅРёРµ С€СЂРёС„С‚Р° (РЅРѕСЂРјР°Р»СЊРЅРѕРµ) */
+      	font-family:Arial, Helvetica, sans-serif; /* СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј С€СЂРёС„С‚ */
       }
 			u {
 				font-weight: bold;
@@ -44,7 +44,7 @@
 				PLL_USB_MUL = document.usb.pllmul.selectedIndex;
 				if (PLL_USB_MUL){
 					if ((USB_C1 < 2000000) || (USB_C1 > 16000000)){
-						alert('Частота USB_C1 должна быть в диапозоне 2...16МГц!');
+						alert('Р§Р°СЃС‚РѕС‚Р° USB_C1 РґРѕР»Р¶РЅР° Р±С‹С‚СЊ РІ РґРёР°РїРѕР·РѕРЅРµ 2...16РњР“С†!');
 						document.usb.usbc1Hz.select();
 					}
 					USB_PLL = USB_C1*PLL_USB_MUL;
@@ -65,20 +65,20 @@
 				OutCod = '<b>void</b> USB_init(<b>void</b>){<br>';
 				
 				OutCod += '<br>&nbsp;&nbsp;<b>unsigned char</b> i = 0;<br>';
-				OutCod += '<br>&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= (1 << 2); <i>//тактирование USB</i><br>';
+				OutCod += '<br>&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= (1 << 2); <i>//С‚Р°РєС‚РёСЂРѕРІР°РЅРёРµ USB</i><br>';
 				
-				OutCod += '<br>&nbsp;&nbsp;MDR_RST_CLK->USB_CLOCK = (1 << 8); <i>//есть тактовая частота</i><br>';
-				OutCod += '&nbsp;&nbsp;MDR_RST_CLK->USB_CLOCK |= ('+USB_C1_SEL+' << 0); <i>//источник для USB_C1</i><br>';
-				OutCod += '&nbsp;&nbsp;MDR_RST_CLK->USB_CLOCK |= ('+USB_C2_SEL+' << 2); <i>//источник для USB_C2</i><br>';
-				OutCod += '&nbsp;&nbsp;MDR_RST_CLK->USB_CLOCK |= ('+USB_C3_SEL+' << 4); <i>//делитель для USB_C3</i><br>';
+				OutCod += '<br>&nbsp;&nbsp;MDR_RST_CLK->USB_CLOCK = (1 << 8); <i>//РµСЃС‚СЊ С‚Р°РєС‚РѕРІР°СЏ С‡Р°СЃС‚РѕС‚Р°</i><br>';
+				OutCod += '&nbsp;&nbsp;MDR_RST_CLK->USB_CLOCK |= ('+USB_C1_SEL+' << 0); <i>//РёСЃС‚РѕС‡РЅРёРє РґР»СЏ USB_C1</i><br>';
+				OutCod += '&nbsp;&nbsp;MDR_RST_CLK->USB_CLOCK |= ('+USB_C2_SEL+' << 2); <i>//РёСЃС‚РѕС‡РЅРёРє РґР»СЏ USB_C2</i><br>';
+				OutCod += '&nbsp;&nbsp;MDR_RST_CLK->USB_CLOCK |= ('+USB_C3_SEL+' << 4); <i>//РґРµР»РёС‚РµР»СЊ РґР»СЏ USB_C3</i><br>';
 				
 				if (PLL_USB_MUL) {
-					OutCod += '<br>&nbsp;&nbsp;MDR_RST_CLK->PLL_CONTROL = ((1 << 0) | ('+(PLL_USB_MUL - 1)+' << 4)); <i>//вкл. PLL_USB | коэф. умножения = '+PLL_USB_MUL+'</i><br>';
-					OutCod += '&nbsp;&nbsp;<b>while</b>((MDR_RST_CLK->CLOCK_STATUS & 0x01) != 0x01); <i>//ждем когда PLL_USB выйдет в раб. режим</i><br>';
+					OutCod += '<br>&nbsp;&nbsp;MDR_RST_CLK->PLL_CONTROL = ((1 << 0) | ('+(PLL_USB_MUL - 1)+' << 4)); <i>//РІРєР». PLL_USB | РєРѕСЌС„. СѓРјРЅРѕР¶РµРЅРёСЏ = '+PLL_USB_MUL+'</i><br>';
+					OutCod += '&nbsp;&nbsp;<b>while</b>((MDR_RST_CLK->CLOCK_STATUS & 0x01) != 0x01); <i>//Р¶РґРµРј РєРѕРіРґР° PLL_USB РІС‹Р№РґРµС‚ РІ СЂР°Р±. СЂРµР¶РёРј</i><br>';
 				}
 				
-				OutCod += '<br>&nbsp;&nbsp;<b>for</b> (;i < 20; i++) MDR_USB->HSCR = (1 << 1); <i>//программный сброс контроллера USB</i><br>';
-				OutCod += '<br>&nbsp;&nbsp;MDR_USB->HSCR &=~ (1 << 1); <i>//рабочий режим контроллера USB</i><br>';
+				OutCod += '<br>&nbsp;&nbsp;<b>for</b> (;i < 20; i++) MDR_USB->HSCR = (1 << 1); <i>//РїСЂРѕРіСЂР°РјРјРЅС‹Р№ СЃР±СЂРѕСЃ РєРѕРЅС‚СЂРѕР»Р»РµСЂР° USB</i><br>';
+				OutCod += '<br>&nbsp;&nbsp;MDR_USB->HSCR &=~ (1 << 1); <i>//СЂР°Р±РѕС‡РёР№ СЂРµР¶РёРј РєРѕРЅС‚СЂРѕР»Р»РµСЂР° USB</i><br>';
 
 				
 				if (USB_C3){
@@ -94,18 +94,18 @@
 					if (pull == 1) pull = 'A << 4';
 					if (pull == 2) pull = '5 << 4';
 					
-					OutCod += '<br>&nbsp;&nbsp;MDR_USB->HSCR |= ('+host+' << 0); <i>//режим работы</i><br>';
-					OutCod += '&nbsp;&nbsp;MDR_USB->HSCR |= (('+entx+' << 2) | (1 << 3)); <i>//вкл. TX | вкл. RX</i><br>';
-					OutCod += '&nbsp;&nbsp;MDR_USB->HSCR |= (0x'+pull+'); <i>//Управление подтяжкой</i><br>';
+					OutCod += '<br>&nbsp;&nbsp;MDR_USB->HSCR |= ('+host+' << 0); <i>//СЂРµР¶РёРј СЂР°Р±РѕС‚С‹</i><br>';
+					OutCod += '&nbsp;&nbsp;MDR_USB->HSCR |= (('+entx+' << 2) | (1 << 3)); <i>//РІРєР». TX | РІРєР». RX</i><br>';
+					OutCod += '&nbsp;&nbsp;MDR_USB->HSCR |= (0x'+pull+'); <i>//РЈРїСЂР°РІР»РµРЅРёРµ РїРѕРґС‚СЏР¶РєРѕР№</i><br>';
 					
 					var spd = document.usb.spd.selectedIndex;
 					var pol = document.usb.pol.selectedIndex;
 					
 					if (host){
-						OutCod += '<br>&nbsp;&nbsp;MDR_USB->HTXLC |= (('+spd+' << 4) | ('+pol+' << 3)); <i>//cкорость | полярность</i><br>';
+						OutCod += '<br>&nbsp;&nbsp;MDR_USB->HTXLC |= (('+spd+' << 4) | ('+pol+' << 3)); <i>//cРєРѕСЂРѕСЃС‚СЊ | РїРѕР»СЏСЂРЅРѕСЃС‚СЊ</i><br>';
 					}
 					else{
-						OutCod += '<br>&nbsp;&nbsp;MDR_USB->SC |= (('+spd+' << 5) | ('+pol+' << 4) | 1); <i>//cкорость | полярность | вкл. окон. точек</i><br>';
+						OutCod += '<br>&nbsp;&nbsp;MDR_USB->SC |= (('+spd+' << 5) | ('+pol+' << 4) | 1); <i>//cРєРѕСЂРѕСЃС‚СЊ | РїРѕР»СЏСЂРЅРѕСЃС‚СЊ | РІРєР». РѕРєРѕРЅ. С‚РѕС‡РµРє</i><br>';
 					}
 				}
 				
@@ -116,30 +116,30 @@
     </script>
 	</head>
 	<body>
-    <span><h2>Расчет частоты тактирования USB</h2></span><br>
+    <span><h2>Р Р°СЃС‡РµС‚ С‡Р°СЃС‚РѕС‚С‹ С‚Р°РєС‚РёСЂРѕРІР°РЅРёСЏ USB</h2></span><br>
     <form name="usb">
 			<table width="100%" border="0" cellpadding="7">
-<!--1 строка-->
+<!--1 СЃС‚СЂРѕРєР°-->
 				<tr>
 					<td align="center">
-						<font size="2"><u>Источник для USB C1</u></font>
+						<font size="2"><u>РСЃС‚РѕС‡РЅРёРє РґР»СЏ USB C1</u></font>
 					</td>
 					<td align="center">
-						<font size="2"><u>Чатота внешнего кварца, Гц</u></font>
+						<font size="2"><u>Р§Р°С‚РѕС‚Р° РІРЅРµС€РЅРµРіРѕ РєРІР°СЂС†Р°, Р“С†</u></font>
 					</td>
 					<td align="center">
-						<font size="2"><u>USB C1, Гц</u></font>
+						<font size="2"><u>USB C1, Р“С†</u></font>
 					</td>
 					<td align="center">
-						<font size="2"><u>Множитель PLL </u></font>
+						<font size="2"><u>РњРЅРѕР¶РёС‚РµР»СЊ PLL </u></font>
 					</td>
 					<td align="center">
 						<font size="2"><u>USB PLL = </u></font>
 					</td>
 				</tr>
-<!--2 строка-->
+<!--2 СЃС‚СЂРѕРєР°-->
 				<tr>
-<!--Выбор источник синхросигнала-->
+<!--Р’С‹Р±РѕСЂ РёСЃС‚РѕС‡РЅРёРє СЃРёРЅС…СЂРѕСЃРёРіРЅР°Р»Р°-->
 					<td align="center">
 						<select name="ist" OnChange="usb_clk()">
 		    			<option>HSI</option>
@@ -148,15 +148,15 @@
 		    			<option>HSE/2</option>
 		  			</select>
 					</td>
-<!--Выбор частоты внешенго кварца-->
+<!--Р’С‹Р±РѕСЂ С‡Р°СЃС‚РѕС‚С‹ РІРЅРµС€РµРЅРіРѕ РєРІР°СЂС†Р°-->
 					<td align="center">
 						<input type="text" name="extq" OnChange="usb_clk()" size=10 placeholder="HSE" disabled value="12000000">
 					</td>
-<!--Вывод частоты USB C1-->
+<!--Р’С‹РІРѕРґ С‡Р°СЃС‚РѕС‚С‹ USB C1-->
 					<td align="center">
 		  			<input type="text" name="usbc1Hz" value="" size=10 placeholder="USB C1">
 					</td>
-<!--Выбор множителя PLL-->
+<!--Р’С‹Р±РѕСЂ РјРЅРѕР¶РёС‚РµР»СЏ PLL-->
 					<td align="center">
 		        <select name="pllmul" OnChange="usb_clk()">
 		  				<option> 0</option>
@@ -178,128 +178,128 @@
 		  				<option>16</option>
 		  			</select>
 					</td>
-<!--Вывод частоты USB_PLL-->					
+<!--Р’С‹РІРѕРґ С‡Р°СЃС‚РѕС‚С‹ USB_PLL-->					
 					<td align="center">
-		  			<input type="text" name="pllHz" value="" size=10 placeholder="USB PLL"> Гц
+		  			<input type="text" name="pllHz" value="" size=10 placeholder="USB PLL"> Р“С†
 					</td>
 				</tr>
-<!--3 строка-->
+<!--3 СЃС‚СЂРѕРєР°-->
 				<tr>
 					<td align="center">
-						<font size="2"><u>Источник для USB C2</u></font>
+						<font size="2"><u>РСЃС‚РѕС‡РЅРёРє РґР»СЏ USB C2</u></font>
 					</td>
 					<td align="center">
-						<font size="2"><u>USB C2, Гц</u></font>
+						<font size="2"><u>USB C2, Р“С†</u></font>
 					</td>
 					<td align="center">
-						<font size="2"><u>Предделитель USB C3</u></font>
+						<font size="2"><u>РџСЂРµРґРґРµР»РёС‚РµР»СЊ USB C3</u></font>
 					</td>
 					<td align="center">
-						<font size="2"><u>USB C3, Гц</u></font>
+						<font size="2"><u>USB C3, Р“С†</u></font>
 					</td>
 					<td align="center">
-						<font size="2"><u>USB_CLK, Гц</u></font>
+						<font size="2"><u>USB_CLK, Р“С†</u></font>
 					</td>
 				</tr>
-<!--4 строка-->
+<!--4 СЃС‚СЂРѕРєР°-->
 				<tr>
-<!--Выбор источника для USB_C2-->
+<!--Р’С‹Р±РѕСЂ РёСЃС‚РѕС‡РЅРёРєР° РґР»СЏ USB_C2-->
 					<td align="center">
 		  			<select name="usbc2mul" OnChange="usb_clk()">
 							<option>USB_C1</option>
 							<option>USB_PLL</option>
 						</select>
 					</td>
-<!--Вывод частоты USB_C2-->
+<!--Р’С‹РІРѕРґ С‡Р°СЃС‚РѕС‚С‹ USB_C2-->
 					<td align="center">
-		  			<input type="text" name="usbc2Hz" value="" size=10 placeholder="USB C2"> Гц
+		  			<input type="text" name="usbc2Hz" value="" size=10 placeholder="USB C2"> Р“С†
 					</td>
-<!--Выбор предделителя USB_C3-->					
+<!--Р’С‹Р±РѕСЂ РїСЂРµРґРґРµР»РёС‚РµР»СЏ USB_C3-->					
 					<td align="center">
 						<select name="usbc3div" OnChange="usb_clk()">
 							<option>USB_C2</option>
 							<option>USB_C2/2</option>
 						</select>
 					</td>
-<!--Вывод частоты USB_C3-->					
+<!--Р’С‹РІРѕРґ С‡Р°СЃС‚РѕС‚С‹ USB_C3-->					
 					<td align="center">
-		  			<input type="text" name="usbc3Hz" value="" size=10 placeholder="USB C3"> Гц
+		  			<input type="text" name="usbc3Hz" value="" size=10 placeholder="USB C3"> Р“С†
 					</td>
-<!--Вывод частоты USB_CLK-->					
+<!--Р’С‹РІРѕРґ С‡Р°СЃС‚РѕС‚С‹ USB_CLK-->					
 					<td align="center">
-		  			<input type="text" name="hclkHz" value="" size=10 placeholder="HCLK"> Гц
+		  			<input type="text" name="hclkHz" value="" size=10 placeholder="HCLK"> Р“С†
 					</td>
 				</tr>
-<!--Кнопки-->
+<!--РљРЅРѕРїРєРё-->
 				<tr>
 					<td></td><td></td><td></td><td></td><td></td>
 				</tr>
 
-<!--1 строка-->
+<!--1 СЃС‚СЂРѕРєР°-->
 				<tr>
 					<td align="center">
-						<font size="2"><u>Режим USB</u></font>
+						<font size="2"><u>Р РµР¶РёРј USB</u></font>
 					</td>
 					<td align="center">
-						<font size="2"><u>Передача</u></font>
+						<font size="2"><u>РџРµСЂРµРґР°С‡Р°</u></font>
 					</td>
 					<td align="center">
-						<font size="2"><u>Скорость</u></font>
+						<font size="2"><u>РЎРєРѕСЂРѕСЃС‚СЊ</u></font>
 					</td>
 					<td align="center">
-						<font size="2"><u>Полярность</u></font>
+						<font size="2"><u>РџРѕР»СЏСЂРЅРѕСЃС‚СЊ</u></font>
 					</td>
 					<td align="center">
-						<font size="2"><u>Подтяжка линии D+/-</u></font>
+						<font size="2"><u>РџРѕРґС‚СЏР¶РєР° Р»РёРЅРёРё D+/-</u></font>
 					</td>
 				</tr>
-<!--2 строка-->
+<!--2 СЃС‚СЂРѕРєР°-->
 				<tr>
-<!--Режим USB-->
+<!--Р РµР¶РёРј USB-->
 					<td align="center">
 						<select name="mod" OnChange="usb_clk()">
 		    			<option>Device</option>
 		    			<option>Host</option>
 		  			</select>
 					</td>
-<!--Передача-->
+<!--РџРµСЂРµРґР°С‡Р°-->
 					<td align="center">
 						<input type="checkbox" name="tx" OnChange="usb_clk()" checked="checked"><font size="2">TX</font>
 					</td>
-<!--Скорость-->
+<!--РЎРєРѕСЂРѕСЃС‚СЊ-->
 					<td align="center">
 		        <select name="spd" OnChange="usb_clk()">
-		    			<option>1.5 Mбит/с</option>
-		    			<option>12 Mбит/с</option>
+		    			<option>1.5 MР±РёС‚/СЃ</option>
+		    			<option>12 MР±РёС‚/СЃ</option>
 		  			</select>
 					</td>
-<!--Полярность-->					
+<!--РџРѕР»СЏСЂРЅРѕСЃС‚СЊ-->					
 					<td align="center">
 		  			<select name="pol" OnChange="usb_clk()">
 		    			<option>Low Speed</option>
 		    			<option>Full Speed</option>
 		  			</select>
 					</td>
-<!--Подтяжка линии D+/--->						
+<!--РџРѕРґС‚СЏР¶РєР° Р»РёРЅРёРё D+/--->						
 					<td align="center">
 		  			<select name="pulud" OnChange="usb_clk()">
-		    			<option>Подтяжки нет</option>
-							<option>Подтяжка вниз</option>
-		    			<option>Подтяжка вверх</option>
+		    			<option>РџРѕРґС‚СЏР¶РєРё РЅРµС‚</option>
+							<option>РџРѕРґС‚СЏР¶РєР° РІРЅРёР·</option>
+		    			<option>РџРѕРґС‚СЏР¶РєР° РІРІРµСЂС…</option>
 		  			</select>
 					</td>
 				</tr>
-<!--Кнопки-->
+<!--РљРЅРѕРїРєРё-->
 				<tr>
 					<td></td><td></td><td></td><td></td>
 					<td align="center">
-						<input type="button" name="bl1" value="Рассчитать" onclick="usb_clk()">
+						<input type="button" name="bl1" value="Р Р°СЃСЃС‡РёС‚Р°С‚СЊ" onclick="usb_clk()">
 					</td>
 				</tr>
-<!--Подсказка-->
+<!--РџРѕРґСЃРєР°Р·РєР°-->
 				<tr>
 					<td colspan="5">
-					<font size="2"><i>Примечание:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>БУДЬТЕ ВНИМАТЕЛЬНЫ</b> - конечная частота блока USB (USB_CLK) должна быть 48МГц.</i></font>
+					<font size="2"><i>РџСЂРёРјРµС‡Р°РЅРёРµ:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Р‘РЈР”Р¬РўР• Р’РќРРњРђРўР•Р›Р¬РќР«</b> - РєРѕРЅРµС‡РЅР°СЏ С‡Р°СЃС‚РѕС‚Р° Р±Р»РѕРєР° USB (USB_CLK) РґРѕР»Р¶РЅР° Р±С‹С‚СЊ 48РњР“С†.</i></font>
 					</td>
 				</tr>
 			</table>

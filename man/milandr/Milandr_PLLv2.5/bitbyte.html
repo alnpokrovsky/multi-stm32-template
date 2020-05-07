@@ -5,25 +5,25 @@
 		<title>BitByte</title>
     <style type="text/css">
       body {
-      	background-color:#fff; /* задаем цвет фона*/
-      	color:#993300; /* задаем цвет текста*/
-      	font-size:12px; /* задаем размер шрифта на странице */
-      	font-style:normal; /* начертание шрифта (нормальное) */
-      	font-family:Arial, Helvetica, sans-serif; /* устанавливаем шрифт */
+      	background-color:#fff; /* Р·Р°РґР°РµРј С†РІРµС‚ С„РѕРЅР°*/
+      	color:#993300; /* Р·Р°РґР°РµРј С†РІРµС‚ С‚РµРєСЃС‚Р°*/
+      	font-size:12px; /* Р·Р°РґР°РµРј СЂР°Р·РјРµСЂ С€СЂРёС„С‚Р° РЅР° СЃС‚СЂР°РЅРёС†Рµ */
+      	font-style:normal; /* РЅР°С‡РµСЂС‚Р°РЅРёРµ С€СЂРёС„С‚Р° (РЅРѕСЂРјР°Р»СЊРЅРѕРµ) */
+      	font-family:Arial, Helvetica, sans-serif; /* СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј С€СЂРёС„С‚ */
       }
 			u {
 				font-weight: bold;
 			}
 			.line {
-				border-left: 2px solid #ccc; /* Параметры линии */ 
-    		padding-left: 10px; /* Расстояние от линии до текста */ 
+				border-left: 2px solid #ccc; /* РџР°СЂР°РјРµС‚СЂС‹ Р»РёРЅРёРё */ 
+    		padding-left: 10px; /* Р Р°СЃСЃС‚РѕСЏРЅРёРµ РѕС‚ Р»РёРЅРёРё РґРѕ С‚РµРєСЃС‚Р° */ 
 			}
     </style>
     <script type="text/javascript">
       
 			var decTohex = new Array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F');
 
-			/*Функция перевода HEX в BIN*/
+			/*Р¤СѓРЅРєС†РёСЏ РїРµСЂРµРІРѕРґР° HEX РІ BIN*/
 			
       function ByteBit(){
 			
@@ -73,7 +73,7 @@
 				
       }
 			
-			/*Функция перевода BIN в HEX*/
+			/*Р¤СѓРЅРєС†РёСЏ РїРµСЂРµРІРѕРґР° BIN РІ HEX*/
 
 			
 			function BitByte(){
@@ -120,7 +120,7 @@
 				
 			}
 			
-			/*Функция перевода DEC в HEX*/
+			/*Р¤СѓРЅРєС†РёСЏ РїРµСЂРµРІРѕРґР° DEC РІ HEX*/
 			
 			function perevDecToHex(){
 				var DecValue = document.btbt.decVal.value;
@@ -128,7 +128,7 @@
 				var Mas = new Array();
 				
 				if (DecValue > 4294967295){
-					alert('Значение введенного десятичного числа не должно превышать 4294967295!');
+					alert('Р—РЅР°С‡РµРЅРёРµ РІРІРµРґРµРЅРЅРѕРіРѕ РґРµСЃСЏС‚РёС‡РЅРѕРіРѕ С‡РёСЃР»Р° РЅРµ РґРѕР»Р¶РЅРѕ РїСЂРµРІС‹С€Р°С‚СЊ 4294967295!');
 					document.btbt.decVal.select();
 				} 
 				else{
@@ -152,7 +152,7 @@
 				}
 			}
 			
-			/*Функция перевода HEX в DEC*/
+			/*Р¤СѓРЅРєС†РёСЏ РїРµСЂРµРІРѕРґР° HEX РІ DEC*/
 			
 			function perevHexToDec(){
 				var DecValue = parseInt(document.btbt.hexVal.value, 16), q = 0, i = 0, fl = 0;
@@ -188,20 +188,20 @@
 			<table width="100%" border="0" cellpadding="0">
 				<tr>
 					<td align="left" colspan="32">
-						<br><font size='2'><u>Перевод шестнадцатиричного в двоичный</u></font><br>&nbsp
+						<br><font size='2'><u>РџРµСЂРµРІРѕРґ С€РµСЃС‚РЅР°РґС†Р°С‚РёСЂРёС‡РЅРѕРіРѕ РІ РґРІРѕРёС‡РЅС‹Р№</u></font><br>&nbsp
 					</td>
 				</tr>
-<!--Ввод шестандцатиричного числа-->
+<!--Р’РІРѕРґ С€РµСЃС‚Р°РЅРґС†Р°С‚РёСЂРёС‡РЅРѕРіРѕ С‡РёСЃР»Р°-->
 				<tr>
 					<td align="left" colspan="5">
-						0x <input type="text" name="hexV" value="" maxlength='8' size=10 placeholder="ввод HEX">
+						0x <input type="text" name="hexV" value="" maxlength='8' size=10 placeholder="РІРІРѕРґ HEX">
 					</td>
 					<td align="left" colspan="27">
-						<input type="button" name="bl1" value="Рассчитать" onclick="ByteBit()">
+						<input type="button" name="bl1" value="Р Р°СЃСЃС‡РёС‚Р°С‚СЊ" onclick="ByteBit()">
 					</td>
 				</tr>
 
-<!--Вывод двоичного-->
+<!--Р’С‹РІРѕРґ РґРІРѕРёС‡РЅРѕРіРѕ-->
 				<tr>
 					<script  type="text/javascript">
 						for (var i = 31; i >= 0; i--)
@@ -216,10 +216,10 @@
 				</tr>
 				<tr>
 					<td align="left" colspan="32">
-						<br><font size='2'><u>Перевод двоичного в шестнадцатиричный</u></font><br>&nbsp
+						<br><font size='2'><u>РџРµСЂРµРІРѕРґ РґРІРѕРёС‡РЅРѕРіРѕ РІ С€РµСЃС‚РЅР°РґС†Р°С‚РёСЂРёС‡РЅС‹Р№</u></font><br>&nbsp
 					</td>
 				</tr>
-<!--Ввод двоичного-->
+<!--Р’РІРѕРґ РґРІРѕРёС‡РЅРѕРіРѕ-->
 				<tr>
 					<script  type="text/javascript">
 						for (var i = 31; i >= 0; i--)
@@ -232,26 +232,26 @@
 							document.write('<td align="center"> <input type="checkbox" name="vbit'+i+'" onchange="BitByte()"> </td>')
 					</script>
 				</tr>
-<!--Вывод байта-->
+<!--Р’С‹РІРѕРґ Р±Р°Р№С‚Р°-->
 				<tr>
 					<td align="left" colspan="32">
-						<input readonly type="text" name="vhexV" value="" size=10 placeholder="вывод HEX">
+						<input readonly type="text" name="vhexV" value="" size=10 placeholder="РІС‹РІРѕРґ HEX">
 					</td>
 				</tr>
 				<tr>
 					<td align='left' colspan='32'>
-						<br><font size='2'><u>Перевод десятичного в шестнадцатиричный</u></font><br>&nbsp
+						<br><font size='2'><u>РџРµСЂРµРІРѕРґ РґРµСЃСЏС‚РёС‡РЅРѕРіРѕ РІ С€РµСЃС‚РЅР°РґС†Р°С‚РёСЂРёС‡РЅС‹Р№</u></font><br>&nbsp
 					</td>
 				</tr>
 				<tr>
-<!--Ввод десятичного числа-->
+<!--Р’РІРѕРґ РґРµСЃСЏС‚РёС‡РЅРѕРіРѕ С‡РёСЃР»Р°-->
 					<td align="left" colspan="5">
 						<input type="text" name="decVal" value="" maxlength='10' size=10 placeholder="DEC">
 					</td>
 					<td align="left" colspan="3">
 						<< >>
 					</td>
-<!--Ввод шестнадцатиричного числа-->
+<!--Р’РІРѕРґ С€РµСЃС‚РЅР°РґС†Р°С‚РёСЂРёС‡РЅРѕРіРѕ С‡РёСЃР»Р°-->
 					<td align="left" colspan="24">
 						&nbsp&nbsp0x <input type="text" name="hexVal" value="" maxlength='8' size=10 placeholder="HEX">
 					</td>

@@ -2,14 +2,14 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 		<meta http-equiv="Access-Control-Allow-Origin" content="*"> 
-		<title>Настройка EBC</title>
+		<title>РќР°СЃС‚СЂРѕР№РєР° EBC</title>
     <style type="text/css">
       body {
-      	background-color:#fff; /* задаем цвет фона*/
-      	color:#993300; /* задаем цвет текста*/
-      	font-size:12px; /* задаем размер шрифта на странице */
-      	font-style:normal; /* начертание шрифта (нормальное) */
-      	font-family:Arial, Helvetica, sans-serif; /* устанавливаем шрифт */
+      	background-color:#fff; /* Р·Р°РґР°РµРј С†РІРµС‚ С„РѕРЅР°*/
+      	color:#993300; /* Р·Р°РґР°РµРј С†РІРµС‚ С‚РµРєСЃС‚Р°*/
+      	font-size:12px; /* Р·Р°РґР°РµРј СЂР°Р·РјРµСЂ С€СЂРёС„С‚Р° РЅР° СЃС‚СЂР°РЅРёС†Рµ */
+      	font-style:normal; /* РЅР°С‡РµСЂС‚Р°РЅРёРµ С€СЂРёС„С‚Р° (РЅРѕСЂРјР°Р»СЊРЅРѕРµ) */
+      	font-family:Arial, Helvetica, sans-serif; /* СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј С€СЂРёС„С‚ */
       }
 			u {
 				font-weight: bold;
@@ -64,53 +64,53 @@
 				
 					OutCod = "<b>void</b> EBC_Init(<b>void</b>){<br>";
 					
-					OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= ((0x1F << 21)|(1 << 29)); <i>//тактирование портов A,B,C,D,E,F</i><br>";
+					OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= ((0x1F << 21)|(1 << 29)); <i>//С‚Р°РєС‚РёСЂРѕРІР°РЅРёРµ РїРѕСЂС‚РѕРІ A,B,C,D,E,F</i><br>";
 				
-					OutCod += "<br>&nbsp;&nbsp;<i>/* настройка выводов - DATA0...DATA15 */</i><br>";
-					OutCod += "&nbsp;&nbsp;MDR_PORTA->FUNC |= 0x55555555; <i>//режим работы порта - основная</i><br>";
-					OutCod += "&nbsp;&nbsp;MDR_PORTA->ANALOG |= 0x0000FFFF; <i>//режим работы контроллера - цифровой</i><br>";
-					OutCod += "&nbsp;&nbsp;MDR_PORTA->PWR |= 0xFFFFFFFF; <i>//режим работы вывода порта - макс. быстрый</i><br>";
+					OutCod += "<br>&nbsp;&nbsp;<i>/* РЅР°СЃС‚СЂРѕР№РєР° РІС‹РІРѕРґРѕРІ - DATA0...DATA15 */</i><br>";
+					OutCod += "&nbsp;&nbsp;MDR_PORTA->FUNC |= 0x55555555; <i>//СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ РїРѕСЂС‚Р° - РѕСЃРЅРѕРІРЅР°СЏ</i><br>";
+					OutCod += "&nbsp;&nbsp;MDR_PORTA->ANALOG |= 0x0000FFFF; <i>//СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ РєРѕРЅС‚СЂРѕР»Р»РµСЂР° - С†РёС„СЂРѕРІРѕР№</i><br>";
+					OutCod += "&nbsp;&nbsp;MDR_PORTA->PWR |= 0xFFFFFFFF; <i>//СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ РІС‹РІРѕРґР° РїРѕСЂС‚Р° - РјР°РєСЃ. Р±С‹СЃС‚СЂС‹Р№</i><br>";
 				
-					OutCod += "<br>&nbsp;&nbsp;<i>/* настройка выводов - DATA16...DATA31 */</i><br>";
-					OutCod += "&nbsp;&nbsp;MDR_PORTB->FUNC |= 0x55555555; <i>//режим работы порта - основная</i><br>";
-					OutCod += "&nbsp;&nbsp;MDR_PORTB->ANALOG |= 0x0000FFFF; <i>//режим работы контроллера - цифровой</i><br>";
-					OutCod += "&nbsp;&nbsp;MDR_PORTB->PWR |= 0xFFFFFFFF; <i>//режим работы вывода порта - макс. быстрый</i><br>";
+					OutCod += "<br>&nbsp;&nbsp;<i>/* РЅР°СЃС‚СЂРѕР№РєР° РІС‹РІРѕРґРѕРІ - DATA16...DATA31 */</i><br>";
+					OutCod += "&nbsp;&nbsp;MDR_PORTB->FUNC |= 0x55555555; <i>//СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ РїРѕСЂС‚Р° - РѕСЃРЅРѕРІРЅР°СЏ</i><br>";
+					OutCod += "&nbsp;&nbsp;MDR_PORTB->ANALOG |= 0x0000FFFF; <i>//СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ РєРѕРЅС‚СЂРѕР»Р»РµСЂР° - С†РёС„СЂРѕРІРѕР№</i><br>";
+					OutCod += "&nbsp;&nbsp;MDR_PORTB->PWR |= 0xFFFFFFFF; <i>//СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ РІС‹РІРѕРґР° РїРѕСЂС‚Р° - РјР°РєСЃ. Р±С‹СЃС‚СЂС‹Р№</i><br>";
 					
-					OutCod += "<br>&nbsp;&nbsp;<i>/* настройка выводов - READY, OE, WE, BE1, BE2, BE3, CLOCK */</i><br>";
-					OutCod += "&nbsp;&nbsp;MDR_PORTC->FUNC |= 0x00005555; <i>//режим работы порта - основная</i><br>";
-					OutCod += "&nbsp;&nbsp;MDR_PORTC->ANALOG |= 0x000000FF; <i>//режим работы контроллера - цифровой</i><br>";
-					OutCod += "&nbsp;&nbsp;MDR_PORTC->PWR |= 0x0000FFFF; <i>//режим работы вывода порта - макс. быстрый</i><br>";
+					OutCod += "<br>&nbsp;&nbsp;<i>/* РЅР°СЃС‚СЂРѕР№РєР° РІС‹РІРѕРґРѕРІ - READY, OE, WE, BE1, BE2, BE3, CLOCK */</i><br>";
+					OutCod += "&nbsp;&nbsp;MDR_PORTC->FUNC |= 0x00005555; <i>//СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ РїРѕСЂС‚Р° - РѕСЃРЅРѕРІРЅР°СЏ</i><br>";
+					OutCod += "&nbsp;&nbsp;MDR_PORTC->ANALOG |= 0x000000FF; <i>//СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ РєРѕРЅС‚СЂРѕР»Р»РµСЂР° - С†РёС„СЂРѕРІРѕР№</i><br>";
+					OutCod += "&nbsp;&nbsp;MDR_PORTC->PWR |= 0x0000FFFF; <i>//СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ РІС‹РІРѕРґР° РїРѕСЂС‚Р° - РјР°РєСЃ. Р±С‹СЃС‚СЂС‹Р№</i><br>";
 					
-					OutCod += "<br>&nbsp;&nbsp;<i>/* настройка выводов - BUSY1, CLE, ALE, BUSY2 */</i><br>";
-					OutCod += "&nbsp;&nbsp;MDR_PORTD->FUNC |= 0x80001410; <i>//режим работы порта - основная, (15 - альтернативная)</i><br>";
-					OutCod += "&nbsp;&nbsp;MDR_PORTD->ANALOG |= 0x00008064; <i>//режим работы контроллера - цифровой</i><br>";
-					OutCod += "&nbsp;&nbsp;MDR_PORTD->PWR |= 0xC0003C30; <i>//режим работы вывода порта - макс. быстрый</i><br>";
+					OutCod += "<br>&nbsp;&nbsp;<i>/* РЅР°СЃС‚СЂРѕР№РєР° РІС‹РІРѕРґРѕРІ - BUSY1, CLE, ALE, BUSY2 */</i><br>";
+					OutCod += "&nbsp;&nbsp;MDR_PORTD->FUNC |= 0x80001410; <i>//СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ РїРѕСЂС‚Р° - РѕСЃРЅРѕРІРЅР°СЏ, (15 - Р°Р»СЊС‚РµСЂРЅР°С‚РёРІРЅР°СЏ)</i><br>";
+					OutCod += "&nbsp;&nbsp;MDR_PORTD->ANALOG |= 0x00008064; <i>//СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ РєРѕРЅС‚СЂРѕР»Р»РµСЂР° - С†РёС„СЂРѕРІРѕР№</i><br>";
+					OutCod += "&nbsp;&nbsp;MDR_PORTD->PWR |= 0xC0003C30; <i>//СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ РІС‹РІРѕРґР° РїРѕСЂС‚Р° - РјР°РєСЃ. Р±С‹СЃС‚СЂС‹Р№</i><br>";
 					
-					OutCod += "<br>&nbsp;&nbsp;<i>/* настройка выводов - ADDR0...ADDR15 */</i><br>";
-					OutCod += "&nbsp;&nbsp;MDR_PORTF->FUNC |= 0x55555555; <i>//режим работы порта - основная</i><br>";
-					OutCod += "&nbsp;&nbsp;MDR_PORTF->ANALOG |= 0x0000FFFF; <i>//режим работы контроллера - цифровой</i><br>";
-					OutCod += "&nbsp;&nbsp;MDR_PORTF->PWR |= 0xFFFFFFFF; <i>//режим работы вывода порта - макс. быстрый</i><br>";
+					OutCod += "<br>&nbsp;&nbsp;<i>/* РЅР°СЃС‚СЂРѕР№РєР° РІС‹РІРѕРґРѕРІ - ADDR0...ADDR15 */</i><br>";
+					OutCod += "&nbsp;&nbsp;MDR_PORTF->FUNC |= 0x55555555; <i>//СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ РїРѕСЂС‚Р° - РѕСЃРЅРѕРІРЅР°СЏ</i><br>";
+					OutCod += "&nbsp;&nbsp;MDR_PORTF->ANALOG |= 0x0000FFFF; <i>//СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ РєРѕРЅС‚СЂРѕР»Р»РµСЂР° - С†РёС„СЂРѕРІРѕР№</i><br>";
+					OutCod += "&nbsp;&nbsp;MDR_PORTF->PWR |= 0xFFFFFFFF; <i>//СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ РІС‹РІРѕРґР° РїРѕСЂС‚Р° - РјР°РєСЃ. Р±С‹СЃС‚СЂС‹Р№</i><br>";
 				
-					OutCod += "<br>&nbsp;&nbsp;<i>/* настройка выводов - ADDR16...ADDR31 */</i><br>";
-					OutCod += "&nbsp;&nbsp;MDR_PORTE->FUNC |= 0x55555555; <i>//режим работы порта - основная</i><br>";
-					OutCod += "&nbsp;&nbsp;MDR_PORTE->ANALOG |= 0x0000FFFF; <i>//режим работы контроллера - цифровой</i><br>";
-					OutCod += "&nbsp;&nbsp;MDR_PORTE->PWR |= 0xFFFFFFFF; <i>//режим работы вывода порта - макс. быстрый</i><br>";
+					OutCod += "<br>&nbsp;&nbsp;<i>/* РЅР°СЃС‚СЂРѕР№РєР° РІС‹РІРѕРґРѕРІ - ADDR16...ADDR31 */</i><br>";
+					OutCod += "&nbsp;&nbsp;MDR_PORTE->FUNC |= 0x55555555; <i>//СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ РїРѕСЂС‚Р° - РѕСЃРЅРѕРІРЅР°СЏ</i><br>";
+					OutCod += "&nbsp;&nbsp;MDR_PORTE->ANALOG |= 0x0000FFFF; <i>//СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ РєРѕРЅС‚СЂРѕР»Р»РµСЂР° - С†РёС„СЂРѕРІРѕР№</i><br>";
+					OutCod += "&nbsp;&nbsp;MDR_PORTE->PWR |= 0xFFFFFFFF; <i>//СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ РІС‹РІРѕРґР° РїРѕСЂС‚Р° - РјР°РєСЃ. Р±С‹СЃС‚СЂС‹Р№</i><br>";
 				
-					OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= 1 << 30; <i>//разрешение тактирования внешней шины</i><br>";
+					OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= 1 << 30; <i>//СЂР°Р·СЂРµС€РµРЅРёРµ С‚Р°РєС‚РёСЂРѕРІР°РЅРёСЏ РІРЅРµС€РЅРµР№ С€РёРЅС‹</i><br>";
 					OutCod += "&nbsp;&nbsp;MDR_EBC->CONTROL |= (<br>";
-					OutCod += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;("+wait+" << 12) | <i>//количество тактов шины AHB для цикла записи/чтения</i><br>";
-					OutCod += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;("+clk+" << 3) | <i>//полярность сигнала CLOCK</i><br>";
-					OutCod += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(1 << "+mem+")); <i>//разрешение памяти "+TMEM[mem]+"</i><br>";
+					OutCod += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;("+wait+" << 12) | <i>//РєРѕР»РёС‡РµСЃС‚РІРѕ С‚Р°РєС‚РѕРІ С€РёРЅС‹ AHB РґР»СЏ С†РёРєР»Р° Р·Р°РїРёСЃРё/С‡С‚РµРЅРёСЏ</i><br>";
+					OutCod += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;("+clk+" << 3) | <i>//РїРѕР»СЏСЂРЅРѕСЃС‚СЊ СЃРёРіРЅР°Р»Р° CLOCK</i><br>";
+					OutCod += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(1 << "+mem+")); <i>//СЂР°Р·СЂРµС€РµРЅРёРµ РїР°РјСЏС‚Рё "+TMEM[mem]+"</i><br>";
 					
 					if (mem == 2){
 						OutCod += "<br>&nbsp;&nbsp;MDR_EBC->NAND_CYCLES |= <br>";
-						OutCod += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;("+rr+" << 24) | <i>//Время от снятия busy до операции чтения</i><br>";
-						OutCod += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;("+alea+" << 20) | <i>//Время доступа к регистрам ID</i><br>";
-						OutCod += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;("+whr+" << 16) | <i>//Время доступа к регистру статуса</i><br>";
-						OutCod += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;("+wp+" << 12) | <i>//Время доступа по записи</i><br>";
-						OutCod += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;("+rea+" << 8) | <i>//Время доступа по чтению</i><br>";
-						OutCod += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;("+wc+" << 4) | <i>//Время цикла записи</i><br>";
-						OutCod += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;("+rc+" << 0)); <i>//Время цикла чтения</i><br>";
+						OutCod += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;("+rr+" << 24) | <i>//Р’СЂРµРјСЏ РѕС‚ СЃРЅСЏС‚РёСЏ busy РґРѕ РѕРїРµСЂР°С†РёРё С‡С‚РµРЅРёСЏ</i><br>";
+						OutCod += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;("+alea+" << 20) | <i>//Р’СЂРµРјСЏ РґРѕСЃС‚СѓРїР° Рє СЂРµРіРёСЃС‚СЂР°Рј ID</i><br>";
+						OutCod += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;("+whr+" << 16) | <i>//Р’СЂРµРјСЏ РґРѕСЃС‚СѓРїР° Рє СЂРµРіРёСЃС‚СЂСѓ СЃС‚Р°С‚СѓСЃР°</i><br>";
+						OutCod += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;("+wp+" << 12) | <i>//Р’СЂРµРјСЏ РґРѕСЃС‚СѓРїР° РїРѕ Р·Р°РїРёСЃРё</i><br>";
+						OutCod += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;("+rea+" << 8) | <i>//Р’СЂРµРјСЏ РґРѕСЃС‚СѓРїР° РїРѕ С‡С‚РµРЅРёСЋ</i><br>";
+						OutCod += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;("+wc+" << 4) | <i>//Р’СЂРµРјСЏ С†РёРєР»Р° Р·Р°РїРёСЃРё</i><br>";
+						OutCod += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;("+rc+" << 0)); <i>//Р’СЂРµРјСЏ С†РёРєР»Р° С‡С‚РµРЅРёСЏ</i><br>";
 					}
 					
 					OutCod += "}";
@@ -124,54 +124,54 @@
     </script>
 	</head>
 	<body>
-    <span><h2>Настройка Внешней системной шины (кроме 1986ВЕ94Т)</h2></span><br>
+    <span><h2>РќР°СЃС‚СЂРѕР№РєР° Р’РЅРµС€РЅРµР№ СЃРёСЃС‚РµРјРЅРѕР№ С€РёРЅС‹ (РєСЂРѕРјРµ 1986Р’Р•94Рў)</h2></span><br>
     	<form name="ebc">
 			<table width="95%" border="0" cellpadding="7">
-<!--Выбор EBC-->
+<!--Р’С‹Р±РѕСЂ EBC-->
 				<tr>
-					<td align="left" width="30%"><font size="2"><u>Включение EBC</u></font></td>
+					<td align="left" width="30%"><font size="2"><u>Р’РєР»СЋС‡РµРЅРёРµ EBC</u></font></td>
 					<td align="left">
 						<input type="checkbox" name="en_ebc" OnChange="ebc_clk()"><font size="2">EBC</font>
 					</td>
 					<td></td>
 				</tr>
-<!--Выберите количество тактов шины АНВ-->
+<!--Р’С‹Р±РµСЂРёС‚Рµ РєРѕР»РёС‡РµСЃС‚РІРѕ С‚Р°РєС‚РѕРІ С€РёРЅС‹ РђРќР’-->
 				<tr>
-					<td align="left"><font size="2"><u>Количество тактов шины АНВ</u></font></td>
+					<td align="left"><font size="2"><u>РљРѕР»РёС‡РµСЃС‚РІРѕ С‚Р°РєС‚РѕРІ С€РёРЅС‹ РђРќР’</u></font></td>
 					<td align="left">
 						<select name="wait_ebc" OnChange="ebc_clk()">
-							<option>3 такта HCLK</option>
-							<option>4 такта HCLK</option>
-							<option>5 тактов HCLK</option>
-							<option>6 тактов HCLK</option>
-							<option>7 тактов HCLK</option>
-							<option>8 тактов HCLK</option>
-							<option>9 тактов HCLK</option>
-							<option>10 тактов HCLK</option>
-							<option>11 тактов HCLK</option>
-							<option>12 тактов HCLK</option>
-							<option>13 тактов HCLK</option>
-							<option>14 тактов HCLK</option>
-							<option>15 тактов HCLK</option>
-							<option>16 тактов HCLK</option>
-							<option>17 тактов HCLK</option>
+							<option>3 С‚Р°РєС‚Р° HCLK</option>
+							<option>4 С‚Р°РєС‚Р° HCLK</option>
+							<option>5 С‚Р°РєС‚РѕРІ HCLK</option>
+							<option>6 С‚Р°РєС‚РѕРІ HCLK</option>
+							<option>7 С‚Р°РєС‚РѕРІ HCLK</option>
+							<option>8 С‚Р°РєС‚РѕРІ HCLK</option>
+							<option>9 С‚Р°РєС‚РѕРІ HCLK</option>
+							<option>10 С‚Р°РєС‚РѕРІ HCLK</option>
+							<option>11 С‚Р°РєС‚РѕРІ HCLK</option>
+							<option>12 С‚Р°РєС‚РѕРІ HCLK</option>
+							<option>13 С‚Р°РєС‚РѕРІ HCLK</option>
+							<option>14 С‚Р°РєС‚РѕРІ HCLK</option>
+							<option>15 С‚Р°РєС‚РѕРІ HCLK</option>
+							<option>16 С‚Р°РєС‚РѕРІ HCLK</option>
+							<option>17 С‚Р°РєС‚РѕРІ HCLK</option>
 						</select>
 					</td>
-					<td><font size="2">Сигналы OE/WE устанавливаются в момент времени &frac14; WAIT_STATE, снимаются в момент времени &frac34; WAIT_STATE</font></td>
+					<td><font size="2">РЎРёРіРЅР°Р»С‹ OE/WE СѓСЃС‚Р°РЅР°РІР»РёРІР°СЋС‚СЃСЏ РІ РјРѕРјРµРЅС‚ РІСЂРµРјРµРЅРё &frac14; WAIT_STATE, СЃРЅРёРјР°СЋС‚СЃСЏ РІ РјРѕРјРµРЅС‚ РІСЂРµРјРµРЅРё &frac34; WAIT_STATE</font></td>
 				</tr>
-<!--Выберите полярность сигнала CLOCK-->
+<!--Р’С‹Р±РµСЂРёС‚Рµ РїРѕР»СЏСЂРЅРѕСЃС‚СЊ СЃРёРіРЅР°Р»Р° CLOCK-->
 				<tr>
-					<td align="left"><font size="2"><u>Полярность сигнала CLOCK</u></font></td>
+					<td align="left"><font size="2"><u>РџРѕР»СЏСЂРЅРѕСЃС‚СЊ СЃРёРіРЅР°Р»Р° CLOCK</u></font></td>
 					<td align="left">
 						<select name="clk_ebc" OnChange="ebc_clk()">
-							<option>положительная</option>
-							<option>отрицательная</option>
+							<option>РїРѕР»РѕР¶РёС‚РµР»СЊРЅР°СЏ</option>
+							<option>РѕС‚СЂРёС†Р°С‚РµР»СЊРЅР°СЏ</option>
 						</select>
 					</td>
 				</tr>
-<!--Выберите тип памяти-->
+<!--Р’С‹Р±РµСЂРёС‚Рµ С‚РёРї РїР°РјСЏС‚Рё-->
 				<tr>
-					<td align="left"><font size="2"><u>Тип памяти</u></font></td>
+					<td align="left"><font size="2"><u>РўРёРї РїР°РјСЏС‚Рё</u></font></td>
 					<td align="left">
 						<select name="mem_ebc" OnChange="ebc_clk()">
 							<option>ROM</option>
@@ -180,137 +180,137 @@
 						</select>
 					</td>
 				</tr>
-<!--Время от снятия busy до чтения-->
+<!--Р’СЂРµРјСЏ РѕС‚ СЃРЅСЏС‚РёСЏ busy РґРѕ С‡С‚РµРЅРёСЏ-->
 				<tr>
-					<td align="left"><font size="2"><u>Время от снятия busy до чтения</u></font></td>
+					<td align="left"><font size="2"><u>Р’СЂРµРјСЏ РѕС‚ СЃРЅСЏС‚РёСЏ busy РґРѕ С‡С‚РµРЅРёСЏ</u></font></td>
 					<td align="left">
 						<select name="rr_ebc" OnChange="ebc_clk()" disabled>
 							<script type="text/javascript">
 							for (var i = 0; i < 16; i++){
 								document.write("<option>"+i+" ");
-								if (i == 1) document.write("цикл");
-								else if ((i >= 2)&&(i <= 4)) document.write("цикла");
-								else document.write("циклов");	
+								if (i == 1) document.write("С†РёРєР»");
+								else if ((i >= 2)&&(i <= 4)) document.write("С†РёРєР»Р°");
+								else document.write("С†РёРєР»РѕРІ");	
 								document.write(" HCLK</option>");	
 							}
 							</script>
 						</select>
 					</td>
-					<td><font size="2">Типовое значение для памяти NAND Flash составляет 20 нс</font></td>
+					<td><font size="2">РўРёРїРѕРІРѕРµ Р·РЅР°С‡РµРЅРёРµ РґР»СЏ РїР°РјСЏС‚Рё NAND Flash СЃРѕСЃС‚Р°РІР»СЏРµС‚ 20 РЅСЃ</font></td>
 				</tr>
-<!--Время доступа к регистрам ID-->
+<!--Р’СЂРµРјСЏ РґРѕСЃС‚СѓРїР° Рє СЂРµРіРёСЃС‚СЂР°Рј ID-->
 				<tr>
-					<td align="left"><font size="2"><u>Время доступа к регистрам ID</u></font></td>
+					<td align="left"><font size="2"><u>Р’СЂРµРјСЏ РґРѕСЃС‚СѓРїР° Рє СЂРµРіРёСЃС‚СЂР°Рј ID</u></font></td>
 					<td align="left">
 						<select name="alea_ebc" OnChange="ebc_clk()" disabled>
 							<script type="text/javascript">
 							for (var i = 0; i < 16; i++){
 								document.write("<option>"+i+" ");
-								if (i == 1) document.write("цикл");
-								else if ((i >= 2)&&(i <= 4)) document.write("цикла");
-								else document.write("циклов");	
+								if (i == 1) document.write("С†РёРєР»");
+								else if ((i >= 2)&&(i <= 4)) document.write("С†РёРєР»Р°");
+								else document.write("С†РёРєР»РѕРІ");	
 								document.write(" HCLK</option>");	
 							}
 							</script>
 						</select>
 					</td>
-					<td><font size="2">Типовое значение для памяти NAND Flash составляет 100 нс</font></td>
+					<td><font size="2">РўРёРїРѕРІРѕРµ Р·РЅР°С‡РµРЅРёРµ РґР»СЏ РїР°РјСЏС‚Рё NAND Flash СЃРѕСЃС‚Р°РІР»СЏРµС‚ 100 РЅСЃ</font></td>
 				</tr>
-<!--Время доступа к регистру статуса-->
+<!--Р’СЂРµРјСЏ РґРѕСЃС‚СѓРїР° Рє СЂРµРіРёСЃС‚СЂСѓ СЃС‚Р°С‚СѓСЃР°-->
 				<tr>
-					<td align="left"><font size="2"><u>Время доступа к регистру статуса</u></font></td>
+					<td align="left"><font size="2"><u>Р’СЂРµРјСЏ РґРѕСЃС‚СѓРїР° Рє СЂРµРіРёСЃС‚СЂСѓ СЃС‚Р°С‚СѓСЃР°</u></font></td>
 					<td align="left">
 						<select name="whr_ebc" OnChange="ebc_clk()" disabled>
 							<script type="text/javascript">
 							for (var i = 0; i < 16; i++){
 								document.write("<option>"+i+" ");
-								if (i == 1) document.write("цикл");
-								else if ((i >= 2)&&(i <= 4)) document.write("цикла");
-								else document.write("циклов");	
+								if (i == 1) document.write("С†РёРєР»");
+								else if ((i >= 2)&&(i <= 4)) document.write("С†РёРєР»Р°");
+								else document.write("С†РёРєР»РѕРІ");	
 								document.write(" HCLK</option>");	
 							}
 							</script>
 						</select>
 					</td>
-					<td><font size="2">Типовое значение для памяти NAND Flash составляет 60 нс</font></td>
+					<td><font size="2">РўРёРїРѕРІРѕРµ Р·РЅР°С‡РµРЅРёРµ РґР»СЏ РїР°РјСЏС‚Рё NAND Flash СЃРѕСЃС‚Р°РІР»СЏРµС‚ 60 РЅСЃ</font></td>
 				</tr>
-<!--Время доступа по записи-->
+<!--Р’СЂРµРјСЏ РґРѕСЃС‚СѓРїР° РїРѕ Р·Р°РїРёСЃРё-->
 				<tr>
-					<td align="left"><font size="2"><u>Время доступа по записи</u></font></td>
+					<td align="left"><font size="2"><u>Р’СЂРµРјСЏ РґРѕСЃС‚СѓРїР° РїРѕ Р·Р°РїРёСЃРё</u></font></td>
 					<td align="left">
 						<select name="wp_ebc" OnChange="ebc_clk()" disabled>
 							<script type="text/javascript">
 							for (var i = 0; i < 16; i++){
 								document.write("<option>"+i+" ");
-								if (i == 1) document.write("цикл");
-								else if ((i >= 2)&&(i <= 4)) document.write("цикла");
-								else document.write("циклов");	
+								if (i == 1) document.write("С†РёРєР»");
+								else if ((i >= 2)&&(i <= 4)) document.write("С†РёРєР»Р°");
+								else document.write("С†РёРєР»РѕРІ");	
 								document.write(" HCLK</option>");	
 							}
 							</script>
 						</select>
 					</td>
-					<td><font size="2">Типовое значение для памяти NAND Flash составляет 25 нс</font></td>
+					<td><font size="2">РўРёРїРѕРІРѕРµ Р·РЅР°С‡РµРЅРёРµ РґР»СЏ РїР°РјСЏС‚Рё NAND Flash СЃРѕСЃС‚Р°РІР»СЏРµС‚ 25 РЅСЃ</font></td>
 				</tr>
-<!--Время доступа по чтению-->
+<!--Р’СЂРµРјСЏ РґРѕСЃС‚СѓРїР° РїРѕ С‡С‚РµРЅРёСЋ-->
 				<tr>
-					<td align="left"><font size="2"><u>Время доступа по чтению</u></font></td>
+					<td align="left"><font size="2"><u>Р’СЂРµРјСЏ РґРѕСЃС‚СѓРїР° РїРѕ С‡С‚РµРЅРёСЋ</u></font></td>
 					<td align="left">
 						<select name="rea_ebc" OnChange="ebc_clk()" disabled>
 							<script type="text/javascript">
 							for (var i = 0; i < 16; i++){
 								document.write("<option>"+i+" ");
-								if (i == 1) document.write("цикл");
-								else if ((i >= 2)&&(i <= 4)) document.write("цикла");
-								else document.write("циклов");	
+								if (i == 1) document.write("С†РёРєР»");
+								else if ((i >= 2)&&(i <= 4)) document.write("С†РёРєР»Р°");
+								else document.write("С†РёРєР»РѕРІ");	
 								document.write(" HCLK</option>");	
 							}
 							</script>
 						</select>
 					</td>
-					<td><font size="2">Типовое значение для памяти NAND Flash составляет 35 нс</font></td>
+					<td><font size="2">РўРёРїРѕРІРѕРµ Р·РЅР°С‡РµРЅРёРµ РґР»СЏ РїР°РјСЏС‚Рё NAND Flash СЃРѕСЃС‚Р°РІР»СЏРµС‚ 35 РЅСЃ</font></td>
 				</tr>
-<!--Время цикла записи-->
+<!--Р’СЂРµРјСЏ С†РёРєР»Р° Р·Р°РїРёСЃРё-->
 				<tr>
-					<td align="left"><font size="2"><u>Время цикла записи</u></font></td>
+					<td align="left"><font size="2"><u>Р’СЂРµРјСЏ С†РёРєР»Р° Р·Р°РїРёСЃРё</u></font></td>
 					<td align="left">
 						<select name="wc_ebc" OnChange="ebc_clk()" disabled>
 							<script type="text/javascript">
 							for (var i = 0; i < 16; i++){
 								document.write("<option>"+i+" ");
-								if (i == 1) document.write("цикл");
-								else if ((i >= 2)&&(i <= 4)) document.write("цикла");
-								else document.write("циклов");	
+								if (i == 1) document.write("С†РёРєР»");
+								else if ((i >= 2)&&(i <= 4)) document.write("С†РёРєР»Р°");
+								else document.write("С†РёРєР»РѕРІ");	
 								document.write(" HCLK</option>");	
 							}
 							</script>
 						</select>
 					</td>
-					<td><font size="2">Типовое значение для памяти NAND Flash составляет 60 нс</font></td>
+					<td><font size="2">РўРёРїРѕРІРѕРµ Р·РЅР°С‡РµРЅРёРµ РґР»СЏ РїР°РјСЏС‚Рё NAND Flash СЃРѕСЃС‚Р°РІР»СЏРµС‚ 60 РЅСЃ</font></td>
 				</tr>
-<!--Время цикла чтения-->
+<!--Р’СЂРµРјСЏ С†РёРєР»Р° С‡С‚РµРЅРёСЏ-->
 				<tr>
-					<td align="left"><font size="2"><u>Время цикла чтения</u></font></td>
+					<td align="left"><font size="2"><u>Р’СЂРµРјСЏ С†РёРєР»Р° С‡С‚РµРЅРёСЏ</u></font></td>
 					<td align="left">
 						<select name="rc_ebc" OnChange="ebc_clk()" disabled>
 							<script type="text/javascript">
 							for (var i = 0; i < 16; i++){
 								document.write("<option>"+i+" ");
-								if (i == 1) document.write("цикл");
-								else if ((i >= 2)&&(i <= 4)) document.write("цикла");
-								else document.write("циклов");	
+								if (i == 1) document.write("С†РёРєР»");
+								else if ((i >= 2)&&(i <= 4)) document.write("С†РёРєР»Р°");
+								else document.write("С†РёРєР»РѕРІ");	
 								document.write(" HCLK</option>");	
 							}
 							</script>
 						</select>
 					</td>
-					<td><font size="2">Типовое значение для памяти NAND Flash составляет 60 нс</font></td>
+					<td><font size="2">РўРёРїРѕРІРѕРµ Р·РЅР°С‡РµРЅРёРµ РґР»СЏ РїР°РјСЏС‚Рё NAND Flash СЃРѕСЃС‚Р°РІР»СЏРµС‚ 60 РЅСЃ</font></td>
 				</tr>
-<!--Кнопки-->
+<!--РљРЅРѕРїРєРё-->
 				<tr>
 					<td align="left"><p><font size="2"></font></p></td>
 					<td align="left">
-						<input type="button" name="bl1" value="Рассчитать" onclick="pwr_clk()">
+						<input type="button" name="bl1" value="Р Р°СЃСЃС‡РёС‚Р°С‚СЊ" onclick="pwr_clk()">
 					</td>
 				</tr>
 			</table>

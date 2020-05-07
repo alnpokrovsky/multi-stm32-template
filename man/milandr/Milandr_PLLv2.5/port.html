@@ -1,15 +1,15 @@
 <html>
 	<head>
-		<!--Функция вывода порта<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">-->
+		<!--Р¤СѓРЅРєС†РёСЏ РІС‹РІРѕРґР° РїРѕСЂС‚Р°<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">-->
 		<meta http-equiv="Access-Control-Allow-Origin" content="*"> 
-		<title>Настройка PORT</title>
+		<title>РќР°СЃС‚СЂРѕР№РєР° PORT</title>
     <style type="text/css">
       body {
-      	background-color:#fff; /* задаем цвет фона*/
-      	color:#993300; /* задаем цвет текста*/
-      	font-size:12px; /* задаем размер шрифта на странице */
-      	font-style:normal; /* начертание шрифта (нормальное) */
-      	font-family:Arial, Helvetica, sans-serif; /* устанавливаем шрифт */
+      	background-color:#fff; /* Р·Р°РґР°РµРј С†РІРµС‚ С„РѕРЅР°*/
+      	color:#993300; /* Р·Р°РґР°РµРј С†РІРµС‚ С‚РµРєСЃС‚Р°*/
+      	font-size:12px; /* Р·Р°РґР°РµРј СЂР°Р·РјРµСЂ С€СЂРёС„С‚Р° РЅР° СЃС‚СЂР°РЅРёС†Рµ */
+      	font-style:normal; /* РЅР°С‡РµСЂС‚Р°РЅРёРµ С€СЂРёС„С‚Р° (РЅРѕСЂРјР°Р»СЊРЅРѕРµ) */
+      	font-family:Arial, Helvetica, sans-serif; /* СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј С€СЂРёС„С‚ */
       }
 			u {
 				font-weight: bold;
@@ -20,7 +20,7 @@
 			var POE, PFUNC, PAN, PUP, PDOWN, PPD, PPWR, PF;
 			var func, an, acc, gnd, pd, pwr, fil, OutCod;
 			
-			var EnDis = new Array('запрещение', 'разрешение');
+			var EnDis = new Array('Р·Р°РїСЂРµС‰РµРЅРёРµ', 'СЂР°Р·СЂРµС€РµРЅРёРµ');
 			
 			function mdr_port(num){
 				switch (document.port.mdrp.selectedIndex){
@@ -101,27 +101,27 @@
 				var FName = '<b>void</b> Port'+PORT+'_Pin'+PB+'_init(<b>void</b>){<br>';
 				
 				OutCod = FName;
-				OutCod += '&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= (1UL << '+CLK+'); <i>// разрешение тактирования порта <u>'+PORT+'</u></i><br>';
+				OutCod += '&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= (1UL << '+CLK+'); <i>// СЂР°Р·СЂРµС€РµРЅРёРµ С‚Р°РєС‚РёСЂРѕРІР°РЅРёСЏ РїРѕСЂС‚Р° <u>'+PORT+'</u></i><br>';
 				if (POE){
-					OutCod += '<br>&nbsp;&nbsp;MDR_PORT'+PORT+'->OE &nbsp;&nbsp;&nbsp;&nbsp;|= (('+POE+' << '+PB+')); <i>//направление передачи данных = <u>Выход</u></i><br>';
+					OutCod += '<br>&nbsp;&nbsp;MDR_PORT'+PORT+'->OE &nbsp;&nbsp;&nbsp;&nbsp;|= (('+POE+' << '+PB+')); <i>//РЅР°РїСЂР°РІР»РµРЅРёРµ РїРµСЂРµРґР°С‡Рё РґР°РЅРЅС‹С… = <u>Р’С‹С…РѕРґ</u></i><br>';
 				}
-				else OutCod += '<br>&nbsp;&nbsp;MDR_PORT'+PORT+'->OE &nbsp;&nbsp;&nbsp;&nbsp;|= (('+POE+' << '+PB+')); <i>//направление передачи данных = <u>Вход</u></i><br>';
+				else OutCod += '<br>&nbsp;&nbsp;MDR_PORT'+PORT+'->OE &nbsp;&nbsp;&nbsp;&nbsp;|= (('+POE+' << '+PB+')); <i>//РЅР°РїСЂР°РІР»РµРЅРёРµ РїРµСЂРµРґР°С‡Рё РґР°РЅРЅС‹С… = <u>Р’С…РѕРґ</u></i><br>';
 				
-				OutCod += '&nbsp;&nbsp;MDR_PORT'+PORT+'->ANALOG |= (('+PAN+' << '+PB+')); <i>//режим работы контроллера = <u>'+an.value+'</u></i><br>';
+				OutCod += '&nbsp;&nbsp;MDR_PORT'+PORT+'->ANALOG |= (('+PAN+' << '+PB+')); <i>//СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ РєРѕРЅС‚СЂРѕР»Р»РµСЂР° = <u>'+an.value+'</u></i><br>';
 				
-				if (PAN) OutCod += '&nbsp;&nbsp;MDR_PORT'+PORT+'->FUNC &nbsp;&nbsp;|= (('+PFUNC+' << '+PB+'*2)); <i>//режим работы вывода порта = <u>'+func.value+'</u></i><br>';
+				if (PAN) OutCod += '&nbsp;&nbsp;MDR_PORT'+PORT+'->FUNC &nbsp;&nbsp;|= (('+PFUNC+' << '+PB+'*2)); <i>//СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ РІС‹РІРѕРґР° РїРѕСЂС‚Р° = <u>'+func.value+'</u></i><br>';
 								
-				OutCod += '&nbsp;&nbsp;MDR_PORT'+PORT+'->PULL &nbsp;&nbsp;|= (('+PDOWN+' << '+PB+') | ('+PUP+' << ('+PB+' << 16))); <i>//<u>'+EnDis[PDOWN]+'</u> подтяжки к GND и <u>'+EnDis[PUP]+'</u> подтяжки к VCC</i><br>';
+				OutCod += '&nbsp;&nbsp;MDR_PORT'+PORT+'->PULL &nbsp;&nbsp;|= (('+PDOWN+' << '+PB+') | ('+PUP+' << ('+PB+' << 16))); <i>//<u>'+EnDis[PDOWN]+'</u> РїРѕРґС‚СЏР¶РєРё Рє GND Рё <u>'+EnDis[PUP]+'</u> РїРѕРґС‚СЏР¶РєРё Рє VCC</i><br>';
 				
 				if (document.port.inout[0].checked)
-					OutCod += '&nbsp;&nbsp;MDR_PORT'+PORT+'->PD &nbsp;&nbsp;&nbsp;&nbsp;|= (('+PPD+' << ('+PB+' << 16))); <i>//режим работы входа = <u>'+pd.value+'</u></i><br>';
+					OutCod += '&nbsp;&nbsp;MDR_PORT'+PORT+'->PD &nbsp;&nbsp;&nbsp;&nbsp;|= (('+PPD+' << ('+PB+' << 16))); <i>//СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ РІС…РѕРґР° = <u>'+pd.value+'</u></i><br>';
 				if (document.port.inout[1].checked)
-					OutCod += '&nbsp;&nbsp;MDR_PORT'+PORT+'->PD &nbsp;&nbsp;&nbsp;&nbsp;|= (('+PPD+' << '+PB+')); <i>//режим работы выхода = <u>'+pd.value+'</u></i><br>';
+					OutCod += '&nbsp;&nbsp;MDR_PORT'+PORT+'->PD &nbsp;&nbsp;&nbsp;&nbsp;|= (('+PPD+' << '+PB+')); <i>//СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ РІС‹С…РѕРґР° = <u>'+pd.value+'</u></i><br>';
 				
-				OutCod += '&nbsp;&nbsp;MDR_PORT'+PORT+'->PWR &nbsp;&nbsp;&nbsp;|= (('+PPWR+' << '+PB+'*2)); <i>//скорость фронта вывода = <u>'+pwr.value+'</u></i><br>';
+				OutCod += '&nbsp;&nbsp;MDR_PORT'+PORT+'->PWR &nbsp;&nbsp;&nbsp;|= (('+PPWR+' << '+PB+'*2)); <i>//СЃРєРѕСЂРѕСЃС‚СЊ С„СЂРѕРЅС‚Р° РІС‹РІРѕРґР° = <u>'+pwr.value+'</u></i><br>';
 				if (document.port.inout[0].checked){
-					if (fil.checked) OutCod += '&nbsp;&nbsp;MDR_PORT'+PORT+'->GFEN &nbsp;&nbsp;|= (('+PF+' << '+PB+')); <i>//входной фильтр <u>включен</u></i><br>';
-					else OutCod += '&nbsp;&nbsp;MDR_PORT'+PORT+'->GFEN &nbsp;&nbsp;|= (('+PF+' << '+PB+')); <i>//входной фильтр <u>выключен</u></i><br>';
+					if (fil.checked) OutCod += '&nbsp;&nbsp;MDR_PORT'+PORT+'->GFEN &nbsp;&nbsp;|= (('+PF+' << '+PB+')); <i>//РІС…РѕРґРЅРѕР№ С„РёР»СЊС‚СЂ <u>РІРєР»СЋС‡РµРЅ</u></i><br>';
+					else OutCod += '&nbsp;&nbsp;MDR_PORT'+PORT+'->GFEN &nbsp;&nbsp;|= (('+PF+' << '+PB+')); <i>//РІС…РѕРґРЅРѕР№ С„РёР»СЊС‚СЂ <u>РІС‹РєР»СЋС‡РµРЅ</u></i><br>';
 				}
 					
 					
@@ -133,13 +133,13 @@
     </script>
 	</head>
 	<body>
-    <span><h2>Настройка PORT</h2></span><br>
+    <span><h2>РќР°СЃС‚СЂРѕР№РєР° PORT</h2></span><br>
     	<form name="port">
 			<table width="100%" border="0" cellpadding="7">
-<!--Выбор порта и вывода-->
+<!--Р’С‹Р±РѕСЂ РїРѕСЂС‚Р° Рё РІС‹РІРѕРґР°-->
 				<tr>
 					<td align="left">
-						<font size="2"><u>Порт и вывод</u></font>
+						<font size="2"><u>РџРѕСЂС‚ Рё РІС‹РІРѕРґ</u></font>
 					</td>
 					<td align="right">
 		        <select name="mdrp" OnChange="mdr_port(0)">
@@ -170,131 +170,131 @@
 		  			</select>
 			    </td>
 				</tr>
-<!--Направление передачи данных-->
+<!--РќР°РїСЂР°РІР»РµРЅРёРµ РїРµСЂРµРґР°С‡Рё РґР°РЅРЅС‹С…-->
 				<tr>
 					<td align="left">
-						<font size="2"><u>Направление передачи данных</u></font>
+						<font size="2"><u>РќР°РїСЂР°РІР»РµРЅРёРµ РїРµСЂРµРґР°С‡Рё РґР°РЅРЅС‹С…</u></font>
 					</td>
 					<td align="left">
 						<p>
-							<input type="radio" name="inout" value="in" onchange="mdr_port(1)" checked> <font size="2"><b>Вход</b></font>
+							<input type="radio" name="inout" value="in" onchange="mdr_port(1)" checked> <font size="2"><b>Р’С…РѕРґ</b></font>
 						</p>
 					</td>
 					<td align="left"> 
 						<p>
-							<input type="radio" name="inout" value="out" onchange="mdr_port(2)"> <font size="2"><b>Выход</b></font>
+							<input type="radio" name="inout" value="out" onchange="mdr_port(2)"> <font size="2"><b>Р’С‹С…РѕРґ</b></font>
 						</p>
 					</td>
 				</tr>
-<!--Цифровой/аналоговый-->
+<!--Р¦РёС„СЂРѕРІРѕР№/Р°РЅР°Р»РѕРіРѕРІС‹Р№-->
 				<tr>
-					<td align="left"><p><font size="2"><u>Цифровой/аналоговый</u></font></p></td>
+					<td align="left"><p><font size="2"><u>Р¦РёС„СЂРѕРІРѕР№/Р°РЅР°Р»РѕРіРѕРІС‹Р№</u></font></p></td>
 					<td align="left">
 						<p>
 							<select name="inan" OnChange="mdr_port(1)">
-			    			<option selected>Аналоговый</option>
-			    			<option>Цифровой</option>
+			    			<option selected>РђРЅР°Р»РѕРіРѕРІС‹Р№</option>
+			    			<option>Р¦РёС„СЂРѕРІРѕР№</option>
 			  			</select>
 						</p>
 					</td>
 					<td align="left">
 						<p>
 							<select name="outan" OnChange="mdr_port(2)" disabled>
-			    			<option selected>Аналоговый</option>
-			    			<option>Цифровой</option>
+			    			<option selected>РђРЅР°Р»РѕРіРѕРІС‹Р№</option>
+			    			<option>Р¦РёС„СЂРѕРІРѕР№</option>
 			  			</select>
 						</p>
 					</td>
 				</tr>
-<!--Функция вывода порта-->
+<!--Р¤СѓРЅРєС†РёСЏ РІС‹РІРѕРґР° РїРѕСЂС‚Р°-->
 				<tr>
-					<td align="left"><p><font size="2"><u>Функция вывода порта</u></font></p></td>
+					<td align="left"><p><font size="2"><u>Р¤СѓРЅРєС†РёСЏ РІС‹РІРѕРґР° РїРѕСЂС‚Р°</u></font></p></td>
 					<td align="left">
 						<p>
 							<select name="infunc" OnChange="mdr_port(1)" disabled>
-			    			<option selected>Порт</option>
-			    			<option>Основная</option>
-			    			<option>Альтернативная</option>
-			    			<option>Переопределенная</option>
+			    			<option selected>РџРѕСЂС‚</option>
+			    			<option>РћСЃРЅРѕРІРЅР°СЏ</option>
+			    			<option>РђР»СЊС‚РµСЂРЅР°С‚РёРІРЅР°СЏ</option>
+			    			<option>РџРµСЂРµРѕРїСЂРµРґРµР»РµРЅРЅР°СЏ</option>
 			  			</select>
 						</p>
 					</td>
 					<td align="left">
 						<p>
 							<select name="outfunc" OnChange="mdr_port(2)" disabled>
-			    			<option selected>Порт</option>
-			    			<option>Основная</option>
-			    			<option>Альтернативная</option>
-			    			<option>Переопределенная</option>
+			    			<option selected>РџРѕСЂС‚</option>
+			    			<option>РћСЃРЅРѕРІРЅР°СЏ</option>
+			    			<option>РђР»СЊС‚РµСЂРЅР°С‚РёРІРЅР°СЏ</option>
+			    			<option>РџРµСЂРµРѕРїСЂРµРґРµР»РµРЅРЅР°СЏ</option>
 			  			</select>
 						</p>
 					</td>
 				</tr>
-<!--Режим подтяжки-->
+<!--Р РµР¶РёРј РїРѕРґС‚СЏР¶РєРё-->
 				<tr>
-					<td align="left"><p><font size="2"><u>Режим подтяжки</u></font></p></td>
+					<td align="left"><p><font size="2"><u>Р РµР¶РёРј РїРѕРґС‚СЏР¶РєРё</u></font></p></td>
 					<td align="left">
-						<input type="checkbox" name="accin" onchange="mdr_port(1)"> <font size="2">Подтяжка к питанию</font><br>
-						<input type="checkbox" name="gndin" onchange="mdr_port(1)"> <font size="2">Подтяжка к земле<br>
+						<input type="checkbox" name="accin" onchange="mdr_port(1)"> <font size="2">РџРѕРґС‚СЏР¶РєР° Рє РїРёС‚Р°РЅРёСЋ</font><br>
+						<input type="checkbox" name="gndin" onchange="mdr_port(1)"> <font size="2">РџРѕРґС‚СЏР¶РєР° Рє Р·РµРјР»Рµ<br>
 					</td>
 					<td align="left">
-						<input type="checkbox" name="accout" onchange="mdr_port(2)" disabled> <font size="2">Подтяжка к питанию</font><br>
-						<input type="checkbox" name="gndout" onchange="mdr_port(2)" disabled> <font size="2">Подтяжка к земле</font><br>
+						<input type="checkbox" name="accout" onchange="mdr_port(2)" disabled> <font size="2">РџРѕРґС‚СЏР¶РєР° Рє РїРёС‚Р°РЅРёСЋ</font><br>
+						<input type="checkbox" name="gndout" onchange="mdr_port(2)" disabled> <font size="2">РџРѕРґС‚СЏР¶РєР° Рє Р·РµРјР»Рµ</font><br>
 					</td>
 				</tr>
-<!--Режим работы-->
+<!--Р РµР¶РёРј СЂР°Р±РѕС‚С‹-->
 				<tr>
-					<td align="left"><p><font size="2"><u>Режим работы</u></font></p></td>
+					<td align="left"><p><font size="2"><u>Р РµР¶РёРј СЂР°Р±РѕС‚С‹</u></font></p></td>
 					<td align="left">
 						<select name="inpd" onchange="mdr_port(1)">
-							<option selected>триггер Шмитта выкл</option>
-							<option>триггер Шмитта вкл.</option>
+							<option selected>С‚СЂРёРіРіРµСЂ РЁРјРёС‚С‚Р° РІС‹РєР»</option>
+							<option>С‚СЂРёРіРіРµСЂ РЁРјРёС‚С‚Р° РІРєР».</option>
 						</select>
 					</td>
 					<td align="left">
 						<select name="outpd" onchange="mdr_port(2)" disabled>
-							<option selected>управляемый драйвер</option>
-							<option>открытый сток</option>
+							<option selected>СѓРїСЂР°РІР»СЏРµРјС‹Р№ РґСЂР°Р№РІРµСЂ</option>
+							<option>РѕС‚РєСЂС‹С‚С‹Р№ СЃС‚РѕРє</option>
 						</select>
 					</td>
 				</tr>
-<!--Режим вывода-->
+<!--Р РµР¶РёРј РІС‹РІРѕРґР°-->
 				<tr>
-					<td align="left"><p><font size="2"><u>Режим вывода</u></font></p></td>
+					<td align="left"><p><font size="2"><u>Р РµР¶РёРј РІС‹РІРѕРґР°</u></font></p></td>
 					<td align="left">
 						<select name="inpwr" onchange="mdr_port(1)">
 							<option></option>
-							<option selected>медленный</option>
-							<option>быстрый</option>
-							<option>максимальный</option>
+							<option selected>РјРµРґР»РµРЅРЅС‹Р№</option>
+							<option>Р±С‹СЃС‚СЂС‹Р№</option>
+							<option>РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№</option>
 						</select>
 					</td>
 					<td align="left">
 						<select name="outpwr" onchange="mdr_port(2)" disabled>
 							<option></option>
-							<option selected>медленный</option>
-							<option>быстрый</option>
-							<option>максимальный</option>
+							<option selected>РјРµРґР»РµРЅРЅС‹Р№</option>
+							<option>Р±С‹СЃС‚СЂС‹Р№</option>
+							<option>РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№</option>
 						</select>
 					</td>
 				</tr>
-<!--Фильтр-->
+<!--Р¤РёР»СЊС‚СЂ-->
 				<tr>
 					<td align="left"><p><font size="2"></font></p></td>
 					<td align="left">
-						<input type="checkbox" name="infil" onchange="mdr_port(1)"> <font size="2">Фильтр</font><br>
+						<input type="checkbox" name="infil" onchange="mdr_port(1)"> <font size="2">Р¤РёР»СЊС‚СЂ</font><br>
 					</td>
 					<td>
 					</td>
 				</tr>
-<!--Кнопки-->
+<!--РљРЅРѕРїРєРё-->
 				<tr>
 					<td align="left"><p><font size="2"></font></p></td>
 					<td align="left">
-						<input type="button" name="bl1" value="Рассчитать" onclick="mdr_port(1)">
+						<input type="button" name="bl1" value="Р Р°СЃСЃС‡РёС‚Р°С‚СЊ" onclick="mdr_port(1)">
 					</td>
 					<td>
-						<input type="button" name="bl2" value="Рассчитать" onclick="mdr_port(2)" disabled>
+						<input type="button" name="bl2" value="Р Р°СЃСЃС‡РёС‚Р°С‚СЊ" onclick="mdr_port(2)" disabled>
 					</td>
 				</tr>
 			</table>

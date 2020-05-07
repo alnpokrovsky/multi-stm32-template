@@ -2,14 +2,14 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 		<meta http-equiv="Access-Control-Allow-Origin" content="*"> 
-		<title>Настройка CAN</title>
+		<title>РќР°СЃС‚СЂРѕР№РєР° CAN</title>
     <style type="text/css">
       body {
-      	background-color:#fff; /* задаем цвет фона*/
-      	color:#993300; /* задаем цвет текста*/
-      	font-size:12px; /* задаем размер шрифта на странице */
-      	font-style:normal; /* начертание шрифта (нормальное) */
-      	font-family:Arial, Helvetica, sans-serif; /* устанавливаем шрифт */
+      	background-color:#fff; /* Р·Р°РґР°РµРј С†РІРµС‚ С„РѕРЅР°*/
+      	color:#993300; /* Р·Р°РґР°РµРј С†РІРµС‚ С‚РµРєСЃС‚Р°*/
+      	font-size:12px; /* Р·Р°РґР°РµРј СЂР°Р·РјРµСЂ С€СЂРёС„С‚Р° РЅР° СЃС‚СЂР°РЅРёС†Рµ */
+      	font-style:normal; /* РЅР°С‡РµСЂС‚Р°РЅРёРµ С€СЂРёС„С‚Р° (РЅРѕСЂРјР°Р»СЊРЅРѕРµ) */
+      	font-family:Arial, Helvetica, sans-serif; /* СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј С€СЂРёС„С‚ */
       }
 			u {
 				font-weight: bold;
@@ -34,7 +34,7 @@
 			
 			var en_can, portc, candiv, canHz, canspeed, cantq;
 			
-			//расчет CAN
+			//СЂР°СЃС‡РµС‚ CAN
 			function can_clk(num){
 				var str = new Array();   var sp = new Array(); var tp = new Array();
 				
@@ -85,14 +85,14 @@
 					}
 					
 					
-					BRP[num] = prompt("CAN"+num+":\nВведите целое значение предделителя в интервале \nот "+tp[1]+" до "+tp[0]+" включительно");
+					BRP[num] = prompt("CAN"+num+":\nР’РІРµРґРёС‚Рµ С†РµР»РѕРµ Р·РЅР°С‡РµРЅРёРµ РїСЂРµРґРґРµР»РёС‚РµР»СЏ РІ РёРЅС‚РµСЂРІР°Р»Рµ \nРѕС‚ "+tp[1]+" РґРѕ "+tp[0]+" РІРєР»СЋС‡РёС‚РµР»СЊРЅРѕ");
 					
 					tp[2] = (parseInt(BRP[num]) + 1)/CAN_CLK[num];
 					tp[3] = 1/sp[num]/tp[2];
 					tp[3] = tp[3].toFixed();
 					
 					if ((tp[3] < 8) || (tp[3] > 25)){
-						alert("CAN"+num+":\nКоличество квантов времени должно быть в интервале \nот 8 до 25 включительно!\nИзмените предделитель или скорость!");
+						alert("CAN"+num+":\nРљРѕР»РёС‡РµСЃС‚РІРѕ РєРІР°РЅС‚РѕРІ РІСЂРµРјРµРЅРё РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РІ РёРЅС‚РµСЂРІР°Р»Рµ \nРѕС‚ 8 РґРѕ 25 РІРєР»СЋС‡РёС‚РµР»СЊРЅРѕ!\nРР·РјРµРЅРёС‚Рµ РїСЂРµРґРґРµР»РёС‚РµР»СЊ РёР»Рё СЃРєРѕСЂРѕСЃС‚СЊ!");
 						tp[4] = 0;
 						canHz.value = ""; 
 					}
@@ -105,14 +105,14 @@
 						tp[5] = tp[5].toFixed(1);
 						tp[6] = tp[6].toFixed(1);
 						
-						SEG1[num] = prompt("CAN"+num+":\nВведите целое значение SEG1 в интервале \nот "+tp[5]+" до "+tp[6]);
+						SEG1[num] = prompt("CAN"+num+":\nР’РІРµРґРёС‚Рµ С†РµР»РѕРµ Р·РЅР°С‡РµРЅРёРµ SEG1 РІ РёРЅС‚РµСЂРІР°Р»Рµ \nРѕС‚ "+tp[5]+" РґРѕ "+tp[6]);
 													
 						PSEG[num] = 2;
 						SEG2[num] = tp[3] - 3 - SEG1[num];
 					}
 				}
 				if ((SEG1[num] > 8) || (SEG2[num] > 8)){
-					alert("CAN"+num+":\nЗначения SEG1 и SEG2 должны быть не больше 8!\nВведите другие значения скорости и предделителей!");
+					alert("CAN"+num+":\nР—РЅР°С‡РµРЅРёСЏ SEG1 Рё SEG2 РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РЅРµ Р±РѕР»СЊС€Рµ 8!\nР’РІРµРґРёС‚Рµ РґСЂСѓРіРёРµ Р·РЅР°С‡РµРЅРёСЏ СЃРєРѕСЂРѕСЃС‚Рё Рё РїСЂРµРґРґРµР»РёС‚РµР»РµР№!");
 					tp[4] = 0;
 					canHz.value = ""; 
 					SEG1[num] = 0; SEG2[num] = 0;
@@ -141,27 +141,27 @@
 						OutCod = '<b>void</b> Can_Init(<b>void</b>){<br>';
 						
 						if (CAN_CLK_EN[1]) {
-							OutCod += "&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= (1UL << "+CAN_PER[1]+"); <i>//Тактирование порта "+CAN_PORT[1]+"</i><br>";
+							OutCod += "&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= (1UL << "+CAN_PER[1]+"); <i>//РўР°РєС‚РёСЂРѕРІР°РЅРёРµ РїРѕСЂС‚Р° "+CAN_PORT[1]+"</i><br>";
 						}
 						if (CAN_CLK_EN[2]) {
 							if (CAN_PER[1] != CAN_PER[2])
-								OutCod += "&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= (1UL << "+CAN_PER[2]+"); <i>//Тактирование порта "+CAN_PORT[2]+"</i><br>";
+								OutCod += "&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= (1UL << "+CAN_PER[2]+"); <i>//РўР°РєС‚РёСЂРѕРІР°РЅРёРµ РїРѕСЂС‚Р° "+CAN_PORT[2]+"</i><br>";
 						}
 						for (var i = 1; i <= 2; i++){
 							if (CAN_CLK_EN[i]){
-								OutCod += "<br>&nbsp;&nbsp;MDR_PORT"+CAN_PORT[i]+"->FUNC &nbsp;&nbsp;|= (("+F_TX[i]+" << "+CAN_TX[i]+"*2) | ("+F_RX[i]+" << "+CAN_RX[i]+"*2)); <i>//режим работы порта</i><br>";
-								OutCod += "&nbsp;&nbsp;MDR_PORT"+CAN_PORT[i]+"->ANALOG |= ((1 << "+CAN_TX[i]+"&nbsp;&nbsp;) | (1 << "+CAN_RX[i]+"&nbsp;&nbsp;)); <i>//цифровой</i><br>";
-								OutCod += "&nbsp;&nbsp;MDR_PORT"+CAN_PORT[i]+"->PD &nbsp;&nbsp;&nbsp;&=~ ((1 << "+CAN_TX[i]+"&nbsp;&nbsp;) | (1 << "+CAN_RX[i]+"&nbsp;&nbsp;)); <i>//управляемый драйвер</i><br>";
-								OutCod += "&nbsp;&nbsp;MDR_PORT"+CAN_PORT[i]+"->PWR &nbsp;&nbsp;&nbsp;|= ((3 << "+CAN_TX[i]+"*2) | (3 << "+CAN_RX[i]+"*2)); <i>//максимально быcтрый</i><br>";
+								OutCod += "<br>&nbsp;&nbsp;MDR_PORT"+CAN_PORT[i]+"->FUNC &nbsp;&nbsp;|= (("+F_TX[i]+" << "+CAN_TX[i]+"*2) | ("+F_RX[i]+" << "+CAN_RX[i]+"*2)); <i>//СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ РїРѕСЂС‚Р°</i><br>";
+								OutCod += "&nbsp;&nbsp;MDR_PORT"+CAN_PORT[i]+"->ANALOG |= ((1 << "+CAN_TX[i]+"&nbsp;&nbsp;) | (1 << "+CAN_RX[i]+"&nbsp;&nbsp;)); <i>//С†РёС„СЂРѕРІРѕР№</i><br>";
+								OutCod += "&nbsp;&nbsp;MDR_PORT"+CAN_PORT[i]+"->PD &nbsp;&nbsp;&nbsp;&=~ ((1 << "+CAN_TX[i]+"&nbsp;&nbsp;) | (1 << "+CAN_RX[i]+"&nbsp;&nbsp;)); <i>//СѓРїСЂР°РІР»СЏРµРјС‹Р№ РґСЂР°Р№РІРµСЂ</i><br>";
+								OutCod += "&nbsp;&nbsp;MDR_PORT"+CAN_PORT[i]+"->PWR &nbsp;&nbsp;&nbsp;|= ((3 << "+CAN_TX[i]+"*2) | (3 << "+CAN_RX[i]+"*2)); <i>//РјР°РєСЃРёРјР°Р»СЊРЅРѕ Р±С‹cС‚СЂС‹Р№</i><br>";
 							}
 						}
 						if (CAN_CLK_EN[1]) {
-							OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= (1UL << 0); <i>//тактирование CAN1</i>";
+							OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= (1UL << 0); <i>//С‚Р°РєС‚РёСЂРѕРІР°РЅРёРµ CAN1</i>";
 						}
 						if (CAN_CLK_EN[2]) {
-							OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= (1UL << 1); <i>//тактирование CAN2</i><br>";
+							OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= (1UL << 1); <i>//С‚Р°РєС‚РёСЂРѕРІР°РЅРёРµ CAN2</i><br>";
 						}
-						OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->CAN_CLOCK = ("+div[1]+" <i>/*предделитель CAN1*/</i><br>&nbsp;&nbsp;|("+div[2]+" << 8) <i>/*предделитель CAN2*/</i><br>&nbsp;&nbsp;|("+CAN_CLK_EN[1]+" << 24)<i>/*вкл. CAN1*/</i><br>&nbsp;&nbsp;|("+CAN_CLK_EN[2]+" << 25));<i>/*вкл. CAN2*/</i><br>";
+						OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->CAN_CLOCK = ("+div[1]+" <i>/*РїСЂРµРґРґРµР»РёС‚РµР»СЊ CAN1*/</i><br>&nbsp;&nbsp;|("+div[2]+" << 8) <i>/*РїСЂРµРґРґРµР»РёС‚РµР»СЊ CAN2*/</i><br>&nbsp;&nbsp;|("+CAN_CLK_EN[1]+" << 24)<i>/*РІРєР». CAN1*/</i><br>&nbsp;&nbsp;|("+CAN_CLK_EN[2]+" << 25));<i>/*РІРєР». CAN2*/</i><br>";
 						
 						for (var i = 1; i <= 2; i++){
 							if (CAN_CLK_EN[i])
@@ -169,10 +169,10 @@
 						}
 						OutCod += "<br>";
 						if (CAN_CLK_EN[1]) {
-							OutCod += "<br>&nbsp;&nbsp;MDR_CAN1->CONTROL = (1 << 0); <i>//разрешение работы CAN1</i><br>";
+							OutCod += "<br>&nbsp;&nbsp;MDR_CAN1->CONTROL = (1 << 0); <i>//СЂР°Р·СЂРµС€РµРЅРёРµ СЂР°Р±РѕС‚С‹ CAN1</i><br>";
 						}
 						if (CAN_CLK_EN[2]) {
-							OutCod += "<br>&nbsp;&nbsp;MDR_CAN2->CONTROL = (1 << 0); <i>//разрешение работы CAN2</i><br>";
+							OutCod += "<br>&nbsp;&nbsp;MDR_CAN2->CONTROL = (1 << 0); <i>//СЂР°Р·СЂРµС€РµРЅРёРµ СЂР°Р±РѕС‚С‹ CAN2</i><br>";
 						}
 						
 						OutCod += "}";
@@ -189,12 +189,12 @@
     </script>
 	</head>
 	<body>
-    <span><h2>Настройка CAN</h2></span><br>
+    <span><h2>РќР°СЃС‚СЂРѕР№РєР° CAN</h2></span><br>
     	<form name="can">
 			<table width="90%" border="0" cellpadding="7">
-<!--Выбор CAN-->
+<!--Р’С‹Р±РѕСЂ CAN-->
 				<tr>
-				<td align="left"><font size="2"><u>Выбор CAN</u></font></td>
+				<td align="left"><font size="2"><u>Р’С‹Р±РѕСЂ CAN</u></font></td>
 					<td align="left">
 						<input type="checkbox" name="en_can1"><font size="2">CAN1</font>
 					</td>
@@ -202,12 +202,12 @@
 						<input type="checkbox" name="en_can2"><font size="2">CAN2</font>
 					</td>
 					<td>
-						<font size="2">HCLK = <input type="text" name="hclkHz" size="9" value="24000000"> Гц</font>
+						<font size="2">HCLK = <input type="text" name="hclkHz" size="9" value="24000000"> Р“С†</font>
 					</td>
 				</tr>
-<!--Выбор выводов (CAN_TX, CAN_RX) для CAN1 и CANOnChange="can_clk(1)"2-->
+<!--Р’С‹Р±РѕСЂ РІС‹РІРѕРґРѕРІ (CAN_TX, CAN_RX) РґР»СЏ CAN1 Рё CANOnChange="can_clk(1)"2-->
 				<tr>
-					<td align="left"><font size="2"><u>Выводы CAN TX, CAN RX</u></font></td>
+					<td align="left"><font size="2"><u>Р’С‹РІРѕРґС‹ CAN TX, CAN RX</u></font></td>
 					<td align="left">
 						<select name="port1" >
 									<option selected>PA6, PA7</option>
@@ -226,9 +226,9 @@
 								</select>
 					</td>
 				</tr>
-<!--Выбор предделитель для CAN1 и CAN2-->
+<!--Р’С‹Р±РѕСЂ РїСЂРµРґРґРµР»РёС‚РµР»СЊ РґР»СЏ CAN1 Рё CAN2-->
 				<tr>
-					<td align="left"><font size="2"><u>Предделитель</u></font></td>
+					<td align="left"><font size="2"><u>РџСЂРµРґРґРµР»РёС‚РµР»СЊ</u></font></td>
 					<td align="left">
 						<select name="can1div">
 								<option selected>  1</option>
@@ -254,19 +254,19 @@
 							</select>
 					</td>
 				</tr>
-<!--Вывод CAN1_CLK-->
+<!--Р’С‹РІРѕРґ CAN1_CLK-->
 				<tr>
 					<td align="left"><font size="2"><u>CAN CLK</u></font></td>
 					<td align="left">
-						<input type="text" name="can1Hz" value="" size=10 placeholder="CAN CLK"> Гц
+						<input type="text" name="can1Hz" value="" size=10 placeholder="CAN CLK"> Р“С†
 					</td>
 					<td align="left">
-						<input type="text" name="can2Hz" value="" size=10 placeholder="CAN CLK"> Гц
+						<input type="text" name="can2Hz" value="" size=10 placeholder="CAN CLK"> Р“С†
 					</td>
 				</tr>
-<!--Выберите скорость для CAN1 и CAN2-->
+<!--Р’С‹Р±РµСЂРёС‚Рµ СЃРєРѕСЂРѕСЃС‚СЊ РґР»СЏ CAN1 Рё CAN2-->
 				<tr>
-					<td align="left"><font size="2"><u>Скорость</u></font></td>
+					<td align="left"><font size="2"><u>РЎРєРѕСЂРѕСЃС‚СЊ</u></font></td>
 					<td align="left">
 						<select name="can1speed">
 								<option>10000</option>
@@ -277,7 +277,7 @@
 								<option>250000</option>
 								<option selected>500000</option>
 								<option>1000000</option>
-							</select> бит/с
+							</select> Р±РёС‚/СЃ
 					</td>
 					<td align="left">
 						<select name="can2speed">
@@ -289,12 +289,12 @@
 								<option>250000</option>
 								<option selected>500000</option>
 								<option>1000000</option>
-							</select> бит/с
+							</select> Р±РёС‚/СЃ
 					</td>
 				</tr>
-<!--Количество квантов времени для CAN1 и CAN2-->
+<!--РљРѕР»РёС‡РµСЃС‚РІРѕ РєРІР°РЅС‚РѕРІ РІСЂРµРјРµРЅРё РґР»СЏ CAN1 Рё CAN2-->
 				<tr>
-					<td align="left"><font size="2"><u>Количество квантов времени</u></font></td>
+					<td align="left"><font size="2"><u>РљРѕР»РёС‡РµСЃС‚РІРѕ РєРІР°РЅС‚РѕРІ РІСЂРµРјРµРЅРё</u></font></td>
 					<td align="left">
 						<input type="text" name="can1tq" value="" size=3 placeholder="Tq" disabled>
 					</td>
@@ -302,20 +302,20 @@
 						<input type="text" name="can2tq" value="" size=3 placeholder="Tq" disabled>
 					</td>
 				</tr>
-<!--Кнопка-->
+<!--РљРЅРѕРїРєР°-->
 				<tr>
 					<td align="left"><font size="2"><u></u></font></td>
 					<td align="left">
-						<input type="button" name="can1bt" value="Рассчитать" onclick="can_clk(1)">
+						<input type="button" name="can1bt" value="Р Р°СЃСЃС‡РёС‚Р°С‚СЊ" onclick="can_clk(1)">
 					</td>
 					<td align="left">
-						<input type="button" name="can2bt" value="Рассчитать" onclick="can_clk(2)">
+						<input type="button" name="can2bt" value="Р Р°СЃСЃС‡РёС‚Р°С‚СЊ" onclick="can_clk(2)">
 					</td>
 				</tr>
-<!--Подсказка-->
+<!--РџРѕРґСЃРєР°Р·РєР°-->
 				<tr>
 					<td colspan="4">
-					<font size="2"><i>Совет:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;при генерации кода сначала установить все параметры (выводы, предделитель, скорость), а потом установить "флажок" нужного Вам CAN-а, иначе придется вводить значения в сплывающем окошке каждый раз, когда изменяете значения.</i></font>
+					<font size="2"><i>РЎРѕРІРµС‚:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РїСЂРё РіРµРЅРµСЂР°С†РёРё РєРѕРґР° СЃРЅР°С‡Р°Р»Р° СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РІСЃРµ РїР°СЂР°РјРµС‚СЂС‹ (РІС‹РІРѕРґС‹, РїСЂРµРґРґРµР»РёС‚РµР»СЊ, СЃРєРѕСЂРѕСЃС‚СЊ), Р° РїРѕС‚РѕРј СѓСЃС‚Р°РЅРѕРІРёС‚СЊ "С„Р»Р°Р¶РѕРє" РЅСѓР¶РЅРѕРіРѕ Р’Р°Рј CAN-Р°, РёРЅР°С‡Рµ РїСЂРёРґРµС‚СЃСЏ РІРІРѕРґРёС‚СЊ Р·РЅР°С‡РµРЅРёСЏ РІ СЃРїР»С‹РІР°СЋС‰РµРј РѕРєРѕС€РєРµ РєР°Р¶РґС‹Р№ СЂР°Р·, РєРѕРіРґР° РёР·РјРµРЅСЏРµС‚Рµ Р·РЅР°С‡РµРЅРёСЏ.</i></font>
 					</td>
 				</tr>
 			</table>

@@ -5,11 +5,11 @@
 		<title>Bit Banding</title>
     <style type="text/css">
       body {
-      	background-color:#fff; /* задаем цвет фона*/
-      	color:#993300; /* задаем цвет текста*/
-      	font-size:12px; /* задаем размер шрифта на странице */
-      	font-style:normal; /* начертание шрифта (нормальное) */
-      	font-family:Arial, Helvetica, sans-serif; /* устанавливаем шрифт */
+      	background-color:#fff; /* Р·Р°РґР°РµРј С†РІРµС‚ С„РѕРЅР°*/
+      	color:#993300; /* Р·Р°РґР°РµРј С†РІРµС‚ С‚РµРєСЃС‚Р°*/
+      	font-size:12px; /* Р·Р°РґР°РµРј СЂР°Р·РјРµСЂ С€СЂРёС„С‚Р° РЅР° СЃС‚СЂР°РЅРёС†Рµ */
+      	font-style:normal; /* РЅР°С‡РµСЂС‚Р°РЅРёРµ С€СЂРёС„С‚Р° (РЅРѕСЂРјР°Р»СЊРЅРѕРµ) */
+      	font-family:Arial, Helvetica, sans-serif; /* СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј С€СЂРёС„С‚ */
       }
 			u {
 				font-weight: bold;
@@ -39,19 +39,19 @@
 					
 					AdresBit = AdresAccessBit + OffsetAdressPort;
 					/*
-	        OutCod = 'Адрес порта = 0х'+Number(AdresPort).toString(16)+'<br>';
-	        OutCod += 'Адрес области хранения бит = 0х'+Number(AdresSaveBit).toString(16)+'<br>';
-					OutCod += 'Адрес области доступа к битам = 0х'+Number(AdresAccessBit).toString(16)+'<br>';
-					OutCod += 'Бит порта = '+NumBitPort+'<br>';
-					OutCod += 'Cмещение = '+Number(Offset).toString(16)+'<br>';
-					OutCod += 'Cмещение адреса порта доступа к биту = '+Number(OffsetAdressPort).toString(16)+'<br>';
-					OutCod += 'Адрес в области доступа к биту = '+Number(AdresBit).toString(16)+'<br>';
+	        OutCod = 'РђРґСЂРµСЃ РїРѕСЂС‚Р° = 0С…'+Number(AdresPort).toString(16)+'<br>';
+	        OutCod += 'РђРґСЂРµСЃ РѕР±Р»Р°СЃС‚Рё С…СЂР°РЅРµРЅРёСЏ Р±РёС‚ = 0С…'+Number(AdresSaveBit).toString(16)+'<br>';
+					OutCod += 'РђРґСЂРµСЃ РѕР±Р»Р°СЃС‚Рё РґРѕСЃС‚СѓРїР° Рє Р±РёС‚Р°Рј = 0С…'+Number(AdresAccessBit).toString(16)+'<br>';
+					OutCod += 'Р‘РёС‚ РїРѕСЂС‚Р° = '+NumBitPort+'<br>';
+					OutCod += 'CРјРµС‰РµРЅРёРµ = '+Number(Offset).toString(16)+'<br>';
+					OutCod += 'CРјРµС‰РµРЅРёРµ Р°РґСЂРµСЃР° РїРѕСЂС‚Р° РґРѕСЃС‚СѓРїР° Рє Р±РёС‚Сѓ = '+Number(OffsetAdressPort).toString(16)+'<br>';
+					OutCod += 'РђРґСЂРµСЃ РІ РѕР±Р»Р°СЃС‚Рё РґРѕСЃС‚СѓРїР° Рє Р±РёС‚Сѓ = '+Number(AdresBit).toString(16)+'<br>';
 					*/
-					OutCod = '<br><i>//Указатель на битовый адрес<br></i>';
+					OutCod = '<br><i>//РЈРєР°Р·Р°С‚РµР»СЊ РЅР° Р±РёС‚РѕРІС‹Р№ Р°РґСЂРµСЃ<br></i>';
 					OutCod += '<b>#define</b> Port'+PeriphName[document.bit.AdrPort.selectedIndex]+'_Bit'+NumBitPort+' (*((<b>volatile unsigned long</b> *) 0x'+Number(AdresBit).toString(16)+'))<br><br>';
 					
-					OutCod += 'Port'+PeriphName[document.bit.AdrPort.selectedIndex]+'_Bit'+NumBitPort+' = 1; <i>//установить бит '+NumBitPort+' в единицу</i><br>';
-					OutCod += 'Port'+PeriphName[document.bit.AdrPort.selectedIndex]+'_Bit'+NumBitPort+' = 0; <i>//установить бит '+NumBitPort+' в ноль</i><br>';
+					OutCod += 'Port'+PeriphName[document.bit.AdrPort.selectedIndex]+'_Bit'+NumBitPort+' = 1; <i>//СѓСЃС‚Р°РЅРѕРІРёС‚СЊ Р±РёС‚ '+NumBitPort+' РІ РµРґРёРЅРёС†Сѓ</i><br>';
+					OutCod += 'Port'+PeriphName[document.bit.AdrPort.selectedIndex]+'_Bit'+NumBitPort+' = 0; <i>//СѓСЃС‚Р°РЅРѕРІРёС‚СЊ Р±РёС‚ '+NumBitPort+' РІ РЅРѕР»СЊ</i><br>';
 					parent.postFrame.document.all.cod.innerHTML += OutCod;
         }
 				else{
@@ -65,10 +65,10 @@
     <span><h2>Bit Banding</h2></span><br>
     <form name="bit">
 			<table width="60%" border="0" cellpadding="7">
-<!--Ввод адреса порта-->
+<!--Р’РІРѕРґ Р°РґСЂРµСЃР° РїРѕСЂС‚Р°-->
 				<tr>
 					<td align="left">
-						<font size="2"><u>Выбор переферии</u></font>
+						<font size="2"><u>Р’С‹Р±РѕСЂ РїРµСЂРµС„РµСЂРёРё</u></font>
 					</td>
 					<td align="left">
 						<select name="AdrPort">
@@ -82,10 +82,10 @@
 					</td>
 				</tr>
 
-<!--Выбор бита порта-->
+<!--Р’С‹Р±РѕСЂ Р±РёС‚Р° РїРѕСЂС‚Р°-->
 				<tr>
 					<td align="left">
-						<font size="2"><u>Бит порта</u></font>
+						<font size="2"><u>Р‘РёС‚ РїРѕСЂС‚Р°</u></font>
 					</td>
 					<td align="left">
 		        <select name="BitPort">
@@ -109,17 +109,17 @@
 					</td>
 				</tr>
 
-<!--Кнопки-->
+<!--РљРЅРѕРїРєРё-->
 				<tr>
 					<td align="left"><p><font size="2"></font></p></td>
 					<td align="left">
-						<input type="button" name="bt" value="Рассчитать" onclick="BitBand(1)">
+						<input type="button" name="bt" value="Р Р°СЃСЃС‡РёС‚Р°С‚СЊ" onclick="BitBand(1)">
 					</td>
 				</tr>
 				<tr>
 				<td align="left"><p><font size="2"></font></p></td>
 				<td align="left">
-						<input type="button" name="bt" value="Стереть 'Код для вставки'" onclick="BitBand(0)">
+						<input type="button" name="bt" value="РЎС‚РµСЂРµС‚СЊ 'РљРѕРґ РґР»СЏ РІСЃС‚Р°РІРєРё'" onclick="BitBand(0)">
 					</td>
 				</tr>
 			</table>

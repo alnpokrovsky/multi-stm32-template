@@ -2,14 +2,14 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 		<meta http-equiv="Access-Control-Allow-Origin" content="*"> 
-		<title>Настройка I2C</title>
+		<title>РќР°СЃС‚СЂРѕР№РєР° I2C</title>
     <style type="text/css">
       body {
-      	background-color:#fff; /* задаем цвет фона*/
-      	color:#993300; /* задаем цвет текста*/
-      	font-size:12px; /* задаем размер шрифта на странице */
-      	font-style:normal; /* начертание шрифта (нормальное) */
-      	font-family:Arial, Helvetica, sans-serif; /* устанавливаем шрифт */
+      	background-color:#fff; /* Р·Р°РґР°РµРј С†РІРµС‚ С„РѕРЅР°*/
+      	color:#993300; /* Р·Р°РґР°РµРј С†РІРµС‚ С‚РµРєСЃС‚Р°*/
+      	font-size:12px; /* Р·Р°РґР°РµРј СЂР°Р·РјРµСЂ С€СЂРёС„С‚Р° РЅР° СЃС‚СЂР°РЅРёС†Рµ */
+      	font-style:normal; /* РЅР°С‡РµСЂС‚Р°РЅРёРµ С€СЂРёС„С‚Р° (РЅРѕСЂРјР°Р»СЊРЅРѕРµ) */
+      	font-family:Arial, Helvetica, sans-serif; /* СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј С€СЂРёС„С‚ */
       }
 			u {
 				font-weight: bold;
@@ -56,17 +56,17 @@
 					RPH[1] = decTohex[qH>>4];
 					
 					OutCod = '<b>void</b> I2C_Init(<b>void</b>){<br>';
-					OutCod += "&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= 1 << "+Per[ptBt]+"; <i>//разрешение тактирования порта "+Port[ptBt]+"</i><br>";
-					OutCod += "<br>&nbsp;&nbsp;MDR_PORT"+Port[ptBt]+"->FUNC |= (("+Mode[ptBt]+" << "+Pin[ptBt]+"*2) | ("+Mode[ptBt]+" << "+Pin[ptBt+2]+"*2)); <i>//режим работы вывода порта</i><br>";
-					OutCod += "&nbsp;&nbsp;MDR_PORT"+Port[ptBt]+"->ANALOG |= ((1 << "+Pin[ptBt]+") | (1 << "+Pin[ptBt+2]+")); <i>//цифровой</i><br>";
-					OutCod += "&nbsp;&nbsp;MDR_PORT"+Port[ptBt]+"->PWR |= ((3 << "+Pin[ptBt]+"*2) | (3 << "+Pin[ptBt+2]+"*2)); <i>//максимально быcтрый</i><br>";
-					OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= 1 << 10; <i>//разрешение тактирования I2C</i><br><br>";
-					OutCod += "&nbsp;&nbsp;MDR_I2C->PRL = 0x"+RPL[1]+RPL[0]+"; <i>//младшая часть предделителя частоты</i><br>";
-					OutCod += "&nbsp;&nbsp;MDR_I2C->PRH = 0x"+RPH[1]+RPH[0]+"; <i>//старшая часть предделителя частоты</i><br>";
+					OutCod += "&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= 1 << "+Per[ptBt]+"; <i>//СЂР°Р·СЂРµС€РµРЅРёРµ С‚Р°РєС‚РёСЂРѕРІР°РЅРёСЏ РїРѕСЂС‚Р° "+Port[ptBt]+"</i><br>";
+					OutCod += "<br>&nbsp;&nbsp;MDR_PORT"+Port[ptBt]+"->FUNC |= (("+Mode[ptBt]+" << "+Pin[ptBt]+"*2) | ("+Mode[ptBt]+" << "+Pin[ptBt+2]+"*2)); <i>//СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ РІС‹РІРѕРґР° РїРѕСЂС‚Р°</i><br>";
+					OutCod += "&nbsp;&nbsp;MDR_PORT"+Port[ptBt]+"->ANALOG |= ((1 << "+Pin[ptBt]+") | (1 << "+Pin[ptBt+2]+")); <i>//С†РёС„СЂРѕРІРѕР№</i><br>";
+					OutCod += "&nbsp;&nbsp;MDR_PORT"+Port[ptBt]+"->PWR |= ((3 << "+Pin[ptBt]+"*2) | (3 << "+Pin[ptBt+2]+"*2)); <i>//РјР°РєСЃРёРјР°Р»СЊРЅРѕ Р±С‹cС‚СЂС‹Р№</i><br>";
+					OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= 1 << 10; <i>//СЂР°Р·СЂРµС€РµРЅРёРµ С‚Р°РєС‚РёСЂРѕРІР°РЅРёСЏ I2C</i><br><br>";
+					OutCod += "&nbsp;&nbsp;MDR_I2C->PRL = 0x"+RPL[1]+RPL[0]+"; <i>//РјР»Р°РґС€Р°СЏ С‡Р°СЃС‚СЊ РїСЂРµРґРґРµР»РёС‚РµР»СЏ С‡Р°СЃС‚РѕС‚С‹</i><br>";
+					OutCod += "&nbsp;&nbsp;MDR_I2C->PRH = 0x"+RPH[1]+RPH[0]+"; <i>//СЃС‚Р°СЂС€Р°СЏ С‡Р°СЃС‚СЊ РїСЂРµРґРґРµР»РёС‚РµР»СЏ С‡Р°СЃС‚РѕС‚С‹</i><br>";
 					OutCod += "&nbsp;&nbsp;MDR_I2C->CTR = (<br>";
-					OutCod += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(1 << 7) | <i>//разрешение работы контроллера I2C</i><br>";
-					OutCod += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;("+INT+" << 6) | <i>//разрешение прерывания от I2C</i><br>";
-					OutCod += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;("+SPEED+" << 5)); <i>//cкорость работы I2C</i><br>";
+					OutCod += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(1 << 7) | <i>//СЂР°Р·СЂРµС€РµРЅРёРµ СЂР°Р±РѕС‚С‹ РєРѕРЅС‚СЂРѕР»Р»РµСЂР° I2C</i><br>";
+					OutCod += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;("+INT+" << 6) | <i>//СЂР°Р·СЂРµС€РµРЅРёРµ РїСЂРµСЂС‹РІР°РЅРёСЏ РѕС‚ I2C</i><br>";
+					OutCod += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;("+SPEED+" << 5)); <i>//cРєРѕСЂРѕСЃС‚СЊ СЂР°Р±РѕС‚С‹ I2C</i><br>";
 					OutCod += '}';
 				}
 				else {
@@ -79,22 +79,22 @@
     </script>
 	</head>
 	<body>
-    <span><h2>Настройка I2C</h2></span><br>
+    <span><h2>РќР°СЃС‚СЂРѕР№РєР° I2C</h2></span><br>
     	<form name="i2c">
 			<table width="95%" border="0" cellpadding="7">
-<!--Разрешение работы-->
+<!--Р Р°Р·СЂРµС€РµРЅРёРµ СЂР°Р±РѕС‚С‹-->
 				<tr>
-				<td align="left"><font size="2"><u>Выбор I2C</u></font></td>
+				<td align="left"><font size="2"><u>Р’С‹Р±РѕСЂ I2C</u></font></td>
 					<td align="left">
 						<input type="checkbox" name="en_i2c" OnChange="i2c_clk()"><font size="2">I2C</font>
 					</td>
 					<td>
-						<font size="2">HCLK = <input type="text" name="hclkHz" size="9" maxlength='9' value="24000000" > Гц</font>
+						<font size="2">HCLK = <input type="text" name="hclkHz" size="9" maxlength='9' value="24000000" > Р“С†</font>
 					</td>
 				</tr>
-<!--Выберите порты-->
+<!--Р’С‹Р±РµСЂРёС‚Рµ РїРѕСЂС‚С‹-->
 				<tr>
-					<td align="left"><font size="2"><u>Выводы SCL, SDA</u></font></td>
+					<td align="left"><font size="2"><u>Р’С‹РІРѕРґС‹ SCL, SDA</u></font></td>
 					<td align="left">
 						<select name="port_i2c" OnChange="i2c_clk()">
 							<option>PC0, PC1</option>
@@ -103,35 +103,35 @@
 					</td>
 				</tr>
 
-<!--Выберите скорость-->
+<!--Р’С‹Р±РµСЂРёС‚Рµ СЃРєРѕСЂРѕСЃС‚СЊ-->
 				<tr>
-					<td align="left"><font size="2"><u>Скорость</u></font></td>
+					<td align="left"><font size="2"><u>РЎРєРѕСЂРѕСЃС‚СЊ</u></font></td>
 					<td align="left">
 						<select name="spd_i2c" OnChange="i2c_clk()">
-							<option>нормальная: (100Kbps)</option>
-							<option>быстрая: (400Kbps)</option>
-							<option>очень быстрая: (1Mbps)</option>
+							<option>РЅРѕСЂРјР°Р»СЊРЅР°СЏ: (100Kbps)</option>
+							<option>Р±С‹СЃС‚СЂР°СЏ: (400Kbps)</option>
+							<option>РѕС‡РµРЅСЊ Р±С‹СЃС‚СЂР°СЏ: (1Mbps)</option>
 						</select>
 					</td>
 				</tr>
-<!--Разрешение прерывания-->
+<!--Р Р°Р·СЂРµС€РµРЅРёРµ РїСЂРµСЂС‹РІР°РЅРёСЏ-->
 				<tr>
-					<td align="left"><font size="2"><u>Прерывание</u></font></td>
+					<td align="left"><font size="2"><u>РџСЂРµСЂС‹РІР°РЅРёРµ</u></font></td>
 					<td align="left">
 						<input type="checkbox" name="enint_i2c" OnChange="i2c_clk()">
 					</td>
 				</tr>
-<!--Кнопки-->
+<!--РљРЅРѕРїРєРё-->
 				<tr>
 					<td align="left"><p><font size="2"></font></p></td>
 					<td align="left">
-						<input type="button" name="bl1" value="Рассчитать" onclick="i2c_clk()">
+						<input type="button" name="bl1" value="Р Р°СЃСЃС‡РёС‚Р°С‚СЊ" onclick="i2c_clk()">
 					</td>
 				</tr>
-<!--Подсказка-->
+<!--РџРѕРґСЃРєР°Р·РєР°-->
 				<tr>
 					<td colspan="3">
-					<font size="2"><i>Примечание:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;при расчете делителя применяется условная формула, поэтому <b>БУДЬТЕ ВНИМАТЕЛЬНЫ - ПОДБИРАЙТЕ ЗНАЧЕНИЕ ПРЕДДЕЛИТЕЛЯ ЧАСТОТЫ ОПЫТНЫМ ПУТЕМ</b>.</i></font>
+					<font size="2"><i>РџСЂРёРјРµС‡Р°РЅРёРµ:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;РїСЂРё СЂР°СЃС‡РµС‚Рµ РґРµР»РёС‚РµР»СЏ РїСЂРёРјРµРЅСЏРµС‚СЃСЏ СѓСЃР»РѕРІРЅР°СЏ С„РѕСЂРјСѓР»Р°, РїРѕСЌС‚РѕРјСѓ <b>Р‘РЈР”Р¬РўР• Р’РќРРњРђРўР•Р›Р¬РќР« - РџРћР”Р‘РР РђР™РўР• Р—РќРђР§Р•РќРР• РџР Р•Р”Р”Р•Р›РРўР•Р›РЇ Р§РђРЎРўРћРўР« РћРџР«РўРќР«Рњ РџРЈРўР•Рњ</b>.</i></font>
 					</td>
 				</tr>
 			</table>

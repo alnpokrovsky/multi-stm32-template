@@ -2,14 +2,14 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 		<meta http-equiv="Access-Control-Allow-Origin" content="*"> 
-		<title>Настройка SSP</title>
+		<title>РќР°СЃС‚СЂРѕР№РєР° SSP</title>
     <style type="text/css">
       body {
-      	background-color:#fff; /* задаем цвет фона*/
-      	color:#993300; /* задаем цвет текста*/
-      	font-size:12px; /* задаем размер шрифта на странице */
-      	font-style:normal; /* начертание шрифта (нормальное) */
-      	font-family:Arial, Helvetica, sans-serif; /* устанавливаем шрифт */
+      	background-color:#fff; /* Р·Р°РґР°РµРј С†РІРµС‚ С„РѕРЅР°*/
+      	color:#993300; /* Р·Р°РґР°РµРј С†РІРµС‚ С‚РµРєСЃС‚Р°*/
+      	font-size:12px; /* Р·Р°РґР°РµРј СЂР°Р·РјРµСЂ С€СЂРёС„С‚Р° РЅР° СЃС‚СЂР°РЅРёС†Рµ */
+      	font-style:normal; /* РЅР°С‡РµСЂС‚Р°РЅРёРµ С€СЂРёС„С‚Р° (РЅРѕСЂРјР°Р»СЊРЅРѕРµ) */
+      	font-family:Arial, Helvetica, sans-serif; /* СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј С€СЂРёС„С‚ */
       }
 			u {
 				font-weight: bold;
@@ -197,7 +197,7 @@
 					SSP_CPSDVSR[num] = sspcpsdiv.value;
 					SSP_CPSDVSR[num] = parseInt(SSP_CPSDVSR[num]);
 					if (SSP_CPSDVSR[num]%2){
-						alert("Значение должно быть четным!")
+						alert("Р—РЅР°С‡РµРЅРёРµ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ С‡РµС‚РЅС‹Рј!")
 						sspcpsdiv.value -= 1;
 						SSP_CPSDVSR[num] = sspcpsdiv.value;
 					}
@@ -230,44 +230,44 @@
 						
 					}
 					else {
-						alert("Значение должно быть от 0 до 255!")
+						alert("Р—РЅР°С‡РµРЅРёРµ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РѕС‚ 0 РґРѕ 255!")
 						sspscr.value = "";
 					}
 					
 					OutCod = '<b>void</b> SSP'+ num +'_init(<b>void</b>){<br>';
 					for (var i = 1; i <= 2; i++){
 						if (SSP_CLK_EN[i]) {
-							OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= (1UL << "+SSP_PER[i]+"); <i>//тактирование порта "+SSP_PORT[i]+"</i>";
+							OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= (1UL << "+SSP_PER[i]+"); <i>//С‚Р°РєС‚РёСЂРѕРІР°РЅРёРµ РїРѕСЂС‚Р° "+SSP_PORT[i]+"</i>";
 						
 							OutCod +="<br>";
 													
-							OutCod += "<br>&nbsp;&nbsp;MDR_PORT"+SSP_PORT[i]+"->FUNC |= (("+SSP_PORT_FUNC[i]+" << "+SSP_FSS[i]+"*2) | ("+SSP_PORT_FUNC[i]+" << "+SSP_CLK[i]+"*2) | ("+SSP_PORT_FUNC[i]+" << "+SSP_RXD[i]+"*2) | ("+SSP_PORT_FUNC[i]+" << "+SSP_TXD[i]+"*2)); <i>//режим работы порта</i><br>";
-							OutCod += "&nbsp;&nbsp;MDR_PORT"+SSP_PORT[i]+"->ANALOG |= ((1 << "+SSP_FSS[i]+") | (1 << "+SSP_CLK[i]+") | (1 << "+SSP_RXD[i]+") | (1 << "+SSP_TXD[i]+")); <i>//цифровой</i><br>";
-							OutCod += "&nbsp;&nbsp;MDR_PORT"+SSP_PORT[i]+"->PWR |= ((3 << "+SSP_FSS[i]+"*2) | (3 << "+SSP_CLK[i]+"*2) | (3 << "+SSP_RXD[i]+"*2) | (3 << "+SSP_TXD[i]+"*2)); <i>//максимально быcтрый</i><br>";
+							OutCod += "<br>&nbsp;&nbsp;MDR_PORT"+SSP_PORT[i]+"->FUNC |= (("+SSP_PORT_FUNC[i]+" << "+SSP_FSS[i]+"*2) | ("+SSP_PORT_FUNC[i]+" << "+SSP_CLK[i]+"*2) | ("+SSP_PORT_FUNC[i]+" << "+SSP_RXD[i]+"*2) | ("+SSP_PORT_FUNC[i]+" << "+SSP_TXD[i]+"*2)); <i>//СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ РїРѕСЂС‚Р°</i><br>";
+							OutCod += "&nbsp;&nbsp;MDR_PORT"+SSP_PORT[i]+"->ANALOG |= ((1 << "+SSP_FSS[i]+") | (1 << "+SSP_CLK[i]+") | (1 << "+SSP_RXD[i]+") | (1 << "+SSP_TXD[i]+")); <i>//С†РёС„СЂРѕРІРѕР№</i><br>";
+							OutCod += "&nbsp;&nbsp;MDR_PORT"+SSP_PORT[i]+"->PWR |= ((3 << "+SSP_FSS[i]+"*2) | (3 << "+SSP_CLK[i]+"*2) | (3 << "+SSP_RXD[i]+"*2) | (3 << "+SSP_TXD[i]+"*2)); <i>//РјР°РєСЃРёРјР°Р»СЊРЅРѕ Р±С‹cС‚СЂС‹Р№</i><br>";
 							
 							if (SSP_CLK_EN[1]){
-								OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= (1 << 8); <i>//тактирование SSP1</i>";
-								OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->SSP_CLOCK = (("+SSP_DIV[1]+" << 0)|(1 << 24)); <i>//предделитель = "+(Math.pow(2,SSP_DIV[1]))+", разрешение тактирования SSP1 </i>";
+								OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= (1 << 8); <i>//С‚Р°РєС‚РёСЂРѕРІР°РЅРёРµ SSP1</i>";
+								OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->SSP_CLOCK = (("+SSP_DIV[1]+" << 0)|(1 << 24)); <i>//РїСЂРµРґРґРµР»РёС‚РµР»СЊ = "+(Math.pow(2,SSP_DIV[1]))+", СЂР°Р·СЂРµС€РµРЅРёРµ С‚Р°РєС‚РёСЂРѕРІР°РЅРёСЏ SSP1 </i>";
 							}
 							if (SSP_CLK_EN[2]){
-								OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= (1 << 20); <i>//тактирование SSP2</i>";
-								OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->SSP_CLOCK = (("+SSP_DIV[2]+" << 8)|(1 << 25)); <i>//предделитель = "+(Math.pow(2,SSP_DIV[2]))+", разрешение тактирования SSP2 </i>";
+								OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= (1 << 20); <i>//С‚Р°РєС‚РёСЂРѕРІР°РЅРёРµ SSP2</i>";
+								OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->SSP_CLOCK = (("+SSP_DIV[2]+" << 8)|(1 << 25)); <i>//РїСЂРµРґРґРµР»РёС‚РµР»СЊ = "+(Math.pow(2,SSP_DIV[2]))+", СЂР°Р·СЂРµС€РµРЅРёРµ С‚Р°РєС‚РёСЂРѕРІР°РЅРёСЏ SSP2 </i>";
 							}
 							
-							OutCod += "<br><br>&nbsp;&nbsp;MDR_SSP"+i+"->CPSR = "+SSP_CPSDVSR[i]+" <i>//делитель тактовой частоты</i>;"
+							OutCod += "<br><br>&nbsp;&nbsp;MDR_SSP"+i+"->CPSR = "+SSP_CPSDVSR[i]+" <i>//РґРµР»РёС‚РµР»СЊ С‚Р°РєС‚РѕРІРѕР№ С‡Р°СЃС‚РѕС‚С‹</i>;"
 							
-							OutCod += "<br>&nbsp;&nbsp;MDR_SSP"+i+"->CR0 = "+SSP_SPO[i]+" << 6; <i>//полярность сигнала</i>"
-							OutCod += "<br>&nbsp;&nbsp;MDR_SSP"+i+"->CR0 |= "+SSP_SPH[i]+" << 7 <i>//фаза сигнала</i>";
-							OutCod += "<br>&nbsp;&nbsp;MDR_SSP"+i+"->CR0 |= "+(SSP_SCR[i] - 1)+" << 8 <i>//коэффициент скорости</i>";
+							OutCod += "<br>&nbsp;&nbsp;MDR_SSP"+i+"->CR0 = "+SSP_SPO[i]+" << 6; <i>//РїРѕР»СЏСЂРЅРѕСЃС‚СЊ СЃРёРіРЅР°Р»Р°</i>"
+							OutCod += "<br>&nbsp;&nbsp;MDR_SSP"+i+"->CR0 |= "+SSP_SPH[i]+" << 7 <i>//С„Р°Р·Р° СЃРёРіРЅР°Р»Р°</i>";
+							OutCod += "<br>&nbsp;&nbsp;MDR_SSP"+i+"->CR0 |= "+(SSP_SCR[i] - 1)+" << 8 <i>//РєРѕСЌС„С„РёС†РёРµРЅС‚ СЃРєРѕСЂРѕСЃС‚Рё</i>";
 							
-							OutCod += "<br>&nbsp;&nbsp;MDR_SSP"+i+"->CR0 |= "+SSP_FRF[i]+" << 4; <i>//формат кадра</i>";
+							OutCod += "<br>&nbsp;&nbsp;MDR_SSP"+i+"->CR0 |= "+SSP_FRF[i]+" << 4; <i>//С„РѕСЂРјР°С‚ РєР°РґСЂР°</i>";
 							
-							OutCod += "<br>&nbsp;&nbsp;MDR_SSP"+i+"->CR0 |= "+(SSP_LEN[i] - 1)+"; <i>//длина слова = "+SSP_LEN[i]+" бит</i>";
+							OutCod += "<br>&nbsp;&nbsp;MDR_SSP"+i+"->CR0 |= "+(SSP_LEN[i] - 1)+"; <i>//РґР»РёРЅР° СЃР»РѕРІР° = "+SSP_LEN[i]+" Р±РёС‚</i>";
 							
-							OutCod += "<br>&nbsp;&nbsp;MDR_SSP"+i+"->CR1 |= (("+SSP_MS[i]+" << 2)|(1 << 1)); <i>//режим работы и включение приемопередатчика SSP</i>";
+							OutCod += "<br>&nbsp;&nbsp;MDR_SSP"+i+"->CR1 |= (("+SSP_MS[i]+" << 2)|(1 << 1)); <i>//СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ Рё РІРєР»СЋС‡РµРЅРёРµ РїСЂРёРµРјРѕРїРµСЂРµРґР°С‚С‡РёРєР° SSP</i>";
 							
 							if (SSP_MS[i]){
-								OutCod += "<br>&nbsp;&nbsp;MDR_SSP"+i+"->CR1 |= "+SSP_SOD[i]+" << 3; <i>//запрет выходных линий</i>";
+								OutCod += "<br>&nbsp;&nbsp;MDR_SSP"+i+"->CR1 |= "+SSP_SOD[i]+" << 3; <i>//Р·Р°РїСЂРµС‚ РІС‹С…РѕРґРЅС‹С… Р»РёРЅРёР№</i>";
 							}
 							
 						}
@@ -287,12 +287,12 @@
     </script>
 	</head>
 	<body>
-    <span><h2>Настройка SSP</h2></span><br>
+    <span><h2>РќР°СЃС‚СЂРѕР№РєР° SSP</h2></span><br>
     	<form name="ssp">
 			<table width="90%" border="0" cellpadding="7">
-<!--Выбор SSP-->
+<!--Р’С‹Р±РѕСЂ SSP-->
 				<tr>
-				<td align="left"><font size="2"><u>Выбор SSP</u></font></td>
+				<td align="left"><font size="2"><u>Р’С‹Р±РѕСЂ SSP</u></font></td>
 				
 					<td align="left">
 						<input type="checkbox" name="en_ssp1" OnChange="ssp_clk(1)"><font size="2">SSP1</font>
@@ -301,12 +301,12 @@
 						<input type="checkbox" name="en_ssp2" OnChange="ssp_clk(2)"><font size="2">SSP2</font>
 					</td>
 					<td>
-						<font size="2">HCLK = <input type="text" name="hclkHz" size="9" value="24000000"> Гц</font>
+						<font size="2">HCLK = <input type="text" name="hclkHz" size="9" value="24000000"> Р“С†</font>
 					</td>
 				</tr>
-<!--Выбор выводов (SSP_TX, SSP_RX) для SSP1 и SSP2-->
+<!--Р’С‹Р±РѕСЂ РІС‹РІРѕРґРѕРІ (SSP_TX, SSP_RX) РґР»СЏ SSP1 Рё SSP2-->
 				<tr>
-					<td align="left"><font size="2"><u>Выводы</u></font></td>
+					<td align="left"><font size="2"><u>Р’С‹РІРѕРґС‹</u></font></td>
 					<td align="left">
 						<select name="ssp1port"  OnChange="ssp_clk(1)">
 							<option selected>PB12, PB13, PB14, PB15</option>
@@ -323,9 +323,9 @@
 						</select>
 					</td>
 				</tr>
-<!--Выбор предделитель для SSP1 и SSP2-->
+<!--Р’С‹Р±РѕСЂ РїСЂРµРґРґРµР»РёС‚РµР»СЊ РґР»СЏ SSP1 Рё SSP2-->
 				<tr>
-					<td align="left"><font size="2"><u>Предделитель</u></font></td>
+					<td align="left"><font size="2"><u>РџСЂРµРґРґРµР»РёС‚РµР»СЊ</u></font></td>
 					<td align="left">
 						<select name="ssp1div" OnChange="ssp_clk(1)">
 							<option selected>  1</option>
@@ -351,19 +351,19 @@
 						</select>
 					</td>
 				</tr>
-<!--Вывод SSP_CLK-->
+<!--Р’С‹РІРѕРґ SSP_CLK-->
 				<tr>
 					<td align="left"><font size="2"><u>SSP CLK</u></font></td>
 					<td align="left">
-						<input type="text" name="ssp1Hz" value="" size=10 placeholder="SSP CLK"><font size="2"> Гц</font>
+						<input type="text" name="ssp1Hz" value="" size=10 placeholder="SSP CLK"><font size="2"> Р“С†</font>
 					</td>
 					<td align="left">
-						<input type="text" name="ssp2Hz" value="" size=10 placeholder="SSP CLK"><font size="2"> Гц</font>
+						<input type="text" name="ssp2Hz" value="" size=10 placeholder="SSP CLK"><font size="2"> Р“С†</font>
 					</td>
 				</tr>
-<!--Ввод CPSDVSR-->
+<!--Р’РІРѕРґ CPSDVSR-->
 				<tr>
-					<td align="left"><font size="2"><u>Коэф. деления</u><br>(от 2 до 254 с шагом 2)</font></td>
+					<td align="left"><font size="2"><u>РљРѕСЌС„. РґРµР»РµРЅРёСЏ</u><br>(РѕС‚ 2 РґРѕ 254 СЃ С€Р°РіРѕРј 2)</font></td>
 					<td align="left">
 						<input type="text" name="ssp1cpsdiv" value="2" OnChange="ssp_clk(1)" size=10>
 					</td>
@@ -371,9 +371,9 @@
 						<input type="text" name="ssp2cpsdiv" value="2" OnChange="ssp_clk(2)" size=10>
 					</td>
 				</tr>
-<!--Ввод SCR-->
+<!--Р’РІРѕРґ SCR-->
 				<tr>
-					<td align="left"><font size="2"><u>Коэф. скорости</u><br>(от 1 до 256)</font></td>
+					<td align="left"><font size="2"><u>РљРѕСЌС„. СЃРєРѕСЂРѕСЃС‚Рё</u><br>(РѕС‚ 1 РґРѕ 256)</font></td>
 					<td align="left">
 						<input type="text" name="ssp1scr" value="1" OnChange="ssp_clk(1)" size=10>
 					</td>
@@ -381,19 +381,19 @@
 						<input type="text" name="ssp2scr" value="1" OnChange="ssp_clk(2)" size=10>
 					</td>
 				</tr>
-<!--Вывод скорости для SSP1 и SSP2-->
+<!--Р’С‹РІРѕРґ СЃРєРѕСЂРѕСЃС‚Рё РґР»СЏ SSP1 Рё SSP2-->
 				<tr>
-					<td align="left"><font size="2"><u>Скорость</u></font></td>
+					<td align="left"><font size="2"><u>РЎРєРѕСЂРѕСЃС‚СЊ</u></font></td>
 					<td align="left">
-						<input name="ssp1speed" OnChange="ssp_clk(1)" size=10><font size="2"> бит/с</font>
+						<input name="ssp1speed" OnChange="ssp_clk(1)" size=10><font size="2"> Р±РёС‚/СЃ</font>
 					</td>
 					<td align="left">
-						<input name="ssp2speed" OnChange="ssp_clk(2)" size=10><font size="2"> бит/с</font>
+						<input name="ssp2speed" OnChange="ssp_clk(2)" size=10><font size="2"> Р±РёС‚/СЃ</font>
 					</td>
 				</tr>
-<!--Выберите формат кадра SSP1 и SSP2-->
+<!--Р’С‹Р±РµСЂРёС‚Рµ С„РѕСЂРјР°С‚ РєР°РґСЂР° SSP1 Рё SSP2-->
 				<tr>
-					<td align="left"><font size="2"><u>Формат кадра</u></font></td>
+					<td align="left"><font size="2"><u>Р¤РѕСЂРјР°С‚ РєР°РґСЂР°</u></font></td>
 					<td align="left">
 						<select name="ssp1frf" OnChange="ssp_clk(1)">
 							<option selected>SPI</option>
@@ -409,9 +409,9 @@
 						</select>
 					</td>
 				</tr>
-<!--Выберите фазу сигнала SSP1 и SSP2-->
+<!--Р’С‹Р±РµСЂРёС‚Рµ С„Р°Р·Сѓ СЃРёРіРЅР°Р»Р° SSP1 Рё SSP2-->
 				<tr>
-					<td align="left"><font size="2"><u>Фаза сигнала</u></font></td>
+					<td align="left"><font size="2"><u>Р¤Р°Р·Р° СЃРёРіРЅР°Р»Р°</u></font></td>
 					<td align="left">
 						<select name="ssp1sph" OnChange="ssp_clk(1)">
 							<option selected>0</option>
@@ -425,9 +425,9 @@
 						</select>
 					</td>
 				</tr>
-<!--Выберите полярность сигнала SSP1 и SSP2-->
+<!--Р’С‹Р±РµСЂРёС‚Рµ РїРѕР»СЏСЂРЅРѕСЃС‚СЊ СЃРёРіРЅР°Р»Р° SSP1 Рё SSP2-->
 				<tr>
-					<td align="left"><font size="2"><u>Полярность сигнала</u></font></td>
+					<td align="left"><font size="2"><u>РџРѕР»СЏСЂРЅРѕСЃС‚СЊ СЃРёРіРЅР°Р»Р°</u></font></td>
 					<td align="left">
 						<select name="ssp1spo" OnChange="ssp_clk(1)">
 							<option selected>0</option>
@@ -441,9 +441,9 @@
 						</select>
 					</td>
 				</tr>
-<!--Выберите длину слова для SSP1 и SSP2-->
+<!--Р’С‹Р±РµСЂРёС‚Рµ РґР»РёРЅСѓ СЃР»РѕРІР° РґР»СЏ SSP1 Рё SSP2-->
 				<tr>
-					<td align="left"><font size="2"><u>Длина слова</u></font></td>
+					<td align="left"><font size="2"><u>Р”Р»РёРЅР° СЃР»РѕРІР°</u></font></td>
 					<td align="left">
 						<select name="ssp1len" OnChange="ssp_clk(1)">
 							<option>4</option>
@@ -459,7 +459,7 @@
 							<option>14</option>
 							<option>15</option>
 							<option>16</option>
-						</select><font size="2"> бит</font>
+						</select><font size="2"> Р±РёС‚</font>
 					</td>
 					<td align="left">
 						<select name="ssp2len" OnChange="ssp_clk(2)">
@@ -476,39 +476,39 @@
 							<option>14</option>
 							<option>15</option>
 							<option>16</option>
-						</select><font size="2"> бит</font>
+						</select><font size="2"> Р±РёС‚</font>
 					</td>
 				</tr>
-<!--Выберите режим работы SSP1 и SSP2-->
+<!--Р’С‹Р±РµСЂРёС‚Рµ СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ SSP1 Рё SSP2-->
 				<tr>
-					<td align="left"><font size="2"><u>Режим работы</u></font></td>
+					<td align="left"><font size="2"><u>Р РµР¶РёРј СЂР°Р±РѕС‚С‹</u></font></td>
 					<td align="left">
-						<input type="radio" name="ssp1ms" value="mas" OnChange="ssp_clk(1)" checked><font size="2"> Ведущий</font><br>
-						<input type="radio" name="ssp1ms" value="sla" OnChange="ssp_clk(1)"><font size="2"> Ведомый</font><br>
+						<input type="radio" name="ssp1ms" value="mas" OnChange="ssp_clk(1)" checked><font size="2"> Р’РµРґСѓС‰РёР№</font><br>
+						<input type="radio" name="ssp1ms" value="sla" OnChange="ssp_clk(1)"><font size="2"> Р’РµРґРѕРјС‹Р№</font><br>
 					</td>
 					<td align="left">
-						<input type="radio" name="ssp2ms" value="mas" OnChange="ssp_clk(2)" checked><font size="2"> Ведущий</font><br>
-						<input type="radio" name="ssp2ms" value="sla" OnChange="ssp_clk(2)"><font size="2"> Ведомый</font><br>
+						<input type="radio" name="ssp2ms" value="mas" OnChange="ssp_clk(2)" checked><font size="2"> Р’РµРґСѓС‰РёР№</font><br>
+						<input type="radio" name="ssp2ms" value="sla" OnChange="ssp_clk(2)"><font size="2"> Р’РµРґРѕРјС‹Р№</font><br>
 					</td>
 				</tr>
-<!--Выберите Запрет выходных линий SSP1 и SSP2-->
+<!--Р’С‹Р±РµСЂРёС‚Рµ Р—Р°РїСЂРµС‚ РІС‹С…РѕРґРЅС‹С… Р»РёРЅРёР№ SSP1 Рё SSP2-->
 				<tr>
-					<td align="left"><font size="2"><u>Выходные линии</u></font></td>
+					<td align="left"><font size="2"><u>Р’С‹С…РѕРґРЅС‹Рµ Р»РёРЅРёРё</u></font></td>
 					<td align="left">
-						<input type="checkbox" name="ssp1sod" OnChange="ssp_clk(1)" disabled><font size="2"> Запретить SSP_TXD</font><br>
+						<input type="checkbox" name="ssp1sod" OnChange="ssp_clk(1)" disabled><font size="2"> Р—Р°РїСЂРµС‚РёС‚СЊ SSP_TXD</font><br>
 					</td>
 					<td align="left">
-						<input type="checkbox" name="ssp2sod" OnChange="ssp_clk(2)" disabled><font size="2"> Запретить SSP_TXD</font><br>
+						<input type="checkbox" name="ssp2sod" OnChange="ssp_clk(2)" disabled><font size="2"> Р—Р°РїСЂРµС‚РёС‚СЊ SSP_TXD</font><br>
 					</td>
 				</tr>
-<!--Кнопки-->
+<!--РљРЅРѕРїРєРё-->
 				<tr>
 					<td align="left"><p><font size="2"></font></p></td>
 					<td align="left">
-						<input type="button" name="bl1" value="Рассчитать" onclick="ssp_clk(1)">
+						<input type="button" name="bl1" value="Р Р°СЃСЃС‡РёС‚Р°С‚СЊ" onclick="ssp_clk(1)">
 					</td>
 					<td>
-						<input type="button" name="bl2" value="Рассчитать" onclick="ssp_clk(2)">
+						<input type="button" name="bl2" value="Р Р°СЃСЃС‡РёС‚Р°С‚СЊ" onclick="ssp_clk(2)">
 					</td>
 				</tr>
 			</table>

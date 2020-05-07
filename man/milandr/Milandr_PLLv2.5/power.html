@@ -2,14 +2,14 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 		<meta http-equiv="Access-Control-Allow-Origin" content="*"> 
-		<title>Настройка Power</title>
+		<title>РќР°СЃС‚СЂРѕР№РєР° Power</title>
     <style type="text/css">
       body {
-      	background-color:#fff; /* задаем цвет фона*/
-      	color:#993300; /* задаем цвет текста*/
-      	font-size:12px; /* задаем размер шрифта на странице */
-      	font-style:normal; /* начертание шрифта (нормальное) */
-      	font-family:Arial, Helvetica, sans-serif; /* устанавливаем шрифт */
+      	background-color:#fff; /* Р·Р°РґР°РµРј С†РІРµС‚ С„РѕРЅР°*/
+      	color:#993300; /* Р·Р°РґР°РµРј С†РІРµС‚ С‚РµРєСЃС‚Р°*/
+      	font-size:12px; /* Р·Р°РґР°РµРј СЂР°Р·РјРµСЂ С€СЂРёС„С‚Р° РЅР° СЃС‚СЂР°РЅРёС†Рµ */
+      	font-style:normal; /* РЅР°С‡РµСЂС‚Р°РЅРёРµ С€СЂРёС„С‚Р° (РЅРѕСЂРјР°Р»СЊРЅРѕРµ) */
+      	font-family:Arial, Helvetica, sans-serif; /* СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј С€СЂРёС„С‚ */
       }
 			u {
 				font-weight: bold;
@@ -32,9 +32,9 @@
 								
 				if (en){
 					OutCod = "<b>void</b> Power_Init(<b>void</b>){<br>";
-					OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= 1 << 11; <i>//разрешение тактирования Power</i><br>";
-					OutCod += "<br>&nbsp;&nbsp;MDR_POWER->PVDCS = ("+document.pwr.ucc_pwr.selectedIndex+" << 3); <i>//cравнение с Ucc</i>";
-					OutCod += "<br>&nbsp;&nbsp;MDR_POWER->PVDCS |= ("+document.pwr.bucc_pwr.selectedIndex+" << 1); <i>//cравнение с BUcc</i><br>";
+					OutCod += "<br>&nbsp;&nbsp;MDR_RST_CLK->PER_CLOCK |= 1 << 11; <i>//СЂР°Р·СЂРµС€РµРЅРёРµ С‚Р°РєС‚РёСЂРѕРІР°РЅРёСЏ Power</i><br>";
+					OutCod += "<br>&nbsp;&nbsp;MDR_POWER->PVDCS = ("+document.pwr.ucc_pwr.selectedIndex+" << 3); <i>//cСЂР°РІРЅРµРЅРёРµ СЃ Ucc</i>";
+					OutCod += "<br>&nbsp;&nbsp;MDR_POWER->PVDCS |= ("+document.pwr.bucc_pwr.selectedIndex+" << 1); <i>//cСЂР°РІРЅРµРЅРёРµ СЃ BUcc</i><br>";
 					OutCod += "}";
 				}
 				else {
@@ -46,20 +46,20 @@
     </script>
 	</head>
 	<body>
-    <span><h2>Детектор напряжения питания</h2></span><br>
+    <span><h2>Р”РµС‚РµРєС‚РѕСЂ РЅР°РїСЂСЏР¶РµРЅРёСЏ РїРёС‚Р°РЅРёСЏ</h2></span><br>
     	<form name="pwr">
 			<table width="95%" border="0" cellpadding="7">
-<!--Выбор Power-->
+<!--Р’С‹Р±РѕСЂ Power-->
 				<tr>
-					<td align="left"><font size="2"><u>Включение детектора</u></font></td>
+					<td align="left"><font size="2"><u>Р’РєР»СЋС‡РµРЅРёРµ РґРµС‚РµРєС‚РѕСЂР°</u></font></td>
 					<td align="left">
 						<input type="checkbox" name="en_pwr" OnChange="pwr_clk()"><font size="2">Power</font>
 					</td>
 					<td></td><td></td><td></td>
 				</tr>
-<!--Выберите порога для Ucc-->
+<!--Р’С‹Р±РµСЂРёС‚Рµ РїРѕСЂРѕРіР° РґР»СЏ Ucc-->
 				<tr>
-					<td align="left"><font size="2"><u>Опорное напряжение для Ucc</u></font></td>
+					<td align="left"><font size="2"><u>РћРїРѕСЂРЅРѕРµ РЅР°РїСЂСЏР¶РµРЅРёРµ РґР»СЏ Ucc</u></font></td>
 					<td align="left">
 						<select name="ucc_pwr" OnChange="pwr_clk()">
 							<option>2.0</option>
@@ -70,31 +70,31 @@
 							<option>3.0</option>
 							<option>3.2</option>
 							<option>3.4</option>
-						</select><font size="2"> В</font>
+						</select><font size="2"> Р’</font>
 					</td>
 				</tr>
-<!--Выберите порога для BUcc-->
+<!--Р’С‹Р±РµСЂРёС‚Рµ РїРѕСЂРѕРіР° РґР»СЏ BUcc-->
 				<tr>
-					<td align="left"><font size="2"><u>Опорное напряжение для BUcc</u></font></td>
+					<td align="left"><font size="2"><u>РћРїРѕСЂРЅРѕРµ РЅР°РїСЂСЏР¶РµРЅРёРµ РґР»СЏ BUcc</u></font></td>
 					<td align="left">
 						<select name="bucc_pwr" OnChange="pwr_clk()">
 							<option>1.8</option>
 							<option>2.2</option>
 							<option>2.6</option>
 							<option>3.0</option>
-						</select><font size="2"> В</font>
+						</select><font size="2"> Р’</font>
 					</td>
 				</tr>
-<!--Кнопки-->
+<!--РљРЅРѕРїРєРё-->
 				<tr>
 					<td align="left"><p><font size="2"></font></p></td>
 					<td align="left">
-						<input type="button" name="bl1" value="Рассчитать" onclick="pwr_clk()">
+						<input type="button" name="bl1" value="Р Р°СЃСЃС‡РёС‚Р°С‚СЊ" onclick="pwr_clk()">
 					</td>
 				</tr>
 				<tr>
 					<td>
-						<font size="2"><i>Примечание:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;В микроконтроллерах второй ревизии (по адресу 0х000003FC загрузочного ПЗУ хранится значение 0x83400FDF и год выпуска не ранее 2011) при BUCC &lt; UCC блок определения уровня BUCC не функционирует.</i></font>
+						<font size="2"><i>РџСЂРёРјРµС‡Р°РЅРёРµ:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Р’ РјРёРєСЂРѕРєРѕРЅС‚СЂРѕР»Р»РµСЂР°С… РІС‚РѕСЂРѕР№ СЂРµРІРёР·РёРё (РїРѕ Р°РґСЂРµСЃСѓ 0С…000003FC Р·Р°РіСЂСѓР·РѕС‡РЅРѕРіРѕ РџР—РЈ С…СЂР°РЅРёС‚СЃСЏ Р·РЅР°С‡РµРЅРёРµ 0x83400FDF Рё РіРѕРґ РІС‹РїСѓСЃРєР° РЅРµ СЂР°РЅРµРµ 2011) РїСЂРё BUCC &lt; UCC Р±Р»РѕРє РѕРїСЂРµРґРµР»РµРЅРёСЏ СѓСЂРѕРІРЅСЏ BUCC РЅРµ С„СѓРЅРєС†РёРѕРЅРёСЂСѓРµС‚.</i></font>
 					</td>
 				</tr>
 			</table>
