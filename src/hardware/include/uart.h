@@ -28,12 +28,16 @@ char uart_recv(UART_PORT port);
 void uart_send(UART_PORT port, char c);
 
 
-void uart1_rx_handler(void);
+/**
+ * tx complete handler
+ * @returns true if last byte was just set to send
+ */
 bool uart1_tx_handler(void);
 void uart1_tc_handler(void);
+void uart1_rx_handler(void);
 
-void uart2_rx_handler(void);
 bool uart2_tx_handler(void);
 void uart2_tc_handler(void);
+void uart2_rx_handler(void);
 
 #endif
