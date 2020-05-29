@@ -19,7 +19,7 @@
  * @date 18 August 2012
  *
  * LGPL License Terms @ref lgpl_license
- *  */
+ */
 /*
  * This file is part of the libopencm3 project.
  *
@@ -41,6 +41,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  */
+/**@{*/
 
 #ifndef LIBOPENCM3_RCC_H
 #define LIBOPENCM3_RCC_H
@@ -48,7 +49,6 @@
 #include <libopencm3/stm32/pwr.h>
 
 /** @defgroup rcc_registers RCC Registers
- * @ingroup rcc_defines
  * @brief Reset / Clock Control Registers
 @{*/
 /** Clock control register */
@@ -116,7 +116,7 @@
 #define RCC_CKGATENR				MMIO32(RCC_BASE + 0x90)
 /** RCC Dedicated Clocks Configuration Register 2 */
 #define RCC_DCKCFGR2				MMIO32(RCC_BASE + 0x94)
-/*@}*/
+/**@}*/
 
 /** @defgroup rcc_cr_values RCC_CR values
  * @ingroup rcc_registers
@@ -138,7 +138,7 @@
 #define RCC_CR_HSITRIM_MASK			0x1f
 #define RCC_CR_HSIRDY				(1 << 1)
 #define RCC_CR_HSION				(1 << 0)
-/*@}*/
+/**@}*/
 
 /** @defgroup rcc_pllcfgr_values RCC_PLLCFGR values
  * @ingroup rcc_registers
@@ -160,7 +160,7 @@
 /* PLLM: [5:0] */
 #define RCC_PLLCFGR_PLLM_SHIFT			0
 #define RCC_PLLCFGR_PLLM_MASK			0x3f
-/*@}*/
+/**@}*/
 
 /** @defgroup rcc_cfgr_values RCC_CFGR values
  * @ingroup rcc_registers
@@ -242,7 +242,7 @@
 #define RCC_CFGR_SW_HSI				0x0
 #define RCC_CFGR_SW_HSE				0x1
 #define RCC_CFGR_SW_PLL				0x2
-/*@}*/
+/**@}*/
 
 /** @defgroup rcc_cir_values RCC_CIR values
  * @ingroup rcc_registers
@@ -280,7 +280,7 @@
 #define RCC_CIR_HSIRDYF				(1 << 2)
 #define RCC_CIR_LSERDYF				(1 << 1)
 #define RCC_CIR_LSIRDYF				(1 << 0)
-/*@}*/
+/**@}*/
 
 /** @defgroup rcc_ahbrstr_rst RCC_AHBxRSTR reset values (full set)
 @{*/
@@ -415,6 +415,7 @@
 #define RCC_AHB1ENR_GPIOCEN			(1 << 2)
 #define RCC_AHB1ENR_GPIOBEN			(1 << 1)
 #define RCC_AHB1ENR_GPIOAEN			(1 << 0)
+/**@}*/
 
 /** @addtogroup deprecated_201802_rcc Deprecated 2018
  * @deprecated replace zzz_IOPxEN with zzz_GPIOxEN
@@ -565,6 +566,8 @@
 
 /* --- RCC_APB1LPENR values ------------------------------------------------- */
 
+/** @defgroup rcc_apblpenr_en RCC_APBxLPENR enable values (full set)
+@{*/
 #define RCC_APB1LPENR_UART8EN			(1 << 31)
 #define RCC_APB1LPENR_UART7EN			(1 << 30)
 #define RCC_APB1LPENR_DACLPEN			(1 << 29)
@@ -611,7 +614,7 @@
 #define RCC_APB2LPENR_USART1LPEN		(1 << 4)
 #define RCC_APB2LPENR_TIM8LPEN			(1 << 1)
 #define RCC_APB2LPENR_TIM1LPEN			(1 << 0)
-/*@}*/
+/**@}*/
 
 /** @defgroup rcc_bdcr_values RCC_BDCR values
  * @ingroup rcc_registers
@@ -630,7 +633,7 @@
 #define RCC_BDCR_LSEBYP				(1 << 2)
 #define RCC_BDCR_LSERDY				(1 << 1)
 #define RCC_BDCR_LSEON				(1 << 0)
-/*@}*/
+/**@}*/
 
 /** @defgroup rcc_csr_values RCC_CSR values
  * @ingroup rcc_registers
@@ -649,7 +652,7 @@
 		RCC_CSR_PINRSTF | RCC_CSR_BORRSTF)
 #define RCC_CSR_LSIRDY				(1 << 1)
 #define RCC_CSR_LSION				(1 << 0)
-/*@}*/
+/**@}*/
 
 /** @defgroup rcc_sscgr_values RCC_SSCGR values
  * @ingroup rcc_registers
@@ -665,7 +668,7 @@
 /* RCC_SSCGR[15:0]: MODPER */
 #define RCC_SSCGR_MODPER_SHIFT			0
 #define RCC_SSCGR_MODPER_MASK			0x1fff
-/*@}*/
+/**@}*/
 
 /** @defgroup rcc_pllded_values RCC_PLLxxx/DCKy values
  * @ingroup rcc_registers
@@ -740,7 +743,7 @@
 
 #define RCC_DCKCFGR_PLLI2SDIVQ_SHIFT		0
 #define RCC_DCKCFGR_PLLI2SDIVQ_MASK		0x1f
-/*@}*/
+/**@}*/
 
 /** @defgroup rcc_ckgatenr_values RCC_CKGATENR bits
  * @ingroup rcc_registers
@@ -754,19 +757,7 @@
 #define RCC_CKGATENR_CM4DBG_CKEN		(1<<2)
 #define RCC_CKGATENR_AHB2APB2_CKEN		(1<<1)
 #define RCC_CKGATENR_AHB2APB1_CKEN		(1<<0)
-/*@}*/
-
-/* PLLSAI1 helper macros */
-static inline void rcc_pllsai_enable(void)
-{
-	RCC_CR |= RCC_CR_PLLSAION;
-}
-
-static inline bool rcc_pllsai_ready(void)
-{
-	return (RCC_CR & RCC_CR_PLLSAIRDY) != 0;
-}
-
+/**@}*/
 
 /* --- Variable definitions ------------------------------------------------ */
 extern uint32_t rcc_ahb_frequency;
@@ -1092,6 +1083,7 @@ void rcc_osc_on(enum rcc_osc osc);
 void rcc_osc_off(enum rcc_osc osc);
 void rcc_css_enable(void);
 void rcc_css_disable(void);
+void rcc_plli2s_config(uint16_t n, uint8_t r);
 void rcc_pllsai_config(uint16_t n, uint16_t p, uint16_t q, uint16_t r);
 void rcc_pllsai_postscalers(uint8_t q, uint8_t r);
 void rcc_set_sysclk_source(uint32_t clk);
@@ -1111,3 +1103,4 @@ void __attribute__((deprecated("Use rcc_clock_setup_pll as direct replacement"))
 END_DECLS
 
 #endif
+/**@}*/

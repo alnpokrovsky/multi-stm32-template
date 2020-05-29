@@ -33,8 +33,8 @@
 
 #include <libopencm3/stm32/pwr.h>
 
-/* --- RCC registers ------------------------------------------------------- */
-
+/** @defgroup rcc_registers Reset and Clock Control Register
+@{*/
 #define RCC_CR				MMIO32(RCC_BASE + 0x00)
 #define RCC_ICSCR			MMIO32(RCC_BASE + 0x04)
 #define RCC_CFGR			MMIO32(RCC_BASE + 0x08)
@@ -69,11 +69,10 @@
 #define RCC_CCIPR			MMIO32(RCC_BASE + 0x54)
 #define RCC_BDCR			MMIO32(RCC_BASE + 0x5c)
 #define RCC_CSR				MMIO32(RCC_BASE + 0x60)
+/**@}*/
 
-
-
-/* --- RCC_CR values ------------------------------------------------------- */
-
+/** @defgroup rcc_cr CR Clock control Register
+@{*/
 #define RCC_CR_PLLRDY			(1 << 25)
 #define RCC_CR_PLLON			(1 << 24)
 #define RCC_CR_CSSON			(1 << 19)
@@ -100,16 +99,20 @@
 #define RCC_CR_HSIRDY			(1 << 10)
 #define RCC_CR_HSIKERON			(1 << 9)
 #define RCC_CR_HSION			(1 << 8)
+/**@}*/
 
-/* --- RCC_ICSCR values ---------------------------------------------------- */
 
+/** @defgroup rcc_icscr ICSCR Internal Clock Source Calibration Register
+@{*/
 #define RCC_ICSCR_HSITRIM_SHIFT		8
 #define RCC_ICSCR_HSITRIM_MASK		0x1f
 #define RCC_ICSCR_HSICAL_SHIFT		0
 #define RCC_ICSCR_HSICAL_MASK		0xff
+/**@}*/
 
-/* --- RCC_CFGR values ----------------------------------------------------- */
 
+/** @defgroup rcc_cfgr CFGR Configuration Register
+@{*/
 #define RCC_CFGR_MCOPRE_SHIFT	    28
 #define RCC_CFGR_MCOPRE_MASK	    0x7
 /** @defgroup rcc_cfgr_mcopre MCO Pre
@@ -188,7 +191,7 @@
 
 #define RCC_CFGR_SW_MASK			0x3
 #define RCC_CFGR_SW_SHIFT			0
-/** @defgroup rcc_cfgr_sws SW
+/** @defgroup rcc_cfgr_sw SW
  * @brief System clock switch
 @sa rcc_cfgr_sw
 @{*/
@@ -198,9 +201,12 @@
 #define RCC_CFGR_SW_LSI				0x3
 #define RCC_CFGR_SW_LSE				0x4
 /**@}*/
+/**@}*/
 
-/* --- RCC_PLLCFGR - PLL Configuration Register */
 
+
+/** @defgroup rcc_pllcfgr PLLCFGR PLL Configuration Register
+@{*/
 #define RCC_PLLCFGR_PLLR_SHIFT		29
 #define RCC_PLLCFGR_PLLR_MASK		0x7
 /** @defgroup rcc_pllcfgr_pllr PLLR
@@ -260,17 +266,19 @@
 #define RCC_PLLCFGR_PLLSRC_HSI16	2
 #define RCC_PLLCFGR_PLLSRC_HSE		3
 /**@}*/
+/**@}*/
 
-/* --- RCC_CIER - Clock interrupt enable register */
-
+/** @defgroup rcc_cier CIER Clock Interrupt Enable Register
+@{*/
 #define RCC_CIER_PLLRDYIE			(1 << 5)
 #define RCC_CIER_HSERDYIE			(1 << 4)
 #define RCC_CIER_HSIRDYIE			(1 << 3)
 #define RCC_CIER_LSERDYIE			(1 << 1)
 #define RCC_CIER_LSIRDYIE			(1 << 0)
+/**@}*/
 
-/* --- RCC_CIFR - Clock interrupt flag register */
-
+/** @defgroup rcc_cifr CIFR Clock Interrupt Flag Register
+@{*/
 #define RCC_CIFR_LSECSSF			(1 << 9)
 #define RCC_CIFR_CSSF				(1 << 8)
 #define RCC_CIFR_PLLRDYF			(1 << 5)
@@ -278,9 +286,10 @@
 #define RCC_CIFR_HSIRDYF			(1 << 3)
 #define RCC_CIFR_LSERDYF			(1 << 1)
 #define RCC_CIFR_LSIRDYF			(1 << 0)
+/**@}*/
 
-/* --- RCC_CICR - Clock interrupt flag register */
-
+/** @defgroup rcc_cicr CICR Clock Interrupt Clear Register
+@{*/
 #define RCC_CICR_LSECSSC			(1 << 9)
 #define RCC_CICR_CSSC				(1 << 8)
 #define RCC_CICR_PLLRDYC			(1 << 5)
@@ -288,6 +297,7 @@
 #define RCC_CICR_HSIRDYC			(1 << 3)
 #define RCC_CICR_LSERDYC			(1 << 1)
 #define RCC_CICR_LSIRDYC			(1 << 0)
+/**@}*/
 
 /** @defgroup rcc_ahbrstr_rst RCC_AHBRSTR reset values
 @{*/
@@ -388,8 +398,6 @@
 /**@}*/
 /**@}*/
 
-/* --- RCC_AHBSMENR values ------------------------------------------------- */
-
 /** @defgroup rcc_aphbsmenr_en RCC_AHBSMENR enable in sleep/stop mode values
 @{*/
 #define RCC_AHBSMENR_RNGSMEN			(1 << 18)
@@ -399,8 +407,6 @@
 #define RCC_AHBSMENR_FLASHSMEN			(1 << 8)
 #define RCC_AHBSMENR_DMASMEN			(1 << 0)
 /**@}*/
-
-/* --- RCC_APBSMENR1 values ------------------------------------------------- */
 
 /** @defgroup rcc_apbsmenr_en RCC_APBSMENR1 enable in sleep/stop mode values
 @{*/
@@ -427,13 +433,10 @@
 #define RCC_APBSMENR1_TIM2SMEN			(1 << 0)
 /**@}*/
 
-/* --- RCC_APBSMENR2 values ------------------------------------------------- */
-
 /** @defgroup rcc_apbsmenr2_en RCC_APBSMENR2 enable in sleep/stop mode values
 @{*/
 #define RCC_APBSMENR2_ADCSMEN			(1 << 20)
 #define RCC_APBSMENR2_TIM17SMEN			(1 << 18)
-#define RCC_APBSMENR2_TIM16SMEN			(1 << 17)
 #define RCC_APBSMENR2_TIM16SMEN			(1 << 17)
 #define RCC_APBSMENR2_TIM15SMEN			(1 << 16)
 #define RCC_APBSMENR2_TIM14SMEN			(1 << 15)
@@ -443,8 +446,9 @@
 #define RCC_APBSMENR2_SYSCFGSMEN		(1 << 0)
 /**@}*/
 
-/* --- RCC_CCIPR - Peripherals independent clock config register ----------- */
 
+/** @defgroup rcc_ccipr CCIPR Peripherals Independent Clock Config Register
+@{*/
 #define RCC_CCIPR_ADCSEL_MASK		0x3
 #define RCC_CCIPR_ADCSEL_SHIFT		30
 /** @defgroup rcc_ccipr_adcsel ADCSEL
@@ -566,9 +570,10 @@
 #define RCC_CCIPR_USART1SEL_HSI16 		2
 #define RCC_CCIPR_USART1SEL_LSE			3
 /**@}*/
+/**@}*/
 
-/* --- RCC_BDCR - PLL Configuration Register */
-
+/** @defgroup rcc_bdcr BDCR Backup Domain Control Register
+@{*/
 #define RCC_BDCR_LSCOSEL		(1 << 25)
 #define RCC_BDCR_LSCOEN			(1 << 24)
 #define RCC_BDCR_BDRST			(1 << 16)
@@ -597,19 +602,21 @@
 #define RCC_BDCR_LSEBYP				(1 << 2)
 #define RCC_BDCR_LSERDY				(1 << 1)
 #define RCC_BDCR_LSEON				(1 << 0)
+/**@}*/
 
-/* --- RCC_CSR - Control/Status register ----------------------------------- */
-
+/** @defgroup rcc_csr CSR Control and Status Register
+@{*/
 #define RCC_CSR_LPWRRSTF			(1 << 31)
 #define RCC_CSR_WWDGRSTF			(1 << 30)
 #define RCC_CSR_IWDGRSTF			(1 << 29)
 #define RCC_CSR_SFTRSTF				(1 << 28)
-#define RCC_CSR_PWRSTF				(1 << 27)
+#define RCC_CSR_PWRRSTF				(1 << 27)
 #define RCC_CSR_PINRSTF				(1 << 26)
 #define RCC_CSR_OBLRSTF				(1 << 25)
 #define RCC_CSR_RMVF				(1 << 23)
 #define RCC_CSR_LSIRDY				(1 << 1)
 #define RCC_CSR_LSION				(1 << 0)
+/**@}*/
 
 /* --- Variable definitions ------------------------------------------------ */
 
@@ -653,8 +660,8 @@ enum rcc_periph_clken {
 	RCC_DAC1 = _REG_BIT(RCC_APBENR1_OFFSET, 29),
 	RCC_PWR = _REG_BIT(RCC_APBENR1_OFFSET, 28),
 	RCC_DBG = _REG_BIT(RCC_APBENR1_OFFSET, 27),
-	RCC_UCPD1 = _REG_BIT(RCC_APBENR1_OFFSET, 26),
-	RCC_UCPD2 = _REG_BIT(RCC_APBENR1_OFFSET, 25),
+	RCC_UCPD2 = _REG_BIT(RCC_APBENR1_OFFSET, 26),
+	RCC_UCPD1 = _REG_BIT(RCC_APBENR1_OFFSET, 25),
 	RCC_CEC = _REG_BIT(RCC_APBENR1_OFFSET, 24),
 	RCC_I2C2 = _REG_BIT(RCC_APBENR1_OFFSET, 22),
 	RCC_I2C1 = _REG_BIT(RCC_APBENR1_OFFSET, 21),
@@ -678,12 +685,12 @@ enum rcc_periph_clken {
 	RCC_TIM1 = _REG_BIT(RCC_APBENR2_OFFSET, 11),
 	RCC_SYSCFG = _REG_BIT(RCC_APBENR2_OFFSET, 0),
 
-	SCC_GPIOF = _REG_BIT(RCC_IOPENR_OFFSET, 5),
-	SCC_GPIOE = _REG_BIT(RCC_IOPENR_OFFSET, 4),
-	SCC_GPIOD = _REG_BIT(RCC_IOPENR_OFFSET, 3),
-	SCC_GPIOC = _REG_BIT(RCC_IOPENR_OFFSET, 2),
-	SCC_GPIOB = _REG_BIT(RCC_IOPENR_OFFSET, 1),
-	SCC_GPIOA = _REG_BIT(RCC_IOPENR_OFFSET, 0),
+	SCC_GPIOF = _REG_BIT(RCC_IOPSMENR_OFFSET, 5),
+	SCC_GPIOE = _REG_BIT(RCC_IOPSMENR_OFFSET, 4),
+	SCC_GPIOD = _REG_BIT(RCC_IOPSMENR_OFFSET, 3),
+	SCC_GPIOC = _REG_BIT(RCC_IOPSMENR_OFFSET, 2),
+	SCC_GPIOB = _REG_BIT(RCC_IOPSMENR_OFFSET, 1),
+	SCC_GPIOA = _REG_BIT(RCC_IOPSMENR_OFFSET, 0),
 
 	SCC_RNG = _REG_BIT(RCC_AHBSMENR_OFFSET, 18),
 	SCC_AES = _REG_BIT(RCC_AHBSMENR_OFFSET, 16),
@@ -697,8 +704,8 @@ enum rcc_periph_clken {
 	SCC_DAC1 = _REG_BIT(RCC_APBSMENR1_OFFSET, 29),
 	SCC_PWR = _REG_BIT(RCC_APBSMENR1_OFFSET, 28),
 	SCC_DBG = _REG_BIT(RCC_APBSMENR1_OFFSET, 27),
-	SCC_UCPD1 = _REG_BIT(RCC_APBSMENR1_OFFSET, 26),
-	SCC_UCPD2 = _REG_BIT(RCC_APBSMENR1_OFFSET, 25),
+	SCC_UCPD2 = _REG_BIT(RCC_APBSMENR1_OFFSET, 26),
+	SCC_UCPD1 = _REG_BIT(RCC_APBSMENR1_OFFSET, 25),
 	SCC_CEC = _REG_BIT(RCC_APBSMENR1_OFFSET, 24),
 	SCC_I2C2 = _REG_BIT(RCC_APBSMENR1_OFFSET, 22),
 	SCC_I2C1 = _REG_BIT(RCC_APBSMENR1_OFFSET, 21),
@@ -743,8 +750,8 @@ enum rcc_periph_rst {
 	RST_DAC1 = _REG_BIT(RCC_APBRSTR1_OFFSET, 29),
 	RST_PWR = _REG_BIT(RCC_APBRSTR1_OFFSET, 28),
 	RST_DBG = _REG_BIT(RCC_APBRSTR1_OFFSET, 27),
-	RST_UCPD1 = _REG_BIT(RCC_APBRSTR1_OFFSET, 26),
-	RST_UCPD2 = _REG_BIT(RCC_APBRSTR1_OFFSET, 25),
+	RST_UCPD2 = _REG_BIT(RCC_APBRSTR1_OFFSET, 26),
+	RST_UCPD1 = _REG_BIT(RCC_APBRSTR1_OFFSET, 25),
 	RST_CEC = _REG_BIT(RCC_APBRSTR1_OFFSET, 24),
 	RST_I2C2 = _REG_BIT(RCC_APBRSTR1_OFFSET, 22),
 	RST_I2C1 = _REG_BIT(RCC_APBRSTR1_OFFSET, 21),

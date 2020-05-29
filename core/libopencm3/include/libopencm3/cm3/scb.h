@@ -24,6 +24,11 @@
 /**
  * @defgroup cm_scb Cortex-M System Control Block
  * @ingroup CM3_defines
+ *
+ * The System Control Block is a section of the System Control Space.
+ * Other members of the SCS are, for instance, DWT, ITM, SYSTICKK.
+ * The exact details of the SCB are defined in the "Architecture Reference
+ * Manual" for either ARMv7-M or ARMV6-m.
  * @{
  */
 #include <libopencm3/cm3/memorymap.h>
@@ -52,13 +57,16 @@
 /** CCR: Configuration Control Register */
 #define SCB_CCR					MMIO32(SCB_BASE + 0x14)
 
-/** SHP: System Handler Priority Registers.
- * Note: 12 8bit registers
+/** System Handler Priority 8 bits Registers, SHPR1/2/3.
+ * @note: 12 8bit Registers
+ * @note: 2 32bit Registers on CM0, requires word access,
+ * (shpr1 doesn't actually exist)
  */
-#define SCB_SHPR(shpr_id)			MMIO8(SCB_BASE + 0x18 + (shpr_id))
-#define SCB_SHPR1				MMIO32(SCB_BASE + 0x18)
-#define SCB_SHPR2				MMIO32(SCB_BASE + 0x1C)
-#define SCB_SHPR3				MMIO32(SCB_BASE + 0x20)
+#if defined(__ARM_ARCH_6M__)
+#define SCB_SHPR32(ipr_id)		MMIO32(SCS_BASE + 0xD18 + ((ipr_id) * 4))
+#else
+#define SCB_SHPR(ipr_id)		MMIO8(SCS_BASE + 0xD18 + (ipr_id))
+#endif
 
 /** SHCSR: System Handler Control and State Register */
 #define SCB_SHCSR				MMIO32(SCB_BASE + 0x24)

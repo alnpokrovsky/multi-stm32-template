@@ -35,14 +35,16 @@ TGT_CFLAGS	+= $(STANDARD_FLAGS)
 ARFLAGS		= rcs
 
 OBJS += adc_common_v2.o
+OBJS += crc_common_all.o crc_v2.o
 OBJS += crs_common_all.o
-OBJS += desig.o
+OBJS += desig_common_all.o desig_common_v1.o
 OBJS += dma_common_l1f013.o dma_common_csel.o
 OBJS += exti_common_all.o
 OBJS += flash_common_all.o flash_common_l01.o
 OBJS += gpio_common_all.o gpio_common_f0234.o
 OBJS += i2c_common_v2.o
 OBJS += iwdg_common_all.o
+OBJS += lptimer_common_all.o
 OBJS += pwr_common_v1.o pwr_common_v2.o
 OBJS += rcc.o rcc_common_all.o
 OBJS += rng_common_v1.o
@@ -52,6 +54,7 @@ OBJS += timer_common_all.o
 OBJS += usart_common_all.o usart_common_v2.o
 
 OBJS += usb.o usb_control.o usb_standard.o usb_msc.o
+OBJS += usb_hid.o
 OBJS += st_usbfs_core.o st_usbfs_v2.o
 
 VPATH += ../../usb:../:../../cm3:../common

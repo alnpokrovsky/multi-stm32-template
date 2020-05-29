@@ -7,5 +7,6 @@
 *.srec
 *.list
 *.map
-.vscode/
+.vscode/ipch
+.vscode/settings.json
 build/

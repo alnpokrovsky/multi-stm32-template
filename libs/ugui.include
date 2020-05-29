@@ -1,0 +1,7 @@
+# uGUI lib plus cyrillic support
+
+DEFS += -DUGUI_LIB
+
+INC += libs/ugui/include
+    
+SRC += $(shell find libs/ugui/src -name "*.c")

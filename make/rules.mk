@@ -46,6 +46,7 @@ PROJECT		?= main
 INC 		+= src
 BUILD_DIR 	?= build
 CSTD		?= -std=c11
+CXXSTD		?= -std=c++14
 
 ###############################################################################
 # Executables
@@ -67,7 +68,7 @@ OOCD	?= openocd
 
 TGT_CFLAGS	+= $(OPT) $(CSTD) $(DEBUG)
 TGT_CFLAGS	+= $(ARCH_FLAGS)
-TGT_CFLAGS	+= -Wextra -Wshadow -Wimplicit-function-declaration -Werror
+TGT_CFLAGS	+= -Wextra -Wshadow -Wimplicit-function-declaration
 TGT_CFLAGS	+= -Wredundant-decls -Wmissing-prototypes -Wstrict-prototypes
 TGT_CFLAGS	+= -fno-common -ffunction-sections -fdata-sections
 
@@ -82,13 +83,13 @@ TGT_CXXFLAGS	+= -fno-common -ffunction-sections -fdata-sections
 ###############################################################################
 # Assembler flags
 
-TGT_ASFLAGS += $(OPT) $(ARCH_FLAGS) -ggdb3
+TGT_ASFLAGS += $(OPT) $(ARCH_FLAGS) $(DEBUG)
 
 ###############################################################################
 # C & C++ preprocessor common flags
 
 TGT_CPPFLAGS	+= -MD
-TGT_CPPFLAGS	+= -Wall -Wundef
+TGT_CPPFLAGS	+= -Wall -Werror -Wundef
 TGT_CPPFLAGS	+= $(DEFS)
 TGT_CPPFLAGS	+= $(addprefix -I, $(INC))
 
@@ -208,7 +209,9 @@ debug: $(PROJECT).elf
 	@printf "  DEBUGING $<\n"
 	$(GDB) $< \
 		-ex 'target remote localhost:3333' \
+		-ex 'monitor endian little' \
 		-ex 'monitor reset halt' \
+		-ex 'monitor arm semihosting enable' \
 		-ex 'monitor poll'
 
 

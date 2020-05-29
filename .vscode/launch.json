@@ -1,0 +1,49 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug-Stm32F4",
+        "type": "cppdbg",
+        "request": "launch",
+        "targetArchitecture": "arm",
+        "program": "${workspaceRoot}/drivecontroller.elf",
+        "preLaunchTask": "build",
+
+        "stopAtEntry": true,
+        "cwd": "${workspaceRoot}",
+        "environment": [],
+        "externalConsole": true,
+
+        // "miDebuggerServerAddress": "localhost:3333",
+        "debugServerPath": "openocd",
+        "debugServerArgs": "-f interface/stlink-v2-1.cfg -f target/stm32f4x.cfg -c init -c \"reset init\"",
+        "serverLaunchTimeout": 20000,
+        "filterStderr": true,
+        "filterStdout": false,
+        "serverStarted": "Info : Listening on port 3333 for gdb connections",
+        
+        "setupCommands": [
+            {"text": "-enable-pretty-printing", "ignoreFailures": true },
+            { "text": "-environment-cd ${workspaceRoot}" },
+            { "text": "-target-select remote localhost:3333" },
+            { "text": "-file-exec-and-symbols drivecontroller.elf" },
+            { "text": "-target-download" },
+            { "text": "-interpreter-exec console \"monitor endian little\"" },
+            { "text": "-interpreter-exec console \"monitor reset halt\"" },
+            { "text": "-interpreter-exec console \"monitor arm semihosting enable\"" },
+            { "text": "-interpreter-exec console \"monitor poll\"" },
+        ],
+        "linux": {
+          "MIMode": "gdb",
+          "miDebuggerPath": "/usr/bin/arm-none-eabi-gdb"
+        },
+        "osx": {
+          "MIMode": "lldb"
+        },
+        "windows": {
+          "MIMode": "gdb",
+          "miDebuggerPath": "arm-none-eabi-gdb.exe"
+        }
+      }
+    ]
+  }

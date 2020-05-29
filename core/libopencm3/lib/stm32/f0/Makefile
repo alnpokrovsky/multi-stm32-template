@@ -40,7 +40,7 @@ OBJS += comparator.o
 OBJS += crc_common_all.o crc_v2.o
 OBJS += crs_common_all.o
 OBJS += dac_common_all.o
-OBJS += desig.o
+OBJS += desig_common_all.o desig_common_v1.o
 OBJS += dma_common_l1f013.o dma_common_csel.o
 OBJS += exti_common_all.o
 OBJS += flash.o flash_common_all.o flash_common_f.o flash_common_f01.o
@@ -55,6 +55,7 @@ OBJS += timer_common_all.o timer_common_f0234.o
 OBJS += usart_common_all.o usart_common_v2.o
 
 OBJS += usb.o usb_control.o usb_standard.o usb_msc.o
+OBJS += usb_hid.o
 OBJS += st_usbfs_core.o st_usbfs_v2.o
 
 VPATH += ../../usb:../:../../cm3:../common

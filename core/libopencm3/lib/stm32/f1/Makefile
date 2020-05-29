@@ -38,7 +38,7 @@ OBJS += adc.o adc_common_v1.o
 OBJS += can.o
 OBJS += crc_common_all.o
 OBJS += dac_common_all.o
-OBJS += desig.o
+OBJS += desig_common_all.o desig_common_v1.o
 OBJS += dma_common_l1f013.o
 OBJS += exti_common_all.o
 OBJS += flash.o flash_common_all.o flash_common_f.o flash_common_f01.o
@@ -56,6 +56,7 @@ OBJS += mac.o mac_stm32fxx7.o
 OBJS += phy.o phy_ksz80x1.o
 
 OBJS += usb.o usb_control.o usb_standard.o usb_msc.o
+OBJS += usb_hid.o
 OBJS += usb_dwc_common.o usb_f107.o
 OBJS += st_usbfs_core.o st_usbfs_v1.o
 

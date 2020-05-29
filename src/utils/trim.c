@@ -8,7 +8,7 @@ void trim(char *s)
 
     // удаляем пробелы и табы с конца строки:
     i = strlen(s) - 1;
-    while(isspace(s[i])) { --i; }
+    while(isspace((unsigned char)s[i])) { --i; }
 
     if(i < strlen(s) - 1)
     {
@@ -17,7 +17,7 @@ void trim(char *s)
 
     // удаляем пробелы и табы с начала строки:
     i = 0;
-    while(isspace(s[i])) { ++i; }
+    while(isspace((unsigned char)s[i])) { ++i; }
 
     for(size_t j=0; j < strlen(s); j++)
     {

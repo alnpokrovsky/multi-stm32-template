@@ -110,14 +110,14 @@ void iic_init(IIC_PORT port) {
     i2c_peripheral_enable(IICS[port].i2c_base);
 }
 
-void iic_send(IIC_PORT port, byte address, byte reg, byte value) {
+void iic_send(IIC_PORT port, uint8_t address, uint8_t reg, uint8_t value) {
 	uint8_t data[2] = {reg, value};
     i2c_transfer7_patched(IICS[port].i2c_base,
 		address, data, 2, NULL, 0);
 }
 
 
-word iic_recv(IIC_PORT port, byte address, byte reg) {
+uint16_t iic_recv(IIC_PORT port, uint8_t address, uint8_t reg) {
     uint8_t data[2] = {reg, 0};
     i2c_transfer7_patched(IICS[port].i2c_base,
 		address, data, 1, data, 2);

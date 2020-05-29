@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "defines": [
+                "STM32F4",
+                "UGUI_LIB"
+            ],
+            "intelliSenseMode": "gcc-x64",
+            "cStandard": "c11",
+            "cppStandard": "c++14",
+            "includePath": [
+                "src",
+                "src/config",
+                "src/utils",
+                "src/hardware/include",
+                "core/libopencm3/include",
+                "libs/ugui/include",
+                "libs/freertos/include"
+            ],
+            "name": "arm-embeded"
+        }
+    ],
+    "version": 4
+}

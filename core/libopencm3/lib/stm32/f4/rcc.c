@@ -543,6 +543,18 @@ void rcc_css_disable(void)
 }
 
 /**
+ * Set the dividers for the PLLI2S clock outputs
+ * @param n valid range depends on target device, check your RefManual.
+ * @param r valid range is 2..7
+ */
+void rcc_plli2s_config(uint16_t n, uint8_t r)
+{
+	RCC_PLLI2SCFGR = (
+	  ((n & RCC_PLLI2SCFGR_PLLI2SN_MASK) << RCC_PLLI2SCFGR_PLLI2SN_SHIFT) |
+	  ((r & RCC_PLLI2SCFGR_PLLI2SR_MASK) << RCC_PLLI2SCFGR_PLLI2SR_SHIFT));
+}
+
+/**
  * Set the dividers for the PLLSAI clock outputs
  * divider p is only available on F4x9 parts, pass 0 for other parts.
  * @param n valid range is 49..432
@@ -710,11 +722,11 @@ void rcc_clock_setup_pll(const struct rcc_clock_scale *clock)
 	}
 
 	/* Set the VOS scale mode */
-	rcc_peripheral_enable_clock(&RCC_APB1ENR, RCC_PWR);
+	rcc_periph_clock_enable(RCC_PWR);
 	pwr_set_vos_scale(clock->voltage_scale);
 
 	/*
-	 * Set prescalers for AHB, ADC, ABP1, ABP2.
+	 * Set prescalers for AHB, ADC, APB1, APB2.
 	 * Do this before touching the PLL (TODO: why?).
 	 */
 	rcc_set_hpre(clock->hpre);

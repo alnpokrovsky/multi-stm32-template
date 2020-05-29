@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+#pragma pack(push, 1)
 typedef union {
     struct {
         uint8_t byte_low;     // low order byte
@@ -10,6 +11,7 @@ typedef union {
     };
     uint16_t word;            // 16 bits presentation
 } WORD2BYTES;
+#pragma pack(pop)
 
 uint16_t word_swap(uint16_t w);
 

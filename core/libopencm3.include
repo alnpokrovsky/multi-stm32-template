@@ -11,4 +11,4 @@ LIBS_A 		+= $(LIBFILE)
 
 $(LIBFILE):
 	@echo "LIBOPENCM3 need to be build"
-	$(Q)$(MAKE) -C $(OPENCM3_DIR)
+	$(Q)$(MAKE) -C core/libopencm3

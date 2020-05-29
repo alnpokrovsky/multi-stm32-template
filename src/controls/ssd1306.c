@@ -1,71 +1,85 @@
 #include "ssd1306.h"
 #include "spi.h"
 #include "digitalpin.h"
-#include "ugui.h"
-#include <assert.h>
 #include <string.h>
-
-#define WIDTH 128
-#define HEIGHT 64
-
-static UG_GUI gui;
-static uint8_t buffer[WIDTH / sizeof(uint8_t)][HEIGHT];
-static struct {
-    SPI_PORT spi;
-    DIGITALPIN_NAME dc; /* DC-pin switches data/command mode */ 
-} SSD1306;
 
 static void set_bit_color(
     uint8_t * point, 
     uint8_t bit, 
-    UG_COLOR c
+    uint32_t c
 ) {
-    switch ( c ) {
-	case C_BLACK: // black
-		*point &= ~(1 << bit);
-        break;
-	case C_RED: // inverse
-        *point ^= (1 << bit);
-        break;
-    case C_WHITE: // white
-	default:
+    if (c == 0x000000) { // black
+        *point &= ~(1 << bit);
+    } else { //white
         *point |= (1 << bit);
-        break;
-	}
+    }
 }
 
-static void draw_point(UG_S16 x, UG_S16 y, UG_COLOR c) {
-    assert(x > 0 && x < WIDTH);
-    assert(y > 0 && y < HEIGHT);
-    set_bit_color(&buffer[x >> 3][y], x & 0x07, c);
+static void command(SSD1306 * oled, uint8_t b) {
+    digitalpin_set(oled->dc, 0);
+    spi_xtransfer(oled->spi, b);
 }
 
-static void command(uint8_t b) {
-    digitalpin_set(SSD1306.dc, 0);
-    spi_xtransfer(SSD1306.spi, b);
+static void data(SSD1306 * oled, uint8_t b) {
+    digitalpin_set(oled->dc, 1);
+    spi_xtransfer(oled->spi, b);
 }
 
-static void data(uint8_t b) {
-    digitalpin_set(SSD1306.dc, 1);
-    spi_xtransfer(SSD1306.spi, b);
+void ssd1306_init(SSD1306 * oled) {
+    // init periph
+    spi_init(SPI_1, DFF_8BIT);
+    digitalpin_mode(oled->dc, DIGITALPIN_OUTPUT);
+    digitalpin_mode(oled->cs, DIGITALPIN_OUTPUT);
+    digitalpin_set(oled->cs, 1);
+
+    // initiation commands
+    digitalpin_set(oled->cs, 0);
+    static const uint8_t INIT_COMMANDS[] = {
+		0xAE, 0x00, 0x10, 0x40, 0x81, 0xCF, 0xA1, 0xA6, 
+		0xA8, 0x3F, 0xD3, 0x00, 0xD5, 0x80, 0xD9, 0xF1, 
+        0xDA, 0x12, 0xDB, 0x40, 0x8D, 0x14, 0xAF, 0xFF
+    };
+    for (int i = 0; INIT_COMMANDS[i] != 0xFF; ++i) {
+        command(oled, INIT_COMMANDS[i]);
+    }
+    digitalpin_set(oled->cs, 1);
+
+    // init draw
+    ssd1306_clear(oled);
+    ssd1306_flush(oled);
 }
 
-void ssd1306_init(SPI_PORT port, DIGITALPIN_NAME dc) {
-    SSD1306.spi = port;
-    SSD1306.dc = dc;
-    digitalpin_mode(dc, DIGITALPIN_OUTPUT);
-    UG_Init(&gui, draw_point, WIDTH, HEIGHT);
-    UG_SetBackcolor(C_BLACK);
-    UG_SetForecolor(C_WHITE);
-    UG_FontSelect(&FONT_4X6);
-	UG_FontSetHSpace(0);
+void ssd1306_draw_point(SSD1306 * oled, int16_t x, int16_t y, uint32_t color) {
+    // check if out of range
+    if ( (x < 0) || (x >= SSD1306_WIDTH) ) return;
+    if ( (y < 0) || (y >= SSD1306_HEIGHT) ) return;
+    
+    y = SSD1306_HEIGHT-1 - y; // invert y axis
+    set_bit_color(&oled->buffer[x][y>>3], y & 0x07, color);
+    oled->isNeedRedraw = true;
 }
 
-void ssd1306_clear(void) {
-    memset(buffer, 0, sizeof(buffer));
+void ssd1306_clear(SSD1306 * oled) {
+    oled->isNeedRedraw = true;
+    memset(oled->buffer, 0, sizeof(oled->buffer));
 }
 
-void ssd1306_redraw(void) {
-    command(0);
-    data(0);
+void ssd1306_flush(SSD1306 * oled) {
+    if (!oled->isNeedRedraw) return;
+    oled->isNeedRedraw = false;
+
+    digitalpin_set(oled->cs, 0);
+
+    command(oled, 0x20); command(oled, 0x02); //page mode
+    command(oled, 0x40);
+    command(oled, 0xD3); command(oled, 0x00);
+    for (int px=0; px < SSD1306_HEIGHT/8; ++px) {
+        command(oled, 0xB0|px);
+        command(oled, 0x00); // Lo col
+        command(oled, 0x10); // Hi col
+        for (int bx=0; bx < SSD1306_WIDTH; ++bx)
+        data(oled, oled->buffer[bx][px]);
+    }
+    
+    digitalpin_set(oled->cs, 1);
 }
