@@ -3,12 +3,12 @@
 #include "digitalpin.h"
 #include <string.h>
 
-static void set_bit_color(
+static void set_bit_brightness(
     uint8_t * point, 
     uint8_t bit, 
-    uint32_t c
+    uint8_t brightness
 ) {
-    if (c == 0x000000) { // black
+    if (brightness == 0) { // black
         *point &= ~(1 << bit);
     } else { //white
         *point |= (1 << bit);
@@ -49,13 +49,13 @@ void ssd1306_init(SSD1306 * oled) {
     ssd1306_flush(oled);
 }
 
-void ssd1306_draw_point(SSD1306 * oled, int16_t x, int16_t y, uint32_t color) {
+void ssd1306_draw_point(SSD1306 * oled, int16_t x, int16_t y, uint8_t brightness) {
     // check if out of range
     if ( (x < 0) || (x >= SSD1306_WIDTH) ) return;
     if ( (y < 0) || (y >= SSD1306_HEIGHT) ) return;
     
     y = SSD1306_HEIGHT-1 - y; // invert y axis
-    set_bit_color(&oled->buffer[x][y>>3], y & 0x07, color);
+    set_bit_brightness(&oled->buffer[x][y>>3], y & 0x07, brightness);
     oled->isNeedRedraw = true;
 }
 

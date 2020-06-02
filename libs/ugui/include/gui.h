@@ -5,10 +5,10 @@
 #include "controls/ssd1306.h"
 
 
-void ugui_init(SSD1306 * oled);
+void gui_init(void);
 
-void ugui_flush(void);
+void gui_poll(void);
 
-void ugui_putString(int16_t x, int16_t y, const char* str);
+void gui_putString(int16_t x, int16_t y, const char* str);
 
 #endif

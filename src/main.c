@@ -41,13 +41,13 @@ static void vSyncTask(void * arg) {
     isdriver_sync_init(CANBUS_1);
 
     RTOS_DELAY_LOOP {
-        isdriver_sync_write(CANBUS_1, SYNC_SET_TIME, 0);
+        // isdriver_sync_write(CANBUS_1, SYNC_SET_TIME, 0);
         isdriver_sync_write(CANBUS_1, SYNC_CORRECT_TIME, xLastWakeTime);
         
         digitalpin_toggle(PD_14);        
         char buf[36];
         sprintf(buf, "%lu", xLastWakeTime);
-        ugui_putString(0, 45, buf);
+        gui_putString(0, 45, buf);
         
         RTOS_DELAY_NEXT_MS(2000);
     }
@@ -61,18 +61,19 @@ static void vDriverTask(void * arg) {
     ISDRIVER_Driver driver1 = {.port = CANBUS_1, .id = 0x01};
     ISDRIVER_Driver driver2 = {.port = CANBUS_1, .id = 0x02};
     
-    ugui_putString(36,0, "dr1");
-    ugui_putString(80,0, "dr2");
-    ugui_putString(0, 15, "init");
-    ugui_putString(36, 15, "w");
-    ugui_putString(80, 15, "w");
+    gui_putString(36,0, "dr1");
+    gui_putString(80,0, "dr2");
+    gui_putString(0, 15, "init");
+    gui_putString(36, 15, "w");
+    gui_putString(80, 15, "w");
+    gui_poll();
 
     while (!isdriver_init(&driver1)) RTOS_DELAY_MS(10000);
-    ugui_putString(36, 15, "ok");
+    gui_putString(36, 15, "ok");
     while (!isdriver_init(&driver2)) RTOS_DELAY_MS(10000);
-    ugui_putString(80, 15, "ok");
+    gui_putString(80, 15, "ok");
 
-    ugui_putString(0, 30, "send");
+    gui_putString(0, 30, "send");
     RTOS_TASK(RTOS_MEDIUM_PRIORITY+1, vSyncTask);
 
     while(1) {
@@ -91,17 +92,16 @@ static void vDriverTask(void * arg) {
 static void vGraphicsTask(void * arg) {
     (void) arg;
 
-    while(1) {
-        ugui_flush();
-        RTOS_DELAY_MS( 500 );
+    RTOS_DELAY_LOOP {
+        gui_poll();
+        RTOS_DELAY_NEXT_MS(1000);
     }
 }
 
 int main(void) {
     rcc_init();
 
-    SSD1306 oled = {.spi = SPI_1, .cs = PA_0, .dc = PA_1};
-    ugui_init(&oled);
+    gui_init();
 
     RTOS_TASK(RTOS_LOW_PRIORITY, vLed1Task);
     RTOS_TASK(RTOS_LOW_PRIORITY+1, vGraphicsTask);
@@ -117,6 +117,6 @@ int main(void) {
 
 
 void hard_fault_handler(void) {
-    ugui_putString(0, 50, "hardfall");
-    ugui_flush();
+    gui_putString(0, 50, "hardfall");
+    gui_poll();
 }

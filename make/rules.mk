@@ -88,8 +88,11 @@ TGT_ASFLAGS += $(OPT) $(ARCH_FLAGS) $(DEBUG)
 ###############################################################################
 # C & C++ preprocessor common flags
 
+WARNINGS := -Wall -Werror \
+			-Wno-unused-value -Wno-unused-parameter
+
 TGT_CPPFLAGS	+= -MD
-TGT_CPPFLAGS	+= -Wall -Werror -Wundef
+TGT_CPPFLAGS	+= $(WARNINGS)
 TGT_CPPFLAGS	+= $(DEFS)
 TGT_CPPFLAGS	+= $(addprefix -I, $(INC))
 
@@ -217,7 +220,7 @@ debug: $(PROJECT).elf
 
 clean:
 	@printf "  CLEAN\n"
-	$(Q)$(RM) $(PROJECT).elf $(PROJECT).bin $(PROJECT).hex $(PROJECT).list $(PROJECT).map generated.* $(OBJS) $(OBJS:%.o=%.d)
+	$(Q)$(RM) $(PROJECT).elf $(PROJECT).bin $(PROJECT).hex $(PROJECT).list $(PROJECT).map
 	$(Q)$(RM) -r $(BUILD_DIR)
 
 .PHONY: images flash clean debug oocd elf bin hex list

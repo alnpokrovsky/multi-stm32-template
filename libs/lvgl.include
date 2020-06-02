@@ -1,0 +1,9 @@
+# lvgl lib
+
+DEFS += -DLVGL_LIB -DLV_CONF_INCLUDE_SIMPLE
+
+INC += libs/lvgl
+
+SRC += $(shell find libs/lvgl/src -name "*.c")
+
+

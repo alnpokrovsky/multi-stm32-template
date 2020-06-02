@@ -1,6 +1,7 @@
 #if defined(STM32F1)||defined(STM32F3)||defined(STM32F4)
 
 #include <libopencm3/stm32/can.h>
+#include "delay.h"
 
 /*---------------------------------------------------------------------------*/
 /** @brief CAN Filter Init
@@ -90,22 +91,33 @@ bool can_transmit_patched(uint32_t canport, uint32_t mailbox,
 		uint32_t data32;
 	} tdlxr, tdhxr;
 
+	uint32_t TME_N;
+	uint32_t TXOK_N;
+	bool flag;
+
     /* Check if transmit mailbox is empty. */
-    switch (mailbox)
-    {
+    switch (mailbox) {
     case 0:
-        if ( (CAN_TSR(canport) & CAN_TSR_TME0) == 0 ) return false;
-        mailbox = CAN_MBOX0;
+		mailbox = CAN_MBOX0;
+		TME_N = CAN_TSR_TME0;
+		TXOK_N = CAN_TSR_TXOK0;
         break;
     case 1:
-        if ( (CAN_TSR(canport) & CAN_TSR_TME1) == 0 ) return false;
-        mailbox = CAN_MBOX1;
+		mailbox = CAN_MBOX1;
+		TME_N = CAN_TSR_TME1;
+		TXOK_N = CAN_TSR_TXOK1;
         break;
     case 2:
-        if ( (CAN_TSR(canport) & CAN_TSR_TME2) == 0 ) return false;
         mailbox = CAN_MBOX2;
+		TME_N = CAN_TSR_TME2;
+		TXOK_N = CAN_TSR_TXOK2;
         break;
     }
+
+	// wait some if there are queue
+	DELAY_TILL(flag = CAN_TSR(canport) & TME_N);
+	if (!flag) return false;
+        
 
 	if (ext) {
 		/* Set extended ID. */
@@ -161,7 +173,11 @@ bool can_transmit_patched(uint32_t canport, uint32_t mailbox,
 	/* Request transmission. */
 	CAN_TIxR(canport, mailbox) |= CAN_TIxR_TXRQ;
 
-	return true;
+	// wait till send
+	DELAY_TILL(flag = CAN_TSR(canport) & TME_N);
+	if (!flag) return false;
+
+	return (CAN_TSR(canport) & TXOK_N) != 0;
 }
 
 #endif

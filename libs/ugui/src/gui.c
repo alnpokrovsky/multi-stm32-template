@@ -3,16 +3,15 @@
 #include "controls/ssd1306.h"
 
 static UG_GUI gui;
-static SSD1306 * oled = 0;
+static SSD1306 oled = {.spi = SPI_1, .cs = PA_0, .dc = PA_1};
 
 static void draw_point(UG_S16 x, UG_S16 y, UG_COLOR color) {
-    ssd1306_draw_point(oled, x, y, color);
+    ssd1306_draw_point(&oled, x, y, (uint8_t)color);
 }
 
-void ugui_init(SSD1306 * ssd1306) {
-    oled = ssd1306;
-    ssd1306_init(oled);
-    ssd1306_clear(oled);
+void gui_init(void) {
+    ssd1306_init(&oled);
+    ssd1306_clear(&oled);
     // uGUI setting
     UG_Init(&gui, &draw_point, SSD1306_WIDTH, SSD1306_HEIGHT);
     // UG_FillScreen(C_BLACK);    
@@ -22,12 +21,12 @@ void ugui_init(SSD1306 * ssd1306) {
 	UG_FontSetHSpace(0);
 }
 
-void ugui_putString(int16_t x, int16_t y, const char* str) {
+void gui_putString(int16_t x, int16_t y, const char* str) {
     char tmp[32];
     convertUtf8ToCp1251(str, tmp);
     UG_PutString(x, y, tmp);
 }
 
-void ugui_flush(void) {
-    ssd1306_flush(oled);
+void gui_poll(void) {
+    ssd1306_flush(&oled);
 }

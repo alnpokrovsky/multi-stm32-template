@@ -27,6 +27,7 @@ include libs/freertos.include
 # include libs/libopencm3-usb.include
 # include libs/saxml.include
 include libs/ugui.include
+# include libs/lvgl.include
 
 ########### BUILD DEVICE ##############
 # LDSCRIPT := make/stm32/f1/stm32f103x8.ld

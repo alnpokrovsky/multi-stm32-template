@@ -3,7 +3,7 @@
         {
             "defines": [
                 "STM32F4",
-                "UGUI_LIB"
+                "LVGL_LIB"
             ],
             "intelliSenseMode": "gcc-x64",
             "cStandard": "c11",
@@ -15,7 +15,8 @@
                 "src/hardware/include",
                 "core/libopencm3/include",
                 "libs/ugui/include",
-                "libs/freertos/include"
+                "libs/freertos/include",
+                "libs/lvgl"
             ],
             "name": "arm-embeded"
         }

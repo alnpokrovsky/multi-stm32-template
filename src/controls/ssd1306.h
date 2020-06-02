@@ -24,7 +24,7 @@ typedef struct {
 
 void ssd1306_init(SSD1306 * oled);
 
-void ssd1306_draw_point(SSD1306 * oled, int16_t x, int16_t y, uint32_t color);
+void ssd1306_draw_point(SSD1306 * oled, int16_t x, int16_t y, uint8_t brightness);
 
 void ssd1306_clear(SSD1306 * oled);
 

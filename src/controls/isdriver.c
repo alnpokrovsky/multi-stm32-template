@@ -62,7 +62,7 @@ static ISDRIVER_ERROR isdriver_write(ISDRIVER_Driver * driver, ISDRIVER_BASE_COM
     msg.data32[1].i = param;
     // проверка на отправку
     bool isSend;
-    DELAY_TILL(isSend = canbus_send(driver->port, pr, &msg));
+    isSend = canbus_send(driver->port, pr, &msg);
     if (!isSend) return ERROR_NOT_SEND;
     // проверка на прием
     bool isRecv;
@@ -85,7 +85,7 @@ static ISDRIVER_ERROR isdriver_read(ISDRIVER_Driver * driver, ISDRIVER_BASE_COMM
     msg.data32[1].i = 0;
     // проверка на отправку
     bool isSend;
-    DELAY_TILL(isSend = canbus_send(driver->port, CANBUS_PR_LOW, &msg));
+    isSend = canbus_send(driver->port, CANBUS_PR_LOW, &msg);
     if (!isSend) return ERROR_NOT_SEND;
     // проверка на прием
     bool isRecv;
