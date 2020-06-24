@@ -2,6 +2,8 @@
 
 DEFS += -DFREERTOS_LIB
 
+TGT_LDFLAGS += -Wl,--undefined=uxTopUsedPriority
+
 INC += libs/freertos/include
 
 SRC += $(shell find libs/freertos -name "*.c")

@@ -21,7 +21,6 @@
 
 #include <libopencm3/usb/usbd.h>
 
-void usb_core_set_serial_number(const char* serial);
 usbd_device* usb_core_init(void);
 
 

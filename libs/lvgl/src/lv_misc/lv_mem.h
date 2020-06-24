@@ -52,14 +52,14 @@ typedef struct {
 } lv_mem_buf_t;
 
 typedef lv_mem_buf_t lv_mem_buf_arr_t[LV_MEM_BUF_MAX_NUM];
-// extern lv_mem_buf_arr_t _lv_mem_buf;
+
 
 /**********************
  * GLOBAL PROTOTYPES
  **********************/
 
 /**
- * Initiaize the dyn_mem module (work memory and other variables)
+ * Initialize the dyn_mem module (work memory and other variables)
  */
 void _lv_mem_init(void);
 

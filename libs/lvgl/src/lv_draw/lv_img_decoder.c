@@ -7,7 +7,7 @@
  *      INCLUDES
  *********************/
 #include "lv_img_decoder.h"
-#include "../lv_core/lv_debug.h"
+#include "../lv_misc/lv_debug.h"
 #include "../lv_draw/lv_draw_img.h"
 #include "../lv_misc/lv_ll.h"
 #include "../lv_misc/lv_color.h"
@@ -581,7 +581,7 @@ static lv_res_t lv_img_decoder_built_in_line_true_color(lv_img_decoder_dsc_t * d
 static lv_res_t lv_img_decoder_built_in_line_alpha(lv_img_decoder_dsc_t * dsc, lv_coord_t x, lv_coord_t y,
                                                    lv_coord_t len, uint8_t * buf)
 {
-
+    (void) dsc; (void) x; (void) y; (void) len; (void) buf;
 #if LV_IMG_CF_ALPHA
     const lv_opa_t alpha1_opa_table[2]  = {0, 255};          /*Opacity mapping with bpp = 1 (Just for compatibility)*/
     const lv_opa_t alpha2_opa_table[4]  = {0, 85, 170, 255}; /*Opacity mapping with bpp = 2*/

@@ -93,7 +93,6 @@ bool can_transmit_patched(uint32_t canport, uint32_t mailbox,
 
 	uint32_t TME_N;
 	uint32_t TXOK_N;
-	bool flag;
 
     /* Check if transmit mailbox is empty. */
     switch (mailbox) {
@@ -115,7 +114,7 @@ bool can_transmit_patched(uint32_t canport, uint32_t mailbox,
     }
 
 	// wait some if there are queue
-	DELAY_TILL(flag = CAN_TSR(canport) & TME_N);
+	bool flag = DELAY_TILL(flag = CAN_TSR(canport) & TME_N);
 	if (!flag) return false;
         
 
@@ -174,7 +173,7 @@ bool can_transmit_patched(uint32_t canport, uint32_t mailbox,
 	CAN_TIxR(canport, mailbox) |= CAN_TIxR_TXRQ;
 
 	// wait till send
-	DELAY_TILL(flag = CAN_TSR(canport) & TME_N);
+	flag = DELAY_TILL(CAN_TSR(canport) & TME_N);
 	if (!flag) return false;
 
 	return (CAN_TSR(canport) & TXOK_N) != 0;

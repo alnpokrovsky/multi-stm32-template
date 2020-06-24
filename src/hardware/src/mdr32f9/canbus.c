@@ -40,7 +40,7 @@ static const can_descript CANS[] = {
     },
 };
 
-void can_init(CAN_PORT n) {
+void canbus_init(CANBUS_PORT n) {
     /* тактирование порта */
     RST_CLK_PCLKcmd(PCLK_BIT(CANS[n].port), ENABLE);
     /* тактирование can */
@@ -77,45 +77,57 @@ void can_init(CAN_PORT n) {
     CAN_ITConfig(CANS[n].can, CAN_IT_GLBINTEN, ENABLE);
 }
 
-void can_rx_tx_interrupt_enable(CAN_PORT n, bool rx_en, bool tx_en) {
+void canbus_rx_tx_interrupt_enable(CANBUS_PORT n, bool rx_en, bool tx_en) {
     /* Enable RX_INT interrupt */
     CAN_ITConfig(CANS[n].can,  CAN_IT_RXINTEN, rx_en);
     /* Enable TX_INT interrupt */
     CAN_ITConfig(CANS[n].can,  CAN_IT_TXINTEN, tx_en);
 }
 
-void can_send(CAN_PORT n, const CAN_Message * msg) {
+void canbus_addFilter(CANBUS_PORT n, const CANBUS_Filter * filter) {
+    (void) n;
+    (void) filter;
+}
+
+bool canbus_send(CANBUS_PORT n, CANBUS_Priority pr, const CANBUS_Message * msg) {
+    (void) pr;
+
     CAN_TxMsgTypeDef TxMsg = {
         .IDE     = CAN_ID_STD,      /* тип сообщения (стандартный/расширенный) */
         .DLC     = msg->DLC,        /* количество байт данных */
         .PRIOR_0 = DISABLE,
         .ID      = CAN_STDID_TO_EXTID(msg->ID), /* стандартный ID */
         .Data = {
-            *(uint32_t*)(msg->data+0), /* 4 байта в начале */
-            *(uint32_t*)(msg->data+4), /* еще 4 байта */
+            msg->data32[0].u,
+            msg->data32[1].u,
         }
     };
-    CAN_Transmit(CANS[n].can, tx_buf, &TxMsg);
+    CAN_Transmit(CANS[n].can, 0, &TxMsg);
+    return true;
 }
 
-
+bool canbus_recv(CANBUS_PORT n, CANBUS_Message * rcv) {
+    (void) n;
+    (void) rcv;
+    return false;
+}
 
 void CAN1_IRQHandler(void)
 {
-  CAN_RxMsgTypeDef RxMessage;
+//   CAN_RxMsgTypeDef RxMessage;
 
-  CAN_GetRawReceivedData(MDR_CAN1, rx_buf, &RxMessage);
+//   CAN_GetRawReceivedData(MDR_CAN1, rx_buf, &RxMessage);
 
-  if((RxMessage.Rx_Header.ID==0x15555555) && (RxMessage.Rx_Header.IDE==CAN_ID_EXT)
-     && (RxMessage.Rx_Header.DLC==4) && (RxMessage.Data[0]==0x12345678))
-  {
-    ret = 1;
-  }
-  else
-  {
-    ret = 0;
-  }
-  CAN_ITClearRxTxPendingBit(MDR_CAN1, rx_buf, CAN_STATUS_RX_READY);
+//   if((RxMessage.Rx_Header.ID==0x15555555) && (RxMessage.Rx_Header.IDE==CAN_ID_EXT)
+//      && (RxMessage.Rx_Header.DLC==4) && (RxMessage.Data[0]==0x12345678))
+//   {
+//     ret = 1;
+//   }
+//   else
+//   {
+//     ret = 0;
+//   }
+//   CAN_ITClearRxTxPendingBit(MDR_CAN1, rx_buf, CAN_STATUS_RX_READY);
 }
 
 void CAN2_IRQHandler(void)

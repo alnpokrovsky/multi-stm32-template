@@ -16,7 +16,7 @@ void usb_cdc_read_handler(uint8_t* Buffer, uint32_t Length);
 #define BUFFER_LENGTH 64
 static uint8_t USB_Buffer[BUFFER_LENGTH];
 
-static void null_handler(uint8_t * buf, int len)
+static void null_handler(uint8_t * buf, uint32_t len)
 {
 	/* echo by default */
 	usb_cdc_send(buf, len);
@@ -117,8 +117,7 @@ void usb_cdc_init(void) {
     usb_setup();
     
     /* wait till init */
-    for (int i = 0; i < 100; i++)
-        delay_some();
+    delay_ms(1000);
 }
 
 void usb_cdc_send(const uint8_t * buf, int len) {

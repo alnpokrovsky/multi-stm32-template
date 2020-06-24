@@ -7,6 +7,8 @@
 
 void gui_init(void);
 
+void gui_clear(void);
+
 void gui_poll(void);
 
 void gui_putString(int16_t x, int16_t y, const char* str);

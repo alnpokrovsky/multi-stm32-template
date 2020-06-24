@@ -2,7 +2,7 @@
 #define __CONTROLS_SSD1306_H__
 
 #include <stdint.h>
-#include "spi.h"
+#include "spibus.h"
 #include "digitalpin.h"
 
 #define SSD1306_WIDTH 128
@@ -15,7 +15,7 @@
  * nrst -> res
  */
 typedef struct {
-    SPI_PORT spi;
+    SPIBUS_PORT spi;
     DIGITALPIN_NAME cs; /* chip select */
     DIGITALPIN_NAME dc; /* DC-pin switches data/command mode */ 
     bool isNeedRedraw;

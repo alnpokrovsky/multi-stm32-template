@@ -1,0 +1,9 @@
+# lua lib
+
+DEFS += -DLUA_32BITS # use float instead of double
+
+INC += libs/lua
+
+SRC += $(shell find libs/lua -name "*.c")
+
+

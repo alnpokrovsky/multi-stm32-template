@@ -1,12 +1,11 @@
 #if defined(STM32F3)
 
-#include "usb/private/setup.h"
+#include "../private/setup.h"
 #include <libopencm3/cm3/nvic.h>
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>
 
 #define usb_driver st_usbfs_v1_usb_driver
-#define GPIO_ALTER_USB GPIO_AF14
 #define NVIC_USB_RX NVIC_USB_LP_CAN1_RX0_IRQ
 #define USB_RX_HANDLER usb_lp_can1_rx0_isr
 
@@ -24,7 +23,7 @@ inline usbd_device * usb_setup(
 	rcc_periph_clock_enable(RCC_USB);
 	/* Setup GPIO pins for USB D+/D-. */
 	gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO11 | GPIO12);
-    gpio_set_af(GPIOA, GPIO_ALTER_USB, GPIO11 | GPIO12);
+    gpio_set_af(GPIOA, GPIO_AF14, GPIO11 | GPIO12);
 
     usbd_dev = usbd_init(&usb_driver, 
         dev, conf, strings, num_strings, control_buffer, control_buffer_size);

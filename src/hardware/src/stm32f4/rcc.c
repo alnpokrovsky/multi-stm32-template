@@ -4,6 +4,7 @@
 #include <libopencm3/stm32/rcc.h>
 #include "DeviceConfig.h"
 
+uint32_t rcc_core_freq = 168000000;
 
 void rcc_init() {
 #if HSE_Value == 8000000

@@ -1,6 +1,10 @@
 #ifndef __CONTROLS_RTOS_H__
 #define __CONTROLS_RTOS_H__
 
+#ifndef FREERTOS_LIB
+#error "FreeRTOS lib not included to build" 
+#endif
+
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
@@ -12,12 +16,18 @@ typedef enum {
     RTOS_LOW_PRIORITY = 1,
 } RTOS_TASK_PRIORITY;
 
-#define GET_MACRO(_1,_2,_3,_4,NAME,...) NAME
-#define RTOS_TASK(...) GET_MACRO(__VA_ARGS__, RTOS_TASK4, RTOS_TAS3, RTOS_TASK2)(__VA_ARGS__)
+typedef xTaskHandle RTOS_Handle;
 
-#define RTOS_TASK4(priority, vTask, arg, mem)   xTaskCreate(&vTask, #vTask, configMINIMAL_STACK_SIZE, arg, priority, NULL)
-#define RTOS_TASK3(priority, vTask, arg)        RTOS_TASK4(priority, vTask, arg, configMINIMAL_STACK_SIZE)
-#define RTOS_TASK2(priority, vTask)             RTOS_TASK3(priority, vTask, NULL)
+#define GET_MACRO(_1,_2,_3,_4,NAME,...) NAME
+#define RTOS_TASK_CREATE(...) GET_MACRO(__VA_ARGS__, RTOS_TASK_CREATE4, RTOS_TASK_CREATE3, RTOS_TASK_CREATE2)(__VA_ARGS__)
+#define RTOS_TASK_CREATE2(priority, vTask)             RTOS_TASK_CREATE3(priority, vTask, NULL)
+#define RTOS_TASK_CREATE3(priority, vTask, arg)        RTOS_TASK_CREATE4(priority, vTask, arg, configMINIMAL_STACK_SIZE)
+#define RTOS_TASK_CREATE4(priority, vTask, arg, mem)   ({ \
+    RTOS_Handle handle_##vTask; \
+    xTaskCreate(&vTask, #vTask, configMINIMAL_STACK_SIZE, arg, priority, &handle_##vTask); \
+    handle_##vTask; })
+
+#define RTOS_TASK_DELETE(handle) vTaskDelete(handle)
 
 #define RTOS_START() vTaskStartScheduler()
 

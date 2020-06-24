@@ -32,10 +32,10 @@ def lvgl_clone():
 
 def lvgl_format():
   title("lvgl: Run code formatter")
-	os.chdir("./scripts")
-	cmd("./code-formatter.sh")
-	cmd("git ci -am 'Run code formatter'")
-	os.chdir("..")
+  os.chdir("./scripts")
+  cmd("./code-formatter.sh")
+  cmd("git ci -am 'Run code formatter'")
+  os.chdir("..")
 
 def lvgl_update_version():
 	title("lvgl: Update version number")
@@ -103,6 +103,11 @@ def lvgl_update_library_json(v):
 		  
 	f.write(outbuf)
 	f.close()
+
+def lvgl_update_lv_conf_templ(ver_str):
+	title("lvgl: Update version number in lv_conf_template.h")
+	cmd("sed -i -r 's/v[0-9]+\.[0-9]+\.[0-9]+/"+ ver_str +"/' lv_conf_template.h ")
+
 
 def lvgl_commit_push(v):
 	title("lvgl: commit and push release")
@@ -235,7 +240,8 @@ lvgl_clone()
 lvgl_format()
 lvgl_update_api_docs()
 ver_str = lvgl_update_version()    
-lvgl_update_library_json(ver_str)
+lvgl_update_library_json(ver_str)  
+lvgl_update_lv_conf_templ(ver_str)
 lvgl_commit_push(ver_str)
 lvgl_merge_to_release_branch(ver_str)
 

@@ -1,6 +1,5 @@
 #include "uf2.h"
 #include <string.h>
-#include "memflash.h"
 #include "DeviceConfig.h"
 #include "bootloader.h"
 

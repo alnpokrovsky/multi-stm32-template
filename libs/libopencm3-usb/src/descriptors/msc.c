@@ -38,8 +38,8 @@
 #ifdef USB_INTERFACE_MSC
 
 //  USB Endpoints.
-#define ENDP_MSC_OUT                 USB_INTERFACE_MSC
-#define ENDP_MSC_IN                  ( 0x81 + USB_INTERFACE_MSC )
+#define ENDP_MSC_OUT                 USB_ENDPOINT_ADDR_OUT(USB_INTERFACE_MSC)
+#define ENDP_MSC_IN                  USB_ENDPOINT_ADDR_IN (USB_INTERFACE_MSC)
 
 #define MSC_PRODUCT_REVISION_LEVEL "2.1"  //  Max 4 chars
 

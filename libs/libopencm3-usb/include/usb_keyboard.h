@@ -2,6 +2,7 @@
 #define __LIB_USB_USB_KEYBOARD_H__
 
 #include <stdint.h>
+#include "usb_core.h"
 
 typedef enum {
     KEY_CTRL = 1,

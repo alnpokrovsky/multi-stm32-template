@@ -9,7 +9,7 @@
 #include "lv_spinbox.h"
 
 #if LV_USE_SPINBOX != 0
-#include "../lv_core/lv_debug.h"
+#include "../lv_misc/lv_debug.h"
 #include "../lv_themes/lv_theme.h"
 #include "../lv_misc/lv_math.h"
 #include "../lv_misc/lv_utils.h"
@@ -89,7 +89,7 @@ lv_obj_t * lv_spinbox_create(lv_obj_t * par, const lv_obj_t * copy)
     if(copy == NULL) {
         /* No scrolling will happen here so make the scrollable non-clickable
          * It allows to handle input events in the bg object only.*/
-        lv_obj_set_click(lv_page_get_scrllable(spinbox), false);
+        lv_obj_set_click(lv_page_get_scrollable(spinbox), false);
         lv_textarea_set_one_line(spinbox, true);
         lv_textarea_set_cursor_click_pos(spinbox, true);
         lv_obj_set_width(spinbox, LV_DPI);

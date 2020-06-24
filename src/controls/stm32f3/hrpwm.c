@@ -1,7 +1,7 @@
 #if defined(STM32F3)
 
 #include "hrpwm.h"
-#include "stm32f3/hrtim.h"
+#include "hrtim.h"
 #include "dma.h"
 #include "sinarray.h"
 

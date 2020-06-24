@@ -24,6 +24,7 @@
 #include <string.h>
 
 #include <libopencm3/usb/usbd.h>
+#include <libopencm3/stm32/desig.h>
 #include "basic/aggregate.h"
 #include "../private/setup.h"
 
@@ -123,12 +124,9 @@ static const struct usb_config_descriptor config = {
 
 
 
-void usb_core_set_serial_number(const char* serial) {
-    serial_number[0] = '\0';
-    if (serial) {
-        strncpy(serial_number, serial, USB_SERIAL_NUM_LENGTH);
-        serial_number[USB_SERIAL_NUM_LENGTH] = '\0';
-    }
+static void usb_core_set_serial_number(void) {
+    desig_get_unique_id_as_string(serial_number, USB_SERIAL_NUM_LENGTH);
+    serial_number[USB_SERIAL_NUM_LENGTH] = '\0';
 }
 
 /* Buffer to be used for control requests. */
@@ -136,7 +134,7 @@ static uint8_t usbd_control_buffer[USB_CONTROL_BUF_SIZE] __attribute__ ((aligned
 static usbd_device* usbd_dev = NULL;
 
 usbd_device* usb_core_init(void) {
-    // debug_print("usb_setup num_strings "); debug_print_int(num_strings); debug_println(""); // debug_flush(); ////
+    usb_core_set_serial_number();
     usbd_dev = usb_setup(
         &dev, &config, 
         usb_strings, NUM_STRINGS,

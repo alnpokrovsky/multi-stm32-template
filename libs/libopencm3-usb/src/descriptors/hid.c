@@ -11,8 +11,8 @@
 
 #ifdef USB_INTERFACE_HID
 
-#define ENDP_ADDRESS_IN     ( 0x81 + USB_INTERFACE_HID )
-#define ENDP_ADDRESS_OUT    ( USB_INTERFACE_HID )
+#define ENDP_ADDRESS_IN     USB_ENDPOINT_ADDR_IN (USB_INTERFACE_HID)
+#define ENDP_ADDRESS_OUT    USB_ENDPOINT_ADDR_OUT(USB_INTERFACE_HID)
 
 
 static void null_handler(uint8_t * buf, uint16_t len)
@@ -21,13 +21,13 @@ static void null_handler(uint8_t * buf, uint16_t len)
 	usb_hid_send(buf, len);
 }
 
-#pragma weak usb_hid_recv_handler = null_handler
+#pragma weak usb_hid_rx_handler = null_handler
 
 
 static const uint8_t hid_report_descriptor[] =
 {
        // Usage Page = 0xFF00 (Vendor Defined Page 1)
-    0x06, 0x00, 0xFF,
+    0x06, 0xFF, 0xFF,
     // Usage (Vendor Usage 1)
     0x09, 0x01,
     // Collection (Application)
@@ -60,7 +60,7 @@ static const uint8_t hid_report_descriptor[] =
     //     was specified to the parser since the "Input" item.
     0x91, 0x00,
     // End Collection
-    0xC0,
+    0xC0, 
  };
 
 
@@ -104,13 +104,13 @@ static const struct usb_endpoint_descriptor hid_endpoints[] = {{
 const struct usb_interface_descriptor hid_iface = {
     .bLength = USB_DT_INTERFACE_SIZE,
     .bDescriptorType = USB_DT_INTERFACE,
-    .bInterfaceNumber = 0,
+    .bInterfaceNumber = USB_INTERFACE_HID,
     .bAlternateSetting = 0,
     .bNumEndpoints = 2,
     .bInterfaceClass = USB_CLASS_HID,
     .bInterfaceSubClass = 0, /* no boot */
     .bInterfaceProtocol = 0, /* user (no mouse, keyboard, etc...)*/
-    .iInterface = 0, // A string representing this interface. Zero means not provided.
+    .iInterface = USB_STRINGS_HID,
 
     .endpoint = hid_endpoints,
 
@@ -119,8 +119,6 @@ const struct usb_interface_descriptor hid_iface = {
 };
 
 
-//This function looks identical in all examples.
-//And it is as I understand monitors all inbound hid-requests.
 static enum usbd_request_return_codes hid_control_request(usbd_device *usbd_dev, struct usb_setup_data *req, uint8_t **buf,
 		uint16_t *len, void (**complete)(usbd_device *usbd_dev, struct usb_setup_data *req))
 {
@@ -130,25 +128,28 @@ static enum usbd_request_return_codes hid_control_request(usbd_device *usbd_dev,
     // This request is asking for information sent to the host using request
     // GET_DESCRIPTOR.
     if ((req->bmRequestType & USB_REQ_TYPE_DIRECTION) == USB_REQ_TYPE_IN &&
-        (req->bRequest == USB_REQ_GET_DESCRIPTOR)) {
+        (req->bmRequestType & USB_REQ_TYPE_TYPE) == USB_REQ_TYPE_STANDARD &&
+        (req->bRequest == USB_REQ_GET_DESCRIPTOR) &&
+        (req->wIndex == USB_INTERFACE_HID)) {
 
         // - High byte: Descriptor type is HID report (0x22)
         // - Low byte: Index 0
-        if (req->wValue == 0x2200) {
+        switch (req->wValue) {
+        case 0x2200:
             // Send the HID report descriptor.
             *buf = (uint8_t *)hid_report_descriptor;
             *len = sizeof(hid_report_descriptor);
             return USBD_REQ_HANDLED;
-        } else if (req->wValue == 0x2100) {
+        case 0x2100:
             *buf = (uint8_t *)&hid_function;
             *len = sizeof(hid_function);
             return USBD_REQ_HANDLED;
+        default:
+            return USBD_REQ_NOTSUPP;
         }
-
-        return USBD_REQ_NOTSUPP;
     }
 
-    return USBD_REQ_NOTSUPP;
+    return USBD_REQ_NEXT_CALLBACK;
 }
 
 //This callback that is executed when the endpoint "OUT" request arrives.
@@ -156,12 +157,10 @@ static void data_rx(usbd_device *dev, uint8_t ep)
 {
     (void)ep;
 
-    //gpio_toggle(LED_PORT, LED_PIN);
-
     uint8_t buf[USB_HID_DATA_SIZE];
     int len = usbd_ep_read_packet(dev, ENDP_ADDRESS_OUT, buf, USB_HID_DATA_SIZE);
     
-    usb_hid_recv_handler(buf, len);
+    usb_hid_rx_handler(buf, len);
 }
 
 //In this function, configure the endpoints and callbacks.

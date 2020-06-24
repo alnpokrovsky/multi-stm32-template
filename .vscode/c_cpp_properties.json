@@ -2,8 +2,13 @@
     "configurations": [
         {
             "defines": [
+                "STM32F1",
+                "STM32F3",
                 "STM32F4",
-                "LVGL_LIB"
+                "USE_MDR1986VE9x",
+                "FREERTOS_LIB",
+                "LVGL_LIB",
+                "LUA_32BITS"
             ],
             "intelliSenseMode": "gcc-x64",
             "cStandard": "c11",
@@ -14,9 +19,13 @@
                 "src/utils",
                 "src/hardware/include",
                 "core/libopencm3/include",
+                "core/emdr1986x-std-per-lib/CMSIS/CM3/DeviceSupport/MDR32F9Qx/inc",
+                "core/emdr1986x-std-per-lib/MDR32F9Qx_StdPeriph_Driver/inc",
                 "libs/ugui/include",
                 "libs/freertos/include",
-                "libs/lvgl"
+                "libs/lvgl",
+                "libs/libopencm3-usb/include",
+                "libs/lua"
             ],
             "name": "arm-embeded"
         }

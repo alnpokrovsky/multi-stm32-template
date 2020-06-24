@@ -14,7 +14,7 @@
     #error "lv_img: lv_label is required. Enable it in lv_conf.h (LV_USE_LABEL  1) "
 #endif
 
-#include "../lv_core/lv_debug.h"
+#include "../lv_misc/lv_debug.h"
 #include "../lv_themes/lv_theme.h"
 #include "../lv_draw/lv_img_decoder.h"
 #include "../lv_misc/lv_fs.h"
@@ -587,7 +587,8 @@ static lv_design_res_t lv_img_design(lv_obj_t * img, const lv_area_t * clip_area
 
         if(zoom_final != LV_IMG_ZOOM_NONE) {
             if(_lv_area_is_in(clip_area, &img->coords, 0) == false) return LV_DESIGN_RES_NOT_COVER;
-        } else {
+        }
+        else {
             lv_area_t a;
             _lv_img_buf_get_transformed_area(&a, lv_obj_get_width(img), lv_obj_get_height(img), 0, zoom_final, &ext->pivot);
             a.x1 += img->coords.x1;

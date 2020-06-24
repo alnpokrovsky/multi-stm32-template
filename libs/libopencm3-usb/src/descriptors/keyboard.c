@@ -11,7 +11,7 @@
 
 #ifdef USB_INTERFACE_KEYBOARD
 
-#define ENDP_KEYBOARD  ( 0x81 + USB_INTERFACE_KEYBOARD )
+#define ENDP_KEYBOARD  USB_ENDPOINT_ADDR_IN(USB_INTERFACE_KEYBOARD)
 
 static const uint8_t hid_report_descriptor[] =
 {
@@ -102,13 +102,13 @@ static const struct usb_endpoint_descriptor keyboard_endpoint = {
 	.bEndpointAddress = ENDP_KEYBOARD,
 	.bmAttributes = USB_ENDPOINT_ATTR_INTERRUPT,
 	.wMaxPacketSize = 9,
-	.bInterval = 0x05,
+	.bInterval = 100,
 };
 
 const struct usb_interface_descriptor keyboard_iface = {
 	.bLength = USB_DT_INTERFACE_SIZE,
 	.bDescriptorType = USB_DT_INTERFACE,
-	.bInterfaceNumber = 0,
+	.bInterfaceNumber = USB_INTERFACE_KEYBOARD,
 	.bAlternateSetting = 0,
 	.bNumEndpoints = 1,
 	.bInterfaceClass = USB_CLASS_HID,
@@ -127,16 +127,31 @@ static enum usbd_request_return_codes keyboard_control_request(usbd_device *usbd
 	(void)complete;
 	(void)usbd_dev;
 
-	if ((req->bmRequestType != 0x81) ||
-	   (req->bRequest != USB_REQ_GET_DESCRIPTOR) ||
-	   (req->wValue != 0x2200))
-		return 0;
+	// This request is asking for information sent to the host using request
+    // GET_DESCRIPTOR.
+    if ((req->bmRequestType & USB_REQ_TYPE_DIRECTION) == USB_REQ_TYPE_IN &&
+        (req->bmRequestType & USB_REQ_TYPE_TYPE) == USB_REQ_TYPE_STANDARD &&
+        (req->bRequest == USB_REQ_GET_DESCRIPTOR) &&
+        (req->wIndex == USB_INTERFACE_KEYBOARD)) {
 
-	/* Handle the HID report descriptor. */
-	*buf = (uint8_t *)hid_report_descriptor;
-	*len = sizeof(hid_report_descriptor);
+        // - High byte: Descriptor type is HID report (0x22)
+        // - Low byte: Index 0
+        switch (req->wValue) {
+        case 0x2200:
+            // Send the HID report descriptor.
+            *buf = (uint8_t *)hid_report_descriptor;
+            *len = sizeof(hid_report_descriptor);
+            return USBD_REQ_HANDLED;
+        case 0x2100:
+            *buf = (uint8_t *)&hid_function;
+            *len = sizeof(hid_function);
+            return USBD_REQ_HANDLED;
+        default:
+            return USBD_REQ_NOTSUPP;
+        }
+    }
 
-	return 1;
+    return USBD_REQ_NEXT_CALLBACK;
 }
 
 /*********************************************************************/

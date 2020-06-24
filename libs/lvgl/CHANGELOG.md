@@ -1,11 +1,28 @@
 # Changelog
 
 
-## v7.0.2 (under developement)
-*Available in the `master` branch*
+## v7.0.2 (16.06.2020)
 
-- `lv_ta` fix wrong cursor positon when clicked after the last character
+- `lv_textarea` fix wrong cursor position when clicked after the last character
 - Change all text related indices from 16-bit to 32-bit integers throughout whole library. #1545
+- Fix gestures
+- Do not call `set_px_cb` for transparent pixel
+- Fix list button focus in material theme
+- Fix crash when the a text area is cleared with the backspace of a keyboard
+- Add version number to `lv_conf_template.h`
+- Add log in true double buffering mode with `set_px_cb`
+- `lv_dropdown`: fix missing `LV_EVENT_VALUE_CHANGED` event when used with encoder
+- `lv_tileview`: fix if not the {0;0} tile is created first
+- `lv_debug`: restructure to allow asserting in from `lv_misc` too
+- add assert if `_lv_mem_buf_get()` fails
+- `lv_textarea`: fix character delete in password mode
+- Update `LV_OPA_MIN` and `LV_OPA_MAX` to widen the opacity processed range
+- `lv_btnm` fix sending events for hidden buttons
+- `lv_gaguge` make `lv_gauge_set_angle_offset` offset the labels and needles too
+- Fix typo in the API `scrllable` -> `scrollable`
+- `tabview` by default allow auto expanding the page only to right and bottom (#1573)
+- fix crash when drawing gradient to the same color
+- chart: fix memory leak
 
 ## v7.0.1 (01.06.2020)
 

@@ -4,6 +4,8 @@
 #include <MDR32Fx.h>
 #include <system_MDR32F9Qx.h>
 
+uint32_t rcc_core_freq = 80000000;
+
 void rcc_init(void) {
     /* выставляем rcc на 80МГц */
 

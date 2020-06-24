@@ -9,7 +9,8 @@
 typedef struct {
     CANBUS_PORT port;
     uint8_t id;
-    int8_t errCnt;
+    uint8_t errCntHard;
+    uint16_t errCntSoft;
 } ISDRIVER_Driver;
 
 typedef enum {
@@ -24,7 +25,6 @@ bool isdriver_init(ISDRIVER_Driver * driver);
 bool isdriver_setPos(ISDRIVER_Driver * driver, int32_t pos);
 int32_t isdriver_getPos(ISDRIVER_Driver * driver);
 
-void isdriver_sync_init(CANBUS_PORT port);
 void isdriver_sync_write(CANBUS_PORT port, ISDRIVER_SYNC_COMMAND cmd, uint32_t param);
 
 

@@ -7,6 +7,7 @@
 typedef union {
     float f;
     int32_t i;
+    uint32_t u;
     uint8_t b[4];
 } Data32;
 #pragma pack(pop)

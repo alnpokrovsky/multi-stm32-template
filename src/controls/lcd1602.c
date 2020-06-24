@@ -1,6 +1,11 @@
 #include "lcd1602.h"
 #include "delay.h"
 
+static void delay_a_bit(void) {
+	for (int i = 0; i < 10000; i++) {
+		__asm__("nop");
+	}
+}
 
 static void pulse(LCD1602 * lcd) {
     digitalpin_set(lcd->en, 1);
@@ -22,7 +27,7 @@ static void send(LCD1602 * lcd, uint8_t isData, uint8_t b) {
     set_half_data(lcd, b);
     pulse(lcd);
 
-    delay_some();
+    delay_ms(10);
 }
 
 static void gpio_init(LCD1602 * lcd) {
@@ -78,7 +83,7 @@ void lcd1602_init(LCD1602 * lcd) {
     send(lcd, 0, 0x0E);
     send(lcd, 0, 0x01);
     send(lcd, 0, 0x06);
-    delay_some();
+    delay_ms(10);
 
     send(lcd, 0, 0x80);
 }

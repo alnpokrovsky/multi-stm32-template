@@ -1,14 +1,12 @@
 #ifndef __USB_CONFIG_H__
 #define __USB_CONFIG_H__
 
-#include "controls/ghostfat.h"
 
+#define USB_VID                 0x42db
+#define USB_PID                 0x2040
 
-#define USB_VID                 0x120A
-#define USB_PID                 0xdb42
-
-#define USB_MSC_VENDOR_ID       "BluePill"
-#define USB_MSC_PRODUCT_ID      "MSC Config"
+#define USB_MSC_VENDOR_ID       "Pokrov"
+#define USB_MSC_PRODUCT_ID      "driver"
 
 
 #define USB_SERIAL_NUM_LENGTH   24
@@ -17,13 +15,13 @@
 
 
 //  Index of each USB interface.  Must be consecutive and must sync with interfaces[].
-// #define USB_INTERFACE_DFU                0 /* TODO */
-#define USB_INTERFACE_MSC         1
-// #define USB_INTERFACE_CDC_COMM    2
-// #define USB_INTERFACE_CDC_DATA    3
+// #define USB_INTERFACE_DFU         0 /* TODO */
+// #define USB_INTERFACE_MSC         1
+#define USB_INTERFACE_CDC_COMM    2
+#define USB_INTERFACE_CDC_DATA    3
 // #define USB_INTERFACE_KEYBOARD    4
-#define USB_INTERFACE_HID         5
-//#define USB21_INTERFACE              /* Enable USB 2.1 with WebUSB and BOS support.*/
+// #define USB_INTERFACE_HID         5
+// #define USB21_INTERFACE              /* Enable USB 2.1 with WebUSB and BOS support.*/
 
 #ifdef USB_INTERFACE_DFU
 // DFU loader config
@@ -32,6 +30,8 @@
 #endif
 
 #ifdef USB_INTERFACE_MSC
+#include "controls/ghostfat.h"
+
 #define USB_MSC_SECTOR_SIZE     GHOSTFAT_SECTOR_SIZE
 #define USB_MSC_TOTAL_SECTORS   GHOSTFAT_TOTAL_SECTORS
 #define USB_MSC_INIT()          ghostfat_init()
@@ -40,7 +40,6 @@
 #endif
 
 #ifdef USB_INTERFACE_CDC_DATA
-#define USB_CDC_PACKET_SIZE     16
 #endif
 
 #ifdef USB_INTERFACE_HID
@@ -53,7 +52,7 @@
 
 #define USB_STRINGS { \
     "POKROV",        /*  USB Manufacturer */ \
-    "Product",       /*  USB Product */ \
+    "STM32HID",       /*  USB Product Description */ \
     serial_number,   /*  Serial number */ \
     "DFU",           /*  DFU */ \
     "MSC",           /*  MSC */ \

@@ -1,15 +1,12 @@
-#include <stdint.h>
-
 #include "delay.h"
+#include "rcc.h"
 
-void delay_some() {
-	for (int i = 0; i < 800000; i++) {
-		__asm__("nop");
-	}
-}
 
-void delay_a_bit() {
-	for (int i = 0; i < 10000; i++) {
-		__asm__("nop");
+void delay_ms(int ms) {
+	uint32_t ticks_in_ms = rcc_core_freq/1000;
+	for (int i = 0; i < ms; i++) {
+		for (uint32_t tick = 0; tick < ticks_in_ms; ++tick) {
+			__asm__("nop");
+		}
 	}
 }

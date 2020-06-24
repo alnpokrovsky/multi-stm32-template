@@ -89,7 +89,7 @@ TGT_ASFLAGS += $(OPT) $(ARCH_FLAGS) $(DEBUG)
 # C & C++ preprocessor common flags
 
 WARNINGS := -Wall -Werror \
-			-Wno-unused-value -Wno-unused-parameter
+			# -Wno-unused-value -Wno-unused-parameter
 
 TGT_CPPFLAGS	+= -MD
 TGT_CPPFLAGS	+= $(WARNINGS)
@@ -112,7 +112,7 @@ TGT_LDFLAGS		+= -Wl,--gc-sections
 ###############################################################################
 # Used libraries
 
-LDLIBS		+= -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group
+LDLIBS		+= -Wl,--start-group -lc -lgcc -lnosys -lm -Wl,--end-group
 
 ###############################################################################
 ###############################################################################

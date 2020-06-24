@@ -1,5 +1,5 @@
 #include "ssd1306.h"
-#include "spi.h"
+#include "spibus.h"
 #include "digitalpin.h"
 #include <string.h>
 
@@ -17,17 +17,17 @@ static void set_bit_brightness(
 
 static void command(SSD1306 * oled, uint8_t b) {
     digitalpin_set(oled->dc, 0);
-    spi_xtransfer(oled->spi, b);
+    spibus_xfer(oled->spi, b);
 }
 
 static void data(SSD1306 * oled, uint8_t b) {
     digitalpin_set(oled->dc, 1);
-    spi_xtransfer(oled->spi, b);
+    spibus_xfer(oled->spi, b);
 }
 
 void ssd1306_init(SSD1306 * oled) {
     // init periph
-    spi_init(SPI_1, DFF_8BIT);
+    spibus_init(SPI_1, DFF_8BIT);
     digitalpin_mode(oled->dc, DIGITALPIN_OUTPUT);
     digitalpin_mode(oled->cs, DIGITALPIN_OUTPUT);
     digitalpin_set(oled->cs, 1);

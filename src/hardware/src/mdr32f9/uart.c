@@ -94,7 +94,7 @@ void uart_init(
     /* разрешение приемопередатчика UART */
     UART_Cmd(UARTS[port].uart_base, ENABLE);
 
-    delay_some();
+    delay_ms(10);
 }
 
 void uart_rx_tx_interrupt_enable(

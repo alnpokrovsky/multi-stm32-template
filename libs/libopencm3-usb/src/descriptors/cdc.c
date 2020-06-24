@@ -1,12 +1,22 @@
-//  CDC code from https://github.com/Apress/Beg-STM32-Devel-FreeRTOS-libopencm3-GCC/blob/master/rtos/usbcdcdemo/usbcdc.c
 #include "cdc.h"
+#include "UsbConfig.h"
+
+#if defined(USB_INTERFACE_CDC_COMM) && defined(USB_INTERFACE_CDC_DATA)
 
 #include <libopencm3/usb/cdc.h>
-#include <stdlib.h>
-
+#include <stdint.h>
+#include <string.h>
 #include "basic/aggregate.h"
-#include "UsbConfig.h"
 #include "usb_cdc.h"
+#include "minmax.h"
+
+#define ENDP_DATA_OUT                USB_ENDPOINT_ADDR_OUT(USB_INTERFACE_CDC_DATA)
+#define ENDP_DATA_IN                 USB_ENDPOINT_ADDR_IN (USB_INTERFACE_CDC_DATA)
+#define ENDP_COMM_IN                 USB_ENDPOINT_ADDR_IN (USB_INTERFACE_CDC_COMM)
+
+#define CONTROL_CALLBACK_TYPE (USB_REQ_TYPE_CLASS | USB_REQ_TYPE_INTERFACE)
+#define CONTROL_CALLBACK_MASK (USB_REQ_TYPE_TYPE | USB_REQ_TYPE_RECIPIENT)
+#define USB_CDC_REQ_GET_LINE_CODING		0x21
 
 
 static void null_handler(char * buf, uint16_t len)
@@ -17,16 +27,6 @@ static void null_handler(char * buf, uint16_t len)
 
 #pragma weak usb_cdc_rx_handler = null_handler
 
-
-#if defined(USB_INTERFACE_CDC_COMM) && defined(USB_INTERFACE_CDC_DATA)
-
-#define ENDP_DATA_OUT                USB_INTERFACE_CDC_DATA
-#define ENDP_DATA_IN                 ( 0x81 + USB_INTERFACE_CDC_DATA )
-#define ENDP_COMM_IN                 ( 0x81 + USB_INTERFACE_CDC_COMM )
-
-#define CONTROL_CALLBACK_TYPE (USB_REQ_TYPE_CLASS | USB_REQ_TYPE_INTERFACE)
-#define CONTROL_CALLBACK_MASK (USB_REQ_TYPE_TYPE | USB_REQ_TYPE_RECIPIENT)
-#define USB_CDC_REQ_GET_LINE_CODING		0x21
 
 //  Line config to be returned.
 static const struct usb_cdc_line_coding line_coding = {
@@ -50,7 +50,7 @@ static const struct usb_endpoint_descriptor comm_endp[] = {
 		.bDescriptorType = USB_DT_ENDPOINT,
 		.bEndpointAddress = ENDP_COMM_IN,
 		.bmAttributes = USB_ENDPOINT_ATTR_INTERRUPT,
-		.wMaxPacketSize = USB_CDC_PACKET_SIZE,  //  Smaller than others
+		.wMaxPacketSize = 16,  //  Smaller than others
 		.bInterval = 255,
 	}
 };
@@ -62,14 +62,14 @@ static const struct usb_endpoint_descriptor data_endp[] = {
 		.bEndpointAddress = ENDP_DATA_OUT,
 		.bmAttributes = USB_ENDPOINT_ATTR_BULK,
 		.wMaxPacketSize = USB_MAX_PACKET_SIZE,
-		.bInterval = 1,
+		.bInterval = 100,
 	}, {
 		.bLength = USB_DT_ENDPOINT_SIZE,
 		.bDescriptorType = USB_DT_ENDPOINT,
 		.bEndpointAddress = ENDP_DATA_IN,
 		.bmAttributes = USB_ENDPOINT_ATTR_BULK,
 		.wMaxPacketSize = USB_MAX_PACKET_SIZE,
-		.bInterval = 1,
+		.bInterval = 100,
 	}
 };
 
@@ -162,39 +162,38 @@ static enum usbd_request_return_codes cdcacm_control_request(
     struct usb_setup_data *req
   ) __attribute__((unused))
 ) {
-	//  Handle USB Control Requests
-	switch (req->bRequest) {
-		case USB_CDC_REQ_SET_CONTROL_LINE_STATE: {
-			/* From https://github.com/libopencm3/libopencm3-examples/blob/master/examples/stm32/f3/stm32f3-discovery/usb_cdcacm/cdcacm.c
-			* This Linux cdc_acm driver requires this to be implemented
-			* even though it's optional in the CDC spec, and we don't
-			* advertise it in the ACM functional descriptor. */
-			return USBD_REQ_HANDLED;
-		}
-		case USB_CDC_REQ_GET_LINE_CODING: {
-			//  Windows requires this request, not Mac or Linux.
-			//  From https://github.com/PX4/Bootloader/blob/master/stm32/cdcacm.c
-			if ( *len < sizeof(struct usb_cdc_line_coding) ) {
-				// debug_print("*** cdcacm_control notsupp line_coding "); debug_print_unsigned(sizeof(struct usb_cdc_line_coding)); 
-				// debug_print(", len "); debug_print_unsigned(*len);
-				// debug_println(""); debug_flush(); ////
-				return USBD_REQ_NOTSUPP;
+	if (req->wIndex == USB_INTERFACE_CDC_COMM) {
+		switch (req->bRequest) {
+			case USB_CDC_REQ_SET_CONTROL_LINE_STATE: {
+				/*This Linux cdc_acm driver requires this to be implemented
+				* even though it's optional in the CDC spec, and we don't
+				* advertise it in the ACM functional descriptor. */
+				char local_buf[10];
+				struct usb_cdc_notification *notif = (void *)local_buf;
+				/* We echo signals back to host as notification. */
+				notif->bmRequestType = 0xA1;
+				notif->bNotification = USB_CDC_NOTIFY_SERIAL_STATE;
+				notif->wValue = 0;
+				notif->wIndex = 0;
+				notif->wLength = 2;
+				local_buf[8] = req->wValue & 3;
+				local_buf[9] = 0;
+				usbd_ep_write_packet(usbd_dev, ENDP_COMM_IN, local_buf, 10);
+				return USBD_REQ_HANDLED;
 			}
-			*buf = (uint8_t *) &line_coding;
-			*len = sizeof(struct usb_cdc_line_coding);
-			return USBD_REQ_HANDLED;
-		}
-		case USB_CDC_REQ_SET_LINE_CODING: {
-			if ( *len < sizeof(struct usb_cdc_line_coding) ) {
-				// debug_print("*** cdcacm_control notsupp line_coding "); debug_print_unsigned(sizeof(struct usb_cdc_line_coding)); 
-				// debug_print(", len "); debug_print_unsigned(*len);
-				// debug_println(""); debug_flush(); ////
-				return USBD_REQ_NOTSUPP;
+			case USB_CDC_REQ_GET_LINE_CODING: {
+				if ( *len < sizeof(struct usb_cdc_line_coding) ) return USBD_REQ_NOTSUPP;
+				*buf = (uint8_t *) &line_coding;
+				*len = sizeof(struct usb_cdc_line_coding);
+				return USBD_REQ_HANDLED;
 			}
-			return USBD_REQ_HANDLED;
+			case USB_CDC_REQ_SET_LINE_CODING: {
+				if ( *len < sizeof(struct usb_cdc_line_coding) ) return USBD_REQ_NOTSUPP;
+				return USBD_REQ_HANDLED;
+			}
 		}
 	}
-	return USBD_REQ_NEXT_CALLBACK;  //  Previously USBD_REQ_NOTSUPP
+	return USBD_REQ_NEXT_CALLBACK;
 }
 
 /**
@@ -237,34 +236,28 @@ cdcacm_set_config(
   usbd_device *usbd_dev,
   uint16_t wValue __attribute__((unused))
 ) {
-	//  From https://github.com/libopencm3/libopencm3-examples/blob/master/examples/stm32/f3/stm32f3-discovery/usb_cdcacm/cdcacm.c
 	usbd_ep_setup(usbd_dev, ENDP_DATA_OUT, USB_ENDPOINT_ATTR_BULK, USB_MAX_PACKET_SIZE, cdcacm_data_rx_cb);
 	usbd_ep_setup(usbd_dev, ENDP_DATA_IN, USB_ENDPOINT_ATTR_BULK, USB_MAX_PACKET_SIZE, NULL);
-	usbd_ep_setup(usbd_dev, ENDP_COMM_IN, USB_ENDPOINT_ATTR_INTERRUPT, USB_CDC_PACKET_SIZE, cdcacm_comm_cb);
-	int status = aggregate_register_callback(
-		usbd_dev,
-		CONTROL_CALLBACK_TYPE,
-		CONTROL_CALLBACK_MASK,
-		cdcacm_control_request);
-	if (status < 0) {
-		// debug_println("*** cdcacm_set_config failed");
-		// debug_flush();
-	}
+	usbd_ep_setup(usbd_dev, ENDP_COMM_IN, USB_ENDPOINT_ATTR_INTERRUPT, 16, cdcacm_comm_cb);
+	aggregate_register_callback(
+				usbd_dev,
+				CONTROL_CALLBACK_TYPE,
+				CONTROL_CALLBACK_MASK,
+				cdcacm_control_request);
 }
 
 static usbd_device* cdcd_dev;
 
-void usb_cdc_tx(const char* data, uint16_t len){
-	usbd_ep_write_packet(cdcd_dev, ENDP_DATA_IN, data, len);
+uint16_t usb_cdc_tx(const char* data, uint16_t len) {
+		len = MIN(USB_MAX_PACKET_SIZE, len);
+		usbd_ep_write_packet(cdcd_dev, ENDP_DATA_IN, data, len);
+		return len;
 }
 
 void cdc_setup(usbd_device* usbd_dev) {
 	cdcd_dev = usbd_dev;
-	int status = aggregate_register_config_callback(usbd_dev, cdcacm_set_config);
-	if (status < 0) {
-		// debug_println("*** cdc_setup failed");
-		// debug_flush();
-	}
+	aggregate_register_config_callback(usbd_dev, cdcacm_set_config);
 }
+
 
 #endif

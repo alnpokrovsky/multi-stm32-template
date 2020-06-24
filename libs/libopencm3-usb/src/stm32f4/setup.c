@@ -1,15 +1,16 @@
+/* only valid for disco-f429zi hs usb config */
+
 #if defined(STM32F4)
 
-#include "usb/private/setup.h"
+#include "../private/setup.h"
 #include <libopencm3/cm3/nvic.h>
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>
 
-#define usb_driver otgfs_usb_driver
-#define RCC_USB RCC_OTGFS
-#define GPIO_ALTER_USB GPIO_AF10
-#define NVIC_USB_RX NVIC_OTG_FS_IRQ
-#define USB_RX_HANDLER otg_fs_isr
+#define usb_driver otghs_usb_driver
+#define RCC_USB RCC_OTGHS
+#define NVIC_USB_RX NVIC_OTG_HS_IRQ
+#define USB_RX_HANDLER otg_hs_isr
 
 
 static usbd_device * usbd_dev;
@@ -21,11 +22,11 @@ inline usbd_device * usb_setup(
     uint8_t *control_buffer, uint16_t control_buffer_size
 ) {
     /* Enable clocks for GPIO port A and USB peripheral. */
-	rcc_periph_clock_enable(RCC_GPIOA);
+	rcc_periph_clock_enable(RCC_GPIOB);
 	rcc_periph_clock_enable(RCC_USB);
 	/* Setup GPIO pins for USB D+/D-. */
-	gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO11 | GPIO12);
-    gpio_set_af(GPIOA, GPIO_ALTER_USB, GPIO11 | GPIO12);
+	gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO14 | GPIO15);
+    gpio_set_af(GPIOB, GPIO_AF12, GPIO14 | GPIO15);
 
     usbd_dev = usbd_init(&usb_driver, 
         dev, conf, strings, num_strings, control_buffer, control_buffer_size);

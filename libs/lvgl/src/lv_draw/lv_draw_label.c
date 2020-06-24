@@ -11,7 +11,7 @@
 #include "../lv_hal/lv_hal_disp.h"
 #include "../lv_core/lv_refr.h"
 #include "../lv_misc/lv_bidi.h"
-#include "../lv_core/lv_debug.h"
+#include "../lv_misc/lv_debug.h"
 
 /*********************
  *      DEFINES
@@ -758,7 +758,7 @@ static void draw_letter_subpx(lv_coord_t pos_x, lv_coord_t pos_y, lv_font_glyph_
             }
 
             /*Go to the next column*/
-            if(col_bit < (int32_t) (8 - bpp)) {
+            if(col_bit < (int32_t)(8 - bpp)) {
                 col_bit += bpp;
                 bitmask = bitmask >> bpp;
             }

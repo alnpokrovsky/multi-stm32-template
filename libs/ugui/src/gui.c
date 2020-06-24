@@ -21,6 +21,10 @@ void gui_init(void) {
 	UG_FontSetHSpace(0);
 }
 
+void gui_clear(void) {
+    ssd1306_clear(&oled);
+}
+
 void gui_putString(int16_t x, int16_t y, const char* str) {
     char tmp[32];
     convertUtf8ToCp1251(str, tmp);

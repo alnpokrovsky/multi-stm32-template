@@ -1,6 +1,6 @@
 #if defined(STM32F3)
 
-#include "stm32f3/hrtim.h"
+#include "hrtim.h"
 #include "dma.h"
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/hrtim.h>

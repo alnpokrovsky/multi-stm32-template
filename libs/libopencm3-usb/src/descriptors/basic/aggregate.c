@@ -44,8 +44,7 @@ int aggregate_register_callback(
             //  If already exists, skip.
             if (control_callback[i].type == type &&
                 control_callback[i].type_mask == type_mask &&
-                control_callback[i].cb == callback) { 
-                    //  debug_println("callback exists"); ////
+                control_callback[i].cb == callback) {
                     return 0;
                 }
             continue;  //  Continue checking.
@@ -77,15 +76,9 @@ enum usbd_request_return_codes aggregate_callback(
                 buf,
                 len,
                 complete);
-            if (result == USBD_REQ_HANDLED ||
-                result == USBD_REQ_NOTSUPP) {
-                return result;
-            }
+            if (result == USBD_REQ_HANDLED || result == USBD_REQ_NOTSUPP) return result;
         }
     }
-    if (!(req->bmRequestType == 0x80 && req->bRequest == 0x06)) {
-        //  Dump the packet if not GET_DESCRIPTOR.
-    } 
 	return USBD_REQ_NEXT_CALLBACK;
 }
 
