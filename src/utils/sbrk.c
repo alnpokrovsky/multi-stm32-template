@@ -50,13 +50,13 @@
  *   __stack
  */
 
-#if defined (STM32F1) || defined (STM32F3)
+#if defined(STM32F1) || defined(STM32F3)
     extern uint8_t _ebss, _stack;/* these are defined by the linker script */
     #define INIT_MEM()
     /* reserve half for stack and half for heap */
     #define HEAP_START &_ebss
     #define HEAP_END &_stack - (&_stack - &_ebss)/2
-#elif defined (STM32F4)
+#elif defined(STM32F4) | defined(STM32F7)
     #include "sdram.h"
     #define INIT_MEM() sdram_init()
     #define HEAP_START _sdram

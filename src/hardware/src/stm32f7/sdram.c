@@ -1,4 +1,4 @@
-#if defined(STM32F4)
+#if defined(STM32F7)
 
 #include "sdram.h"
 #include "delay.h"
@@ -7,29 +7,29 @@
 #include <libopencm3/stm32/fsmc.h>
 
 uint8_t * const _sdram = (uint8_t *)(0xd0000000);
-uint8_t * const _esdram = _sdram + 8*1024*1024;
+uint8_t * const _esdram = (uint8_t *)(0xd0000000 + 8*1024*1024);
 
 static const struct {
 	uint32_t	gpio;
 	uint32_t	rcc;
 	uint16_t	pins;
 } SDRAM_PINS[] = {
-	{GPIOB, RCC_GPIOB, GPIO5 | GPIO6 },
-	{GPIOC, RCC_GPIOC, GPIO0 },
 	{GPIOD, RCC_GPIOD, GPIO0 | GPIO1 | GPIO8 | GPIO9 | GPIO10 | GPIO14 | GPIO15},
-	{GPIOE, RCC_GPIOE, GPIO0 | GPIO1 | GPIO7 | GPIO8 | GPIO9 | GPIO10 |
+	{GPIOE, RCC_GPIOE, GPIO0 | GPIO1 | GPIO7 | GPIO8 |
+			GPIO9 | GPIO10 | GPIO11 | GPIO12 | GPIO13 | GPIO14 | GPIO15},
+	{GPIOF, RCC_GPIOF, GPIO0 | GPIO1 | GPIO2 | GPIO3 | GPIO4 | GPIO5 |
 			GPIO11 | GPIO12 | GPIO13 | GPIO14 | GPIO15 },
-	{GPIOF, RCC_GPIOF, GPIO0 | GPIO1 | GPIO2 | GPIO3 | GPIO4 | GPIO5 | GPIO11 |
-			GPIO12 | GPIO13 | GPIO14 | GPIO15 },
-	{GPIOG, RCC_GPIOG, GPIO0 | GPIO1 | GPIO4 | GPIO5 | GPIO8 | GPIO15}
+	{GPIOG, RCC_GPIOG, GPIO0 | GPIO1 | GPIO4 | GPIO5 | GPIO8 | GPIO15},
+	{GPIOH, RCC_GPIOH, GPIO5 | GPIO6 | GPIO7},
 };
 #define PINS_SIZE sizeof(SDRAM_PINS)/sizeof(SDRAM_PINS[0])
+
 
 static struct sdram_timing TIMING = {
 	.trcd = 2,		/* RCD Delay */
 	.trp = 2,		/* RP Delay */
 	.twr = 2,		/* Write Recovery Time */
-	.trc = 7,		/* Row Cycle Delay */
+	.trc = 6,		/* Row Cycle Delay */
 	.tras = 4,		/* Self Refresh Time */
 	.txsr = 7,		/* Exit Self Refresh Time */
 	.tmrd = 2,		/* Load to Active Delay */
@@ -49,7 +49,7 @@ void sdram_init(void) {
 	}
 
 	/* Enable the SDRAM Controller */
-	rcc_periph_clock_enable(RCC_FSMC);
+	rcc_periph_clock_enable(RCC_FMC);
 
 	/* Note the STM32F429-DISCO board has the ram attached to bank 2 */
 	/* Timing parameters computed for a 168Mhz clock */

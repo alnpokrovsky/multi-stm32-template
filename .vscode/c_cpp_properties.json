@@ -5,6 +5,7 @@
                 "STM32F1",
                 "STM32F3",
                 "STM32F4",
+                "STM32F7",
                 "USE_MDR1986VE9x",
                 "FREERTOS_LIB",
                 "LVGL_LIB",

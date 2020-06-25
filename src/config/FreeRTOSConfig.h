@@ -46,6 +46,8 @@
 #include "FreeRTOS/STM32F3.h"
 #elif defined(STM32F4)
 #include "FreeRTOS/STM32F4.h"
+#elif defined(STM32F7)
+#include "FreeRTOS/STM32F7.h"
 #elif defined(USE_MDR1986VE9x)
 #include "FreeRTOS/MDR1986VE9.h"
 #else

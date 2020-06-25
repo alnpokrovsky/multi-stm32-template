@@ -4,9 +4,6 @@
 // #include "controls/milua.h"
 #include "controls/isdriver.h"
 #include "controls/rtos.h"
-#include "lcd.h"
-#include <stdio.h>
-#include <stdlib.h>
 
 
 // static void vLed1Task(void * arg) {
@@ -121,95 +118,11 @@
  * all different colors.
  */
 
-static void draw_layer_1(const LCD_Layer * l)
-{
-	const int cel_count = (l->width >> 5) + (l->height >> 5);
-	for (int row = 0; row < l->height; row++) {
-		for (int col = 0; col < l->width; col++) {
-			// size_t i = row * l->width + col;
-			uint32_t cel = (row >> 5) + (col >> 5);
-			uint8_t a = cel & 1 ? 0 : 0xFF;
-			uint8_t r = row * 0xFF / l->height;
-			uint8_t g = col * 0xFF / l->width;
-			uint8_t b = 0xFF * (cel_count - cel - 1) / cel_count;
-			if (!(cel & 3)) {
-				b = 0;
-			}
-
-			/* Put black and white borders around the squares. */
-			if (row % 32 == 0 || col % 32 == 0) {
-				r = g = b = a ? 0xFF : 0;
-				a = 0xFF;
-			}
-			uint32_t pix = a << 24 | r << 16 | g << 8 | b << 0;
-
-			/*
-			 * Outline the screen in white.  Put a black
-			 * dot at the origin.
-			 *
-			 * (The origin is in the lower left!)
-			 */
-			if (row == 0 || col == 0 || row == 319 || col == 239) {
-				pix = 0xFFFFFFFF;
-			} else if (row < 20 && col < 20) {
-				pix = 0xFF000000;
-			}
-			// FRAMEBUFFER_1[i] = pix;
-			lcd_setPixel(l, col, row, pix);
-		}
-	}
-}
-
-/*
- * Layer 2 holds the sprite.  The sprite is a semitransparent
- * magenta/cyan diamond outlined in black.
- */
-
-static void draw_layer_2(const LCD_Layer * l)
-{
-	const uint8_t hw = l->width / 2;
-	const uint8_t hh = l->height / 2;
-	const uint8_t sz = (hw + hh) / 2;
-
-	for (int row = 0; row < l->height; row++) {
-		for (int col = 0; col < l->width; col++) {
-			// size_t i = row * l->width + col;
-			uint8_t dx = abs(col  - hw);
-			uint8_t dy = abs(row  - hh);
-			uint8_t dxy = dx + dy;
-			uint8_t a = dxy <= sz ? 0xF * dxy / (sz / 2) : 0x0;
-			if (a > 0xF) {
-				if (a < 0x14) {
-					a = 0xF;
-				} else {
-					a &= 0xF;
-				}
-			}
-			uint8_t r = dx >= dy ? 0xF : 0x0;
-			uint8_t g = dy >= dx ? 0xF : 0x0;
-			uint8_t b = 0xF;
-			if (dx + dy >= sz - 2 || dx == dy) {
-				r = g = b = 0;
-			}
-			uint16_t pix = a << 12 | r << 8 | g << 4 | b << 0;
-			// FRAMEBUFFER_2[i] = pix;
-			lcd_setPixel(l, col, row, pix);
-		}
-	}
-}
-
-#include "controls/stmpe811.h"
-#include "delay.h"
 
 int main(void) {
     rcc_init();
 
-    static LCD_Layer l1 = {1, ARGB8888, 0, 0, LCD_WIDTH, LCD_HEIGHT, 0xff};
-    static LCD_Layer l2 = {2, ARGB4444, 0, 0, 128, 128, 0xff};
-    lcd_init(&l1, &l2);
-    draw_layer_1(&l1);
-    draw_layer_2(&l2);
-    stmpe811_init();
+    
     // milua_init();
     // gui_init();
 
@@ -222,14 +135,6 @@ int main(void) {
 
     // RTOS_START();
 
-    while (1) {
-        STMPE811_Point p = stmpe811_read();
-        if (p.z > 0) {
-            l2.x = p.x - l2.width/2;
-            l2.y = p.y - l2.height/2;
-            lcd_setLayer(&l2);   
-        }
-        delay_ms(1);
-    }
+    while (1) ;
 }
 
