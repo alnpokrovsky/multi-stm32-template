@@ -33,6 +33,8 @@ void lcd_setLayer(const LCD_Layer * l);
 
 void lcd_setPixel(const LCD_Layer * l, uint16_t x, uint16_t y, uint32_t color);
 
+void * lcd_getFramebuf(const LCD_Layer * l);
+
 
 void lcd_handler(void);
 

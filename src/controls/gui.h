@@ -10,6 +10,4 @@
 
 void gui_init(void);
 
-void gui_poll(uint8_t ms);
-
 #endif

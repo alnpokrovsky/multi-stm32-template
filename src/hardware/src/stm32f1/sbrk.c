@@ -33,6 +33,8 @@
  * then malloc() will hard fault when it tries to use
  * memory from the gap.
  */
+#if defined(STM32F1)
+
 #include <stdint.h>
 #include <errno.h>
 #include <malloc.h>
@@ -50,31 +52,19 @@
  *   __stack
  */
 
-#if defined(STM32F1) || defined(STM32F3)
-    extern uint8_t _ebss, _stack;/* these are defined by the linker script */
-    #define INIT_MEM()
-    /* reserve half for stack and half for heap */
-    #define HEAP_START &_ebss
-    #define HEAP_END &_stack - (&_stack - &_ebss)/2
-#elif defined(STM32F4) | defined(STM32F7)
-    #include "sdram.h"
-    #define INIT_MEM() sdram_init()
-    #define HEAP_START _sdram
-    #define HEAP_END _esdram
-#elif defined(USE_MDR1986VE9x)
-    extern uint8_t __bss_end__, __stack;
-    #define INIT_MEM()
-    #define HEAP_START &__bss_end__
-    #define HEAP_END &__stack - (&__stack - &__bss_end__)/2
-#endif
+
+extern uint8_t _ebss, _stack;/* these are defined by the linker script */
+
+/* reserve half for stack and half for heap */
+#define HEAP_START &_ebss
+#define HEAP_END &_stack - (&_stack - &_ebss)/2
+
 
 /** this function once called when first malloc
  * it will not be called if there are no malloc usings
  */
-void local_heap_setup(uint8_t **start, uint8_t **end);
-void local_heap_setup(uint8_t **start, uint8_t **end)
+static void local_heap_setup(uint8_t **start, uint8_t **end)
 {
-    INIT_MEM();
     *start = HEAP_START;
     *end = HEAP_END;
 }
@@ -99,3 +89,5 @@ void * _sbrk_r(struct _reent *reent, ptrdiff_t diff)
     _cur_brk += diff;
     return _old_brk;
 }
+
+#endif

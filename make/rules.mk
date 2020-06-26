@@ -91,6 +91,7 @@ TGT_ASFLAGS += $(OPT) $(ARCH_FLAGS) $(DEBUG)
 WARNINGS := -Wall -Werror \
 			# -Wno-unused-value -Wno-unused-parameter
 
+# TGT_CPPFLAGS	+= -mlong-calls
 TGT_CPPFLAGS	+= -MD
 TGT_CPPFLAGS	+= $(WARNINGS)
 TGT_CPPFLAGS	+= $(DEFS)

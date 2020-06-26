@@ -340,18 +340,22 @@ void lcd_init(const LCD_Layer * l1, const LCD_Layer * l2) {
 
 	/* Configure the Layer 1 parameters.
 	 * (Layer 1 is the bottom l->layerN.)    */
-	lcd_setLayer(l1);
-	/* The color frame buffer start address */
-	LTDC_L1CFBAR = (uint32_t)FRAMEBUFFER_1;
-	/* Enable Layer1 and if needed the CLUT */
-	LTDC_L1CR |= LTDC_LxCR_LAYER_ENABLE;
+	if (l1) {
+		lcd_setLayer(l1);
+		/* The color frame buffer start address */
+		LTDC_L1CFBAR = (uint32_t)FRAMEBUFFER_1;
+		/* Enable Layer1 and if needed the CLUT */
+		LTDC_L1CR |= LTDC_LxCR_LAYER_ENABLE;
+	}
 
 	/* Configure the Layer 2 parameters. */
-	lcd_setLayer(l2);
-	/* The color frame buffer start address */
-	LTDC_L2CFBAR = (uint32_t)FRAMEBUFFER_2;
-	/* Enable Layer2 and if needed the CLUT */
-	LTDC_L2CR |= LTDC_LxCR_LAYER_ENABLE;
+	if (l2) {
+		lcd_setLayer(l2);
+		/* The color frame buffer start address */
+		LTDC_L2CFBAR = (uint32_t)FRAMEBUFFER_2;
+		/* Enable Layer2 and if needed the CLUT */
+		LTDC_L2CR |= LTDC_LxCR_LAYER_ENABLE;
+	}
 
 	lcd_setBackground(0);
 
@@ -439,19 +443,24 @@ void lcd_setBackground(uint32_t color) {
 	LTDC_BCCR = color;
 }
 
+void * lcd_getFramebuf(const LCD_Layer * l) {
+	return (l->layerN == 1) ? FRAMEBUFFER_1 : FRAMEBUFFER_2;
+}
+
 void lcd_setPixel(const LCD_Layer * l, uint16_t x, uint16_t y, uint32_t color) {
 	if ( (x >= l->width) || (y >= l->height) ) return;
-	const size_t i = y * l->width + x;
+	const size_t i = (y+1) * l->width - x;
 	const uint32_t bites = LCD_COLOR_MODELS[l->m].pixSize * 8;
 	const uint32_t mask = UINT32_MAX >> (32 - bites);
 
-	void * buf = (l->layerN == 1) ? FRAMEBUFFER_1 : FRAMEBUFFER_2;
+	void * buf = lcd_getFramebuf(l);
 	uint32_t * addr = (uint32_t *)(buf + i * LCD_COLOR_MODELS[l->m].pixSize);
 	*addr &= ~mask;
 	*addr |= color & mask;
 }
 
-void lcd_tft_isr(void)
+#include "sramfunc.h"
+void SRAM_FUNC lcd_tft_isr(void)
 {
 	LTDC_ICR |= LTDC_ICR_CRRIF;
 	lcd_handler();

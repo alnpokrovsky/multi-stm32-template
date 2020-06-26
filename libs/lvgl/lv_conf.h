@@ -3,14 +3,15 @@
 /* clang-format off */
 
 #include <stdint.h>
+#include "lcd.h"
 
 /*====================
    Graphical settings
  *====================*/
 
 /* Maximal horizontal and vertical resolution to support by the library.*/
-#define LV_HOR_RES_MAX          (128)
-#define LV_VER_RES_MAX          (64)
+#define LV_HOR_RES_MAX          (LCD_WIDTH)
+#define LV_VER_RES_MAX          (LCD_HEIGHT)
 
 /* Color depth:
  * - 1:  1 byte per pixel
@@ -18,7 +19,7 @@
  * - 16: RGB565
  * - 32: ARGB8888
  */
-#define LV_COLOR_DEPTH     1
+#define LV_COLOR_DEPTH     32
 
 /* Swap the 2 bytes of RGB565 color.
  * Useful if the display has a 8 bit interface (e.g. SPI)*/
@@ -27,7 +28,7 @@
 /* 1: Enable screen transparency.
  * Useful for OSD or other overlapping GUIs.
  * Requires `LV_COLOR_DEPTH = 32` colors and the screen's style should be modified: `style.body.opa = ...`*/
-#define LV_COLOR_SCREEN_TRANSP    0
+#define LV_COLOR_SCREEN_TRANSP    1
 
 /*Images pixels with this color will not be drawn (with chroma keying)*/
 #define LV_COLOR_TRANSP    LV_COLOR_LIME         /*LV_COLOR_LIME: pure green*/
@@ -66,10 +67,10 @@ typedef int16_t lv_coord_t;
  * The graphical objects and other related data are stored here. */
 
 /* 1: use custom malloc/free, 0: use the built-in `lv_mem_alloc` and `lv_mem_free` */
-#define LV_MEM_CUSTOM      0
+#define LV_MEM_CUSTOM      1
 #if LV_MEM_CUSTOM == 0
 /* Size of the memory used by `lv_mem_alloc` in bytes (>= 2kB)*/
-#  define LV_MEM_SIZE    (4U * 1024U)
+#  define LV_MEM_SIZE    (32U * 1024U)
 
 /* Complier prefix for a big array declaration */
 #  define LV_MEM_ATTR
@@ -220,7 +221,7 @@ typedef void * lv_img_decoder_user_data_t;
 /* With size optimization (-Os) the compiler might not align data to
  * 4 or 8 byte boundary. This alignment will be explicitly applied where needed.
  * E.g. __attribute__((aligned(4))) */
-#define LV_ATTRIBUTE_MEM_ALIGN
+#define LV_ATTRIBUTE_MEM_ALIGN __attribute__((aligned(4)))
 
 /* Attribute to mark large constant arrays for example
  * font's bitmaps */
@@ -228,7 +229,8 @@ typedef void * lv_img_decoder_user_data_t;
 
 /* Prefix performance critical functions to place them into a faster memory (e.g RAM)
  * Uses 15-20 kB extra memory */
-#define LV_ATTRIBUTE_FAST_MEM
+#include "sramfunc.h"
+#define LV_ATTRIBUTE_FAST_MEM SRAM_FUNC
 
 /* Export integer constant to binding.
  * This macro is used with constants in the form of LV_<CONST> that
@@ -287,7 +289,7 @@ typedef void * lv_indev_drv_user_data_t;            /*Type of user data in the i
  * The behavior of asserts can be overwritten by redefining them here.
  * E.g. #define LV_ASSERT_MEM(p)  <my_assert_code>
  */
-#define LV_USE_DEBUG        1
+#define LV_USE_DEBUG        0
 #if LV_USE_DEBUG
 
 /*Check if the parameter is NULL. (Quite fast) */
@@ -395,20 +397,20 @@ typedef void * lv_font_user_data_t;
  * Flags:
  * LV_THEME_MATERIAL_FLAG_LIGHT: light theme
  * LV_THEME_MATERIAL_FLAG_DARK: dark theme*/
- #define LV_USE_THEME_MATERIAL    0
+ #define LV_USE_THEME_MATERIAL    1
 
 /* Mono-color theme for monochrome displays.
  * If LV_THEME_DEFAULT_COLOR_PRIMARY is LV_COLOR_BLACK the
  * texts and borders will be black and the background will be
  * white. Else the colors are inverted.
  * No flags. Set LV_THEME_DEFAULT_FLAG 0 */
- #define LV_USE_THEME_MONO        1
+ #define LV_USE_THEME_MONO        0
 
 #define LV_THEME_DEFAULT_INCLUDE            <stdint.h>      /*Include a header for the init. function*/
-#define LV_THEME_DEFAULT_INIT               lv_theme_mono_init
+#define LV_THEME_DEFAULT_INIT               lv_theme_material_init
 #define LV_THEME_DEFAULT_COLOR_PRIMARY      LV_COLOR_GREEN
 #define LV_THEME_DEFAULT_COLOR_SECONDARY    LV_COLOR_BLUE
-#define LV_THEME_DEFAULT_FLAG               0
+#define LV_THEME_DEFAULT_FLAG               LV_THEME_MATERIAL_FLAG_DARK
 #define LV_THEME_DEFAULT_FONT_SMALL         &lv_font_unscii_8
 #define LV_THEME_DEFAULT_FONT_NORMAL        &lv_font_unscii_8
 #define LV_THEME_DEFAULT_FONT_SUBTITLE      &lv_font_unscii_8

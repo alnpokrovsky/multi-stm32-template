@@ -27,7 +27,7 @@ include libs/freertos.include
 # include libs/libopencm3-usb.include
 # include libs/saxml.include
 # include libs/ugui.include
-# include libs/lvgl.include
+include libs/lvgl.include
 # include libs/lua.include
 
 ########### BUILD DEVICE ##############
@@ -36,8 +36,8 @@ include libs/freertos.include
 # LDSCRIPT := make/stm32/f3/stm32f334.ld
 # include make/stm32/f3.mk
 # LDSCRIPT := make/stm32/f4/stm32f407.ld
-# LDSCRIPT := make/stm32/f4/stm32f429.ld
-# include make/stm32/f4.mk
-LDSCRIPT := make/stm32/f7/stm32f746.ld
-include make/stm32/f7.mk
+LDSCRIPT := make/stm32/f4/stm32f429.ld
+include make/stm32/f4.mk
+# LDSCRIPT := make/stm32/f7/stm32f746.ld
+# include make/stm32/f7.mk
 # include make/mdr1986/ve9.mk
