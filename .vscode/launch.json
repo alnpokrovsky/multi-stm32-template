@@ -20,7 +20,7 @@
         "serverLaunchTimeout": 20000,
         "filterStderr": true,
         "filterStdout": false,
-        "serverStarted": "Info : Listening on port 3333 for gdb connections",
+        "serverStarted": "Info : stm32f",
         
         "setupCommands": [
             {"text": "-enable-pretty-printing", "ignoreFailures": true },

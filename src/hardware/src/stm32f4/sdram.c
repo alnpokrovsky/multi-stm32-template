@@ -7,7 +7,7 @@
 #include <libopencm3/stm32/fsmc.h>
 
 uint8_t * const _sdram = (uint8_t *)(0xd0000000);
-uint8_t * const _esdram = _sdram + 8*1024*1024;
+uint8_t * const _esdram = (uint8_t *)(0xd0000000 + 8*1024*1024);
 
 static const struct {
 	uint32_t	gpio;
