@@ -41,6 +41,9 @@
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 
+#ifndef __MDR32F9Qx_CONFIG_H
+#define __MDR32F9Qx_CONFIG_H
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -252,6 +255,8 @@ extern "C" {
 } // extern "C" block end
 #endif
 
+
+#endif
 /******************* (C) COPYRIGHT 2011 Milandr *********************************
 *
 * END OF FILE MDR32F9Qx_config.h */

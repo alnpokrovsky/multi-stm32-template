@@ -7,3 +7,4 @@ MEMORY
     ccm (rwx) : ORIGIN = 0x10000000, LENGTH = 64K
 }
 
+INCLUDE cortex-m-generic-s.ld

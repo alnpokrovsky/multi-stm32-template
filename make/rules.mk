@@ -102,11 +102,8 @@ TGT_CPPFLAGS	+= $(addprefix -I, $(INC))
 ###############################################################################
 # Linker flags
 
-LDGENERIC 	:= make/stm32/cortex-m-generic.ld
-
 TGT_LDFLAGS		+= --static -nostartfiles
 TGT_LDFLAGS		+= -T$(LDSCRIPT)
-TGT_LDFLAGS		+= -T$(LDGENERIC)
 TGT_LDFLAGS		+= $(ARCH_FLAGS) $(DEBUG)
 TGT_LDFLAGS 	+= -specs=nano.specs
 TGT_LDFLAGS 	+= -specs=nosys.specs
