@@ -141,7 +141,7 @@ typedef void * lv_anim_user_data_t;
 #endif
 
 /* 1: Enable shadow drawing*/
-#define LV_USE_SHADOW           0
+#define LV_USE_SHADOW           1
 #if LV_USE_SHADOW
 /* Allow buffering some shadow calculation
  * LV_SHADOW_CACHE_SIZE is the max. shadow size to buffer,
@@ -624,8 +624,8 @@ typedef void * lv_obj_user_data_t;
 #define LV_USE_SPINNER      1
 #if LV_USE_SPINNER != 0
 #  define LV_SPINNER_DEF_ARC_LENGTH   60      /*[deg]*/
-#  define LV_SPINNER_DEF_SPIN_TIME    1000    /*[ms]*/
-#  define LV_SPINNER_DEF_ANIM         LV_SPINNER_TYPE_SPINNING_ARC
+#  define LV_SPINNER_DEF_SPIN_TIME    10000    /*[ms]*/
+#  define LV_SPINNER_DEF_ANIM         LV_SPINNER_TYPE_FILLSPIN_ARC
 #endif
 
 /*Roller (dependencies: lv_ddlist)*/

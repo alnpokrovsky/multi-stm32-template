@@ -110,8 +110,8 @@
 //     (void) arg;
 
 //     RTOS_DELAY_LOOP {
-//         // gui_poll();
-//         RTOS_DELAY_NEXT_MS(1000);
+//         lv_tick_inc(80);
+//         RTOS_DELAY_NEXT_MS(10);
 //     }
 // }
 
@@ -147,13 +147,15 @@ int main(void) {
     // milua_init();
     gui_init();
 
-    lv_obj_t * label;
+    lv_obj_t * preload = lv_spinner_create(lv_scr_act(), NULL);
+    lv_obj_set_size(preload, 100, 100);
+    lv_obj_align(preload, NULL, LV_ALIGN_CENTER, 0, 0);
 
     lv_obj_t * btn1 = lv_btn_create(lv_scr_act(), NULL);
     lv_obj_set_event_cb(btn1, event_handler);
     lv_obj_align(btn1, NULL, LV_ALIGN_CENTER, 0, -40);
 
-    label = lv_label_create(btn1, NULL);
+    lv_obj_t * label = lv_label_create(btn1, NULL);
     lv_label_set_text(label, "Button");
 
     lv_obj_t * btn2 = lv_btn_create(lv_scr_act(), NULL);
@@ -165,6 +167,8 @@ int main(void) {
 
     label = lv_label_create(btn2, NULL);
     lv_label_set_text(label, "Toggled");
+
+    
 
     // RTOS_TASK_CREATE(RTOS_LOW_PRIORITY, vLed1Task);
     // RTOS_TASK_CREATE(RTOS_LOW_PRIORITY+1, vGraphicsTask);
