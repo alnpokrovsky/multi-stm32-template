@@ -6,15 +6,5 @@ MEMORY
 	ram (rwx) : ORIGIN = 0x20000000, LENGTH = 320K
 }
 
-/* Include the common ld script. */
-INCLUDE cortex-m-generic.ld
-
-SECTIONS {
-    .sram_func : ALIGN(4) {
-        __sram_func = .;
-        *(.sram_func*)
-        . = ALIGN(4);
-        __esram_func = .;
-    } >ram AT >itcm
-    __sram_func_loadaddr = LOADADDR(.sram_func);
-}
+/* my improved linker with sramfunc section */
+INCLUDE make/stm32/cortex-m-generic-s.ld

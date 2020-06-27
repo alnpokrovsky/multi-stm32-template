@@ -1,5 +1,11 @@
 #include "sramfunc.h"
 
+static const unsigned NULL_PTR = 0;
+
+#pragma weak __sram_func = NULL_PTR
+#pragma weak __esram_func = NULL_PTR
+#pragma weak __sram_func_loadaddr = NULL_PTR
+
 extern unsigned __sram_func, __esram_func, __sram_func_loadaddr;
 
 /**

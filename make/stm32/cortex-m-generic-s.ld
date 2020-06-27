@@ -123,5 +123,6 @@ SECTIONS {
     __sram_func_loadaddr = LOADADDR(.sram_func);
 }
 
+
 PROVIDE(_stack = ORIGIN(ram) + LENGTH(ram));
 

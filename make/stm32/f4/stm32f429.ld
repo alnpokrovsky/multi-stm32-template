@@ -7,4 +7,6 @@ MEMORY
     ccm (rwx) : ORIGIN = 0x10000000, LENGTH = 64K
 }
 
-INCLUDE cortex-m-generic-s.ld
+/*INCLUDE cortex-m-generic.ld*/
+/* my improved linker with sramfunc section */
+INCLUDE make/stm32/cortex-m-generic-s.ld
