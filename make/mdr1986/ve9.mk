@@ -21,6 +21,5 @@ SRC += $(SRC_MDR_VE9)
 INC += $(INC_MDR_VE9) \
 		src/config/device
 
-LDSCRIPT := $(LD_MDR_VE9)
 
 include make/rules.mk

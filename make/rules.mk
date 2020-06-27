@@ -27,22 +27,35 @@ Q			:= @
 NULL		:= 2>/dev/null
 endif
 
+
 # 'make BUILD=debug' will compile with debugging symbols 
-# By default builds release version with optimization 
-ifeq ($(BUILD),debug)
-OPT	  := -O0
-DEBUG := -ggdb3
-DEFS  += -DDEBUG
+# By default builds debug version with optimization 
+ifeq ($(BUILD),release)
+PROJECT	:= release
+OPT	  	:= -O2
+DEBUG 	:= -g0
+DEFS  	+= -DNDEBUG
 else
-OPT	  := -Os
-DEBUG := -g0
-DEFS  += -DNDEBUG
+PROJECT	:= debug
+OPT	  	:= -O0
+DEBUG 	:= -ggdb3
+DEFS  	+= -DDEBUG
+endif
+
+# 'make MEM=ram' will compile for flashing program in ram
+# By default ram
+ifeq ($(MEM),rom)
+PROJECT		:= $(PROJECT)_rom
+LDGENERIC 	:= make/stm32/cortex-m-generic-ROM.ld
+DEFS		+= -DROM
+else
+PROJECT		:= $(PROJECT)_ram
+LDGENERIC 	:= make/stm32/cortex-m-generic-RAM.ld
+DEFS		+= -DRAM
 endif
 
 ###############################################################################
 # Optional
-
-PROJECT		?= main
 INC 		+= src
 BUILD_DIR 	?= build
 CSTD		?= -std=c11
@@ -102,6 +115,7 @@ TGT_CPPFLAGS	+= $(addprefix -I, $(INC))
 
 TGT_LDFLAGS		+= --static -nostartfiles
 TGT_LDFLAGS		+= -T$(LDSCRIPT)
+TGT_LDFLAGS		+= -T$(LDGENERIC)
 TGT_LDFLAGS		+= $(ARCH_FLAGS) $(DEBUG)
 TGT_LDFLAGS 	+= -specs=nano.specs
 TGT_LDFLAGS 	+= -specs=nosys.specs
@@ -133,12 +147,12 @@ OBJS := $(OBJS_AS) $(OBJS_C) $(OBJS_CXX)
 .SECONDEXPANSION:
 .SECONDARY:
 
-elf: $(PROJECT).elf
-bin: $(PROJECT).bin
-hex: $(PROJECT).hex
-list: $(PROJECT).list
-images: $(PROJECT).images
-flash: $(PROJECT).flash
+elf: 	$(BUILD_DIR)/$(PROJECT).elf
+bin: 	$(BUILD_DIR)/$(PROJECT).bin
+hex: 	$(BUILD_DIR)/$(PROJECT).hex
+list: 	$(BUILD_DIR)/$(PROJECT).list
+images: $(BUILD_DIR)/$(PROJECT).images
+flash: 	$(BUILD_DIR)/$(PROJECT).flash
 
 
 %.elf %.map: $(OBJS) $(LDSCRIPT) $(LIBS_A)
@@ -221,7 +235,6 @@ debug: $(PROJECT).elf
 
 clean:
 	@printf "  CLEAN\n"
-	$(Q)$(RM) $(PROJECT).elf $(PROJECT).bin $(PROJECT).hex $(PROJECT).list $(PROJECT).map
 	$(Q)$(RM) -r $(BUILD_DIR)
 
 .PHONY: images flash clean debug oocd elf bin hex list

@@ -1,9 +1,10 @@
 # Makefile
 
-PROJECT := drivecontroller
+###### default params ##########
+BUILD ?= debug
+MEM ?= rom
 
 ###### Create binary ###########
-BUILD ?= debug
 all: elf
 
 
