@@ -1,7 +1,5 @@
 #include "sramfunc.h"
 
-#if defined(ROM)
-
 extern unsigned __sram_func, __esram_func, __sram_func_loadaddr;
 
 /**
@@ -17,5 +15,3 @@ static void __attribute__ ((constructor)) premainInitFuncs(void) {
 		    *dest = *src;
 	}
 }
-
-#endif

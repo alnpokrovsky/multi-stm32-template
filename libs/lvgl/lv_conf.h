@@ -624,7 +624,7 @@ typedef void * lv_obj_user_data_t;
 #define LV_USE_SPINNER      1
 #if LV_USE_SPINNER != 0
 #  define LV_SPINNER_DEF_ARC_LENGTH   60      /*[deg]*/
-#  define LV_SPINNER_DEF_SPIN_TIME    10000    /*[ms]*/
+#  define LV_SPINNER_DEF_SPIN_TIME    5000    /*[ms]*/
 #  define LV_SPINNER_DEF_ANIM         LV_SPINNER_TYPE_FILLSPIN_ARC
 #endif
 

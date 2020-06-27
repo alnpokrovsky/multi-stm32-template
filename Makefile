@@ -2,7 +2,6 @@
 
 ###### default params ##########
 BUILD ?= debug
-MEM ?= rom
 
 ###### Create binary ###########
 all: elf

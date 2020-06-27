@@ -42,17 +42,6 @@ DEBUG 	:= -ggdb3
 DEFS  	+= -DDEBUG
 endif
 
-# 'make MEM=ram' will compile for flashing program in ram
-# By default ram
-ifeq ($(MEM),rom)
-PROJECT		:= $(PROJECT)_rom
-LDGENERIC 	:= make/stm32/cortex-m-generic-ROM.ld
-DEFS		+= -DROM
-else
-PROJECT		:= $(PROJECT)_ram
-LDGENERIC 	:= make/stm32/cortex-m-generic-RAM.ld
-DEFS		+= -DRAM
-endif
 
 ###############################################################################
 # Optional
@@ -112,6 +101,8 @@ TGT_CPPFLAGS	+= $(addprefix -I, $(INC))
 
 ###############################################################################
 # Linker flags
+
+LDGENERIC 	:= make/stm32/cortex-m-generic.ld
 
 TGT_LDFLAGS		+= --static -nostartfiles
 TGT_LDFLAGS		+= -T$(LDSCRIPT)
@@ -205,18 +196,10 @@ $(BUILD_DIR)/%.o: %.cpp
 
 %.flash: %.elf
 	@printf "  FLASH\t$<\n"
-ifeq (,$(OOCD_FILE))
-	$(Q)(echo "init; halt; program $(realpath $(*).elf) verify reset" | nc -4 localhost 4444 2>/dev/null) || \
-		$(OOCD) -f interface/$(OOCD_INTERFACE).cfg \
+	$(Q)$(OOCD) -f interface/$(OOCD_INTERFACE).cfg \
 		-f target/$(OOCD_TARGET).cfg \
 		-c "program $(realpath $(*).elf) verify reset exit" \
 		$(NULL)
-else
-	$(Q)(echo "init; halt; program $(realpath $(*).elf) verify reset" | nc -4 localhost 4444 2>/dev/null) || \
-		$(OOCD) -f $(OOCD_FILE) \
-		-c "program $(realpath $(*).elf) verify reset exit" \
-		$(NULL)
-endif
 
 oocd:
 	$(OOCD) -f interface/$(OOCD_INTERFACE).cfg \
