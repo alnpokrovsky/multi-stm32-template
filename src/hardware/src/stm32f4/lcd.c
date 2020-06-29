@@ -459,8 +459,7 @@ void lcd_setPixel(const LCD_Layer * l, uint16_t x, uint16_t y, uint32_t color) {
 	*addr |= color & mask;
 }
 
-#include "sramfunc.h"
-void SRAM_FUNC lcd_tft_isr(void)
+void lcd_tft_isr(void)
 {
 	LTDC_ICR |= LTDC_ICR_CRRIF;
 	lcd_handler();

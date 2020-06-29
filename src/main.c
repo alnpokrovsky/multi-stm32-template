@@ -106,14 +106,14 @@
 //     }
 // }
 
-// static void vGraphicsTask(void * arg) {
-//     (void) arg;
+static void vGraphicsTask(void * arg) {
+    (void) arg;
 
-//     RTOS_DELAY_LOOP {
-//         lv_tick_inc(80);
-//         RTOS_DELAY_NEXT_MS(10);
-//     }
-// }
+    RTOS_DELAY_LOOP {
+        lv_tick_inc(80);
+        RTOS_DELAY_NEXT_MS(10);
+    }
+}
 
 /*
  * Checkerboard pattern.  Odd squares are transparent; even squares are
@@ -122,11 +122,12 @@
 
 static void event_handler(lv_obj_t * obj, lv_event_t event)
 {
+    (void) obj;
     if(event == LV_EVENT_CLICKED) {
         // printf("Clicked\n");
     }
     else if(event == LV_EVENT_VALUE_CHANGED) {
-        lv_btn_set_checkable(obj, false);
+        // lv_btn_toggle(obj);
     }
 }
 
@@ -162,8 +163,9 @@ int main(void) {
     lv_obj_set_event_cb(btn2, event_handler);
     lv_obj_align(btn2, NULL, LV_ALIGN_CENTER, 0, 40);
     lv_btn_set_checkable(btn2, true);
-    lv_btn_toggle(btn2);
+    // lv_btn_toggle(btn2);
     lv_btn_set_fit2(btn2, LV_FIT_NONE, LV_FIT_TIGHT);
+
 
     label = lv_label_create(btn2, NULL);
     lv_label_set_text(label, "Toggled");
@@ -171,13 +173,13 @@ int main(void) {
     
 
     // RTOS_TASK_CREATE(RTOS_LOW_PRIORITY, vLed1Task);
-    // RTOS_TASK_CREATE(RTOS_LOW_PRIORITY+1, vGraphicsTask);
+    RTOS_TASK_CREATE(RTOS_LOW_PRIORITY+1, vGraphicsTask);
 
     // RTOS_TASK_CREATE(RTOS_MEDIUM_PRIORITY, vDriverTask);
 
     // RTOS_TASK_CREATE(RTOS_HIGH_PRIORITY+5, vLed2Task);
 
-    // RTOS_START();
+    RTOS_START();
 
     while (1);
 }

@@ -77,8 +77,12 @@ void gui_init(void) {
     lv_indev_drv_register(&indev_drv);
 }
 
-void SRAM_FUNC lcd_handler() {
-    lv_tick_inc(100);
+void SRAM_FUNC gui_poll(int ms) {
+    lv_tick_inc(ms);
+}
+
+void lcd_handler() {
+    // lv_tick_inc(100);
     lv_task_handler();
 }
 
