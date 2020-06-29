@@ -3,15 +3,15 @@
 /* clang-format off */
 
 #include <stdint.h>
-#include "lcd.h"
+#include "ltdc.h"
 
 /*====================
    Graphical settings
  *====================*/
 
 /* Maximal horizontal and vertical resolution to support by the library.*/
-#define LV_HOR_RES_MAX          (LCD_WIDTH)
-#define LV_VER_RES_MAX          (LCD_HEIGHT)
+#define LV_HOR_RES_MAX          (LTDC_WIDTH)
+#define LV_VER_RES_MAX          (LTDC_HEIGHT)
 
 /* Color depth:
  * - 1:  1 byte per pixel
@@ -229,8 +229,7 @@ typedef void * lv_img_decoder_user_data_t;
 
 /* Prefix performance critical functions to place them into a faster memory (e.g RAM)
  * Uses 15-20 kB extra memory */
-#include "sramfunc.h"
-#define LV_ATTRIBUTE_FAST_MEM SRAM_FUNC
+#define LV_ATTRIBUTE_FAST_MEM
 
 /* Export integer constant to binding.
  * This macro is used with constants in the form of LV_<CONST> that

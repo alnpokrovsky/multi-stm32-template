@@ -115,10 +115,6 @@
 //     }
 // }
 
-/*
- * Checkerboard pattern.  Odd squares are transparent; even squares are
- * all different colors.
- */
 
 // static void event_handler(lv_obj_t * obj, lv_event_t event)
 // {
@@ -131,12 +127,16 @@
 //     }
 // }
 
-#include "usb_core.h"
+#include "ltdc.h"
 
 int main(void) {
     rcc_init();
 
-    usb_core_init();
+    // LTDC_Layer layer = {1, ARGB8888, 0, 0, LTDC_WIDTH, LTDC_HEIGHT, 0x1f};
+    ltdc_init(NULL, NULL);
+    ltdc_setBackground(0xff0000FF);
+
+    // usb_core_init();
 
     // static LCD_Layer layer = {1, ARGB8888, 0, 0, LCD_WIDTH, LCD_HEIGHT, 0xffffffff};
     // static LCD_Layer layer2 = {2, ARGB8888, 0, 0, LCD_WIDTH, LCD_HEIGHT, 0xff};
@@ -172,6 +172,7 @@ int main(void) {
 
     // label = lv_label_create(btn2, NULL);
     // lv_label_set_text(label, "Toggled");
+
 
     
 
