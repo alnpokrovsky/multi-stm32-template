@@ -27,6 +27,18 @@
             }
         },
         {
+            "label": "build-debug",
+            "type": "shell",
+            "command": "make BUILD=debug",
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
+        },
+        {
             "label": "clean",
             "type": "shell",
             "command": "make clean"

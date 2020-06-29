@@ -3,7 +3,7 @@
 #include "uart.h"
 // #include "controls/milua.h"
 #include "controls/isdriver.h"
-#include "controls/gui.h"
+// #include "controls/gui.h"
 #include "controls/rtos.h"
 #include "delay.h"
 
@@ -106,34 +106,37 @@
 //     }
 // }
 
-static void vGraphicsTask(void * arg) {
-    (void) arg;
+// static void vGraphicsTask(void * arg) {
+//     (void) arg;
 
-    RTOS_DELAY_LOOP {
-        lv_tick_inc(80);
-        RTOS_DELAY_NEXT_MS(10);
-    }
-}
+//     RTOS_DELAY_LOOP {
+//         lv_tick_inc(80);
+//         RTOS_DELAY_NEXT_MS(10);
+//     }
+// }
 
 /*
  * Checkerboard pattern.  Odd squares are transparent; even squares are
  * all different colors.
  */
 
-static void event_handler(lv_obj_t * obj, lv_event_t event)
-{
-    (void) obj;
-    if(event == LV_EVENT_CLICKED) {
-        // printf("Clicked\n");
-    }
-    else if(event == LV_EVENT_VALUE_CHANGED) {
-        // lv_btn_toggle(obj);
-    }
-}
+// static void event_handler(lv_obj_t * obj, lv_event_t event)
+// {
+//     (void) obj;
+//     if(event == LV_EVENT_CLICKED) {
+//         // printf("Clicked\n");
+//     }
+//     else if(event == LV_EVENT_VALUE_CHANGED) {
+//         // lv_btn_toggle(obj);
+//     }
+// }
 
+#include "usb_core.h"
 
 int main(void) {
     rcc_init();
+
+    usb_core_init();
 
     // static LCD_Layer layer = {1, ARGB8888, 0, 0, LCD_WIDTH, LCD_HEIGHT, 0xffffffff};
     // static LCD_Layer layer2 = {2, ARGB8888, 0, 0, LCD_WIDTH, LCD_HEIGHT, 0xff};
@@ -146,34 +149,34 @@ int main(void) {
     // }
 
     // milua_init();
-    gui_init();
+    // gui_init();
 
-    lv_obj_t * preload = lv_spinner_create(lv_scr_act(), NULL);
-    lv_obj_set_size(preload, 100, 100);
-    lv_obj_align(preload, NULL, LV_ALIGN_CENTER, 0, 0);
+    // lv_obj_t * preload = lv_spinner_create(lv_scr_act(), NULL);
+    // lv_obj_set_size(preload, 100, 100);
+    // lv_obj_align(preload, NULL, LV_ALIGN_CENTER, 0, 0);
 
-    lv_obj_t * btn1 = lv_btn_create(lv_scr_act(), NULL);
-    lv_obj_set_event_cb(btn1, event_handler);
-    lv_obj_align(btn1, NULL, LV_ALIGN_CENTER, 0, -40);
+    // lv_obj_t * btn1 = lv_btn_create(lv_scr_act(), NULL);
+    // lv_obj_set_event_cb(btn1, event_handler);
+    // lv_obj_align(btn1, NULL, LV_ALIGN_CENTER, 0, -40);
 
-    lv_obj_t * label = lv_label_create(btn1, NULL);
-    lv_label_set_text(label, "Button");
+    // lv_obj_t * label = lv_label_create(btn1, NULL);
+    // lv_label_set_text(label, "Button");
 
-    lv_obj_t * btn2 = lv_btn_create(lv_scr_act(), NULL);
-    lv_obj_set_event_cb(btn2, event_handler);
-    lv_obj_align(btn2, NULL, LV_ALIGN_CENTER, 0, 40);
-    lv_btn_set_checkable(btn2, true);
-    // lv_btn_toggle(btn2);
-    lv_btn_set_fit2(btn2, LV_FIT_NONE, LV_FIT_TIGHT);
+    // lv_obj_t * btn2 = lv_btn_create(lv_scr_act(), NULL);
+    // lv_obj_set_event_cb(btn2, event_handler);
+    // lv_obj_align(btn2, NULL, LV_ALIGN_CENTER, 0, 40);
+    // lv_btn_set_checkable(btn2, true);
+    // // lv_btn_toggle(btn2);
+    // lv_btn_set_fit2(btn2, LV_FIT_NONE, LV_FIT_TIGHT);
 
 
-    label = lv_label_create(btn2, NULL);
-    lv_label_set_text(label, "Toggled");
+    // label = lv_label_create(btn2, NULL);
+    // lv_label_set_text(label, "Toggled");
 
     
 
     // RTOS_TASK_CREATE(RTOS_LOW_PRIORITY, vLed1Task);
-    RTOS_TASK_CREATE(RTOS_LOW_PRIORITY+1, vGraphicsTask);
+    // RTOS_TASK_CREATE(RTOS_LOW_PRIORITY+1, vGraphicsTask);
 
     // RTOS_TASK_CREATE(RTOS_MEDIUM_PRIORITY, vDriverTask);
 

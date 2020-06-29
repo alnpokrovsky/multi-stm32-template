@@ -44,7 +44,7 @@ void sdram_init(void) {
 		gpio_mode_setup(SDRAM_PINS[i].gpio, GPIO_MODE_AF,
 				GPIO_PUPD_NONE, SDRAM_PINS[i].pins);
 		gpio_set_output_options(SDRAM_PINS[i].gpio, GPIO_OTYPE_PP,
-				GPIO_OSPEED_50MHZ, SDRAM_PINS[i].pins);
+				GPIO_OSPEED_100MHZ, SDRAM_PINS[i].pins);
 		gpio_set_af(SDRAM_PINS[i].gpio, GPIO_AF12, SDRAM_PINS[i].pins);
 	}
 
