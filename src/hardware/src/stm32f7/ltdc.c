@@ -46,9 +46,11 @@ static const ltdc_pins_descript LTDC_PINS[] = {
 	{ GPIOC, RCC_GPIOC, GPIO0, GPIO_AF14 },
 	{ GPIOD, RCC_GPIOD, GPIO6, GPIO_AF14 },
 	{ GPIOE, RCC_GPIOE, GPIO4 | GPIO5 | GPIO6, GPIO_AF14 },
-	{ GPIOF, RCC_GPIOF, GPIO10, GPIO_AF9 },
+	{ GPIOF, RCC_GPIOF, GPIO10, GPIO_AF14 },
 	{ GPIOG, RCC_GPIOG, GPIO10, GPIO_AF9 },
 	{ GPIOG, RCC_GPIOG, GPIO6 | GPIO7 | GPIO11 | GPIO12, GPIO_AF14 },
+	{ GPIOH, RCC_GPIOH, GPIO2 | GPIO3 | GPIO8 | GPIO9 | 
+						GPIO10 | GPIO13 | GPIO15, GPIO_AF14 },
 	{ GPIOI, RCC_GPIOI, GPIO0 | GPIO1 | GPIO2 | GPIO4 | GPIO5 |
 						GPIO6 | GPIO7 | GPIO9 | GPIO10, GPIO_AF14 },
 };
@@ -98,7 +100,7 @@ void ltdc_init(const LTDC_Layer * l1, const LTDC_Layer * l2) {
 
 	LTDC_BCCR = 0; 																										// Color background																					// Enable layer #2
 
-	LTDC_SRCR |= LTDC_SRCR_VBR;																							// Reload
+	// LTDC_SRCR |= LTDC_SRCR_VBR;																							// Reload
 
 	LTDC_GCR |= LTDC_GCR_LTDCEN;	
 
