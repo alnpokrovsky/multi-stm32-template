@@ -5,8 +5,6 @@
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/ltdc.h>
 #include <libopencm3/cm3/nvic.h>
-#include "delay.h"
-#include "sdram.h"
 #include "digitalpin.h"
 #include <stdint.h>
 #include <stdlib.h>
@@ -58,8 +56,8 @@ static const ltdc_pins_descript LTDC_PINS[] = {
 
 void ltdc_init(const LTDC_Layer * l1, const LTDC_Layer * l2) {
 	/* my heap is located in sdram (look sbrk.c) */
-	// FRAMEBUFFER_1 = malloc(LTDC_SIZE * LTDC_COLOR_MODELS[l1->m].pixSize);
-	// FRAMEBUFFER_2 = malloc(LTDC_SIZE * LTDC_COLOR_MODELS[l2->m].pixSize);
+	FRAMEBUFFER_1 = malloc(LTDC_SIZE * LTDC_COLOR_MODELS[l1->m].pixSize);
+	FRAMEBUFFER_2 = malloc(LTDC_SIZE * LTDC_COLOR_MODELS[l2->m].pixSize);
 
 	for (uint8_t i = 0; i < LTDC_PINS_SIZE; ++i) {
 		/* init GPIO clocks */
@@ -72,37 +70,35 @@ void ltdc_init(const LTDC_Layer * l1, const LTDC_Layer * l2) {
 	}
 
 	/* max led_pwm */
-	// digitalpin_mode(PA_3, DIGITALPIN_OUTPUT);
-	// digitalpin_set(PA_3, 0);
+	digitalpin_mode(PA_3, DIGITALPIN_OUTPUT);
+	digitalpin_set(PA_3, 0);
+
+	/* configure rcc pll clocking */
+	RCC_PLLSAICFGR |= 192 << RCC_PLLSAICFGR_PLLSAIN_SHIFT;
+	RCC_PLLSAICFGR |= 3   << RCC_PLLSAICFGR_PLLSAIR_SHIFT;
+	RCC_PLLSAICFGR |= 2   << RCC_PLLSAICFGR_PLLSAIQ_SHIFT;
+	RCC_DCKCFGR1 &= ~(RCC_DCKCFGR1_PLLSAIDIVR_MASK << RCC_DCKCFGR1_PLLSAIDIVR_SHIFT);
+	/* wait till RCC configured */
+	RCC_CR |= RCC_CR_PLLSAION;
+	while ((RCC_CR & RCC_CR_PLLSAIRDY) == 0) ;
 	
-	
-#define DISPLAY_WIDTH 			((uint16_t)1024)
-#define DISPLAY_HEIGHT			((uint16_t)600)
+	/*
+	 * Configure the Synchronous timings: VSYNC, HSNC,
+	 * Vertical and Horizontal back porch, active data area, and
+	 * the front porch timings.
+	 */
+	LTDC_SSCR = (HSYNC - 1) << LTDC_SSCR_HSW_SHIFT |
+		    (VSYNC - 1) << LTDC_SSCR_VSH_SHIFT;
+	LTDC_BPCR = (HSYNC + HBP - 1) << LTDC_BPCR_AHBP_SHIFT |
+		    (VSYNC + VBP - 1) << LTDC_BPCR_AVBP_SHIFT;
+	LTDC_AWCR = (HSYNC + HBP + LTDC_WIDTH - 1) << LTDC_AWCR_AAW_SHIFT |
+		    (VSYNC + VBP + LTDC_HEIGHT - 1) << LTDC_AWCR_AAH_SHIFT;
+	LTDC_TWCR =
+	    (HSYNC + HBP + LTDC_WIDTH + HFP - 1) << LTDC_TWCR_TOTALW_SHIFT |
+	    (VSYNC + VBP + LTDC_HEIGHT + VFP - 1) << LTDC_TWCR_TOTALH_SHIFT;
 
-#define PIXEL_SIZE 				((uint16_t)4)
-
-/**************************************** Timing display ***************************************/
-
-#define  DISPLAY_HSYNC            ((uint16_t)20)   		// Horizontal synchronization
-#define  DISPLAY_HBP              ((uint16_t)140)   		// Horizontal back porch
-#define  DISPLAY_HFP              ((uint16_t)32)   		// Horizontal front porch
-#define  DISPLAY_VSYNC            ((uint16_t)3)   		// Vertical synchronization
-#define  DISPLAY_VBP              ((uint16_t)20)    		// Vertical back porch
-#define  DISPLAY_VFP              ((uint16_t)12)    		// Vertical front porch
-
-	/* enable RCC */
-	RCC_APB2ENR |= RCC_APB2ENR_LTDCEN;
-
-	LTDC_SSCR |= ((DISPLAY_HSYNC - 1) << 16 | (DISPLAY_VSYNC - 1));
-	LTDC_BPCR |= ((DISPLAY_HSYNC + DISPLAY_HBP - 1) << 16 | (DISPLAY_VSYNC + DISPLAY_VBP - 1));
-	LTDC_AWCR |= ((DISPLAY_WIDTH + DISPLAY_HSYNC + DISPLAY_HBP - 1) << 16 | (DISPLAY_HEIGHT + DISPLAY_VSYNC + DISPLAY_VBP - 1));
-	LTDC_TWCR |= ((DISPLAY_WIDTH + DISPLAY_HSYNC + DISPLAY_HBP + DISPLAY_HFP - 1) << 16 | (DISPLAY_HEIGHT + DISPLAY_VSYNC + DISPLAY_VBP + DISPLAY_VFP - 1));
-
-	LTDC_BCCR = 0; 																										// Color background																					// Enable layer #2
-
-	// LTDC_SRCR |= LTDC_SRCR_VBR;																							// Reload
-
-	LTDC_GCR |= LTDC_GCR_LTDCEN;	
+	/* Configure the synchronous signals and clock polarity. */
+	LTDC_GCR |= LTDC_GCR_PCPOL_ACTIVE_HIGH;
 
 
 	/* Configure the Layer 1 parameters.
@@ -110,7 +106,7 @@ void ltdc_init(const LTDC_Layer * l1, const LTDC_Layer * l2) {
 	if (l1) {
 		ltdc_setLayer(l1);
 		/* The color frame buffer start address */
-		// LTDC_L1CFBAR = (uint32_t)FRAMEBUFFER_1;
+		LTDC_L1CFBAR = (uint32_t)FRAMEBUFFER_1;
 		/* Enable Layer1 and if needed the CLUT */
 		LTDC_L1CR |= LTDC_LxCR_LAYER_ENABLE;
 	}
@@ -119,10 +115,20 @@ void ltdc_init(const LTDC_Layer * l1, const LTDC_Layer * l2) {
 	if (l2) {
 		ltdc_setLayer(l2);
 		/* The color frame buffer start address */
-		// LTDC_L2CFBAR = (uint32_t)FRAMEBUFFER_2;
+		LTDC_L2CFBAR = (uint32_t)FRAMEBUFFER_2;
 		/* Enable Layer2 and if needed the CLUT */
 		LTDC_L2CR |= LTDC_LxCR_LAYER_ENABLE;
 	}
+
+	ltdc_setBackground(0);
+
+	/* Configure the needed interrupts. */
+	LTDC_IER = LTDC_IER_RRIE;
+	nvic_enable_irq(NVIC_LCD_TFT_IRQ);
+	/* Reload the shadow registers to active registers. */
+	LTDC_SRCR |= LTDC_SRCR_VBR;
+	/* Enable the LTDC-TFT controller. */
+	LTDC_GCR |= LTDC_GCR_LTDC_ENABLE;
 
 }
 

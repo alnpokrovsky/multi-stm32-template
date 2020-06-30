@@ -6,10 +6,9 @@
 #include <libopencm3/stm32/spi.h>
 #include <libopencm3/stm32/ltdc.h>
 #include <libopencm3/cm3/nvic.h>
+#include "dma2d.h"
 #include "delay.h"
-#include "sdram.h"
 #include <stdint.h>
-#include <stdlib.h>
 #include <malloc.h>
 
 
@@ -23,7 +22,7 @@
 
 typedef struct {
 	uint32_t pixFormat;
-	size_t pixSize;
+	uint32_t pixSize;
 } colormodel_descript;
 
 static const colormodel_descript LTDC_COLOR_MODELS[] = {
@@ -182,7 +181,7 @@ const struct tft_command INIT[] = {
 	{  0, ILI_PWR_CTL_2,        1, .args = { 0x10 } },
 	{  0, ILI_VCOM_CTL_1,       2, .args = { 0x45, 0x15 } },
 	{  0, ILI_VCOM_CTL_2,       1, .args = { 0x90 } },
-	{  0, ILI_MEM_ACC_CTL,      1, .args = { 0x08 } },
+	{  0, ILI_MEM_ACC_CTL,      1, .args = { 0x48 } }, /* 0x48 - normal, 0x48 ^ 0xC0 - y mirrored, 0x08 - x mirrored */
 	{  0, ILI_RGB_IFC_CTL,      1, .args = { 0xc0 } },
 	{  0, ILI_IFC_CTL,          3, .args = { 0x01, 0x00, 0x06 } },
 	{  0, ILI_GAMMA_SET,        1, .args = { 0x01 } },
@@ -252,8 +251,8 @@ static const ltdc_pins_descript LTDC_PINS[] = {
  */
 void ltdc_init(const LTDC_Layer * l1, const LTDC_Layer * l2) {
 	/* my heap is located in sdram (look sbrk.c) */
-	FRAMEBUFFER_1 = malloc(LTDC_SIZE * LTDC_COLOR_MODELS[l1->m].pixSize);
-	FRAMEBUFFER_2 = malloc(LTDC_SIZE * LTDC_COLOR_MODELS[l2->m].pixSize);
+	FRAMEBUFFER_1 = malloc(LTDC_SIZE * LTDC_COLOR_MODELS[l1->cm].pixSize);
+	FRAMEBUFFER_2 = malloc(LTDC_SIZE * LTDC_COLOR_MODELS[l2->cm].pixSize);
 
 	for (uint8_t i = 0; i < LTDC_PINS_SIZE; ++i) {
 		/* init GPIO clocks */
@@ -346,6 +345,8 @@ void ltdc_init(const LTDC_Layer * l1, const LTDC_Layer * l2) {
 	LTDC_SRCR |= LTDC_SRCR_VBR;
 	/* Enable the LTDC-TFT controller. */
 	LTDC_GCR |= LTDC_GCR_LTDC_ENABLE;
+
+	dma2d_init();
 	
 	/**
 	 * Initialize the SPI port, and the through that port
@@ -391,7 +392,7 @@ void ltdc_init(const LTDC_Layer * l1, const LTDC_Layer * l2) {
 
 void ltdc_setLayer(const LTDC_Layer * l) {
 	/* The pixel input format */
-	LTDC_LxPFCR(l->layerN) = LTDC_COLOR_MODELS[l->m].pixFormat;
+	LTDC_LxPFCR(l->layerN) = LTDC_COLOR_MODELS[l->cm].pixFormat;
 
 	/* x shift */
 	uint32_t h_start = HSYNC + HBP + l->x;
@@ -405,7 +406,7 @@ void ltdc_setLayer(const LTDC_Layer * l) {
 		       v_start << LTDC_LxWVPCR_WVSTPOS_SHIFT;
 
 	/* The line length and pitch of the color frame buffer */
-	uint32_t pitch = l->width * LTDC_COLOR_MODELS[l->m].pixSize;
+	uint32_t pitch = l->width * LTDC_COLOR_MODELS[l->cm].pixSize;
 	LTDC_LxCFBLR(l->layerN) = pitch << LTDC_LxCFBLR_CFBP_SHIFT |
 				(pitch+3) << LTDC_LxCFBLR_CFBLL_SHIFT;
 
@@ -423,18 +424,19 @@ void ltdc_setBackground(uint32_t color) {
 	LTDC_BCCR = color;
 }
 
-void * ltdc_getFramebuf(const LTDC_Layer * l) {
-	return (l->layerN == 1) ? FRAMEBUFFER_1 : FRAMEBUFFER_2;
+uint32_t * ltdc_getPixelAddr(const LTDC_Layer * l, uint16_t x, uint16_t y) {
+	uint32_t offset = (y * l->width + x) * LTDC_COLOR_MODELS[l->cm].pixSize;
+	void * buf = (l->layerN == 1) ? FRAMEBUFFER_1 : FRAMEBUFFER_2;
+	return (uint32_t *)(buf + offset);
 }
 
 void ltdc_setPixel(const LTDC_Layer * l, uint16_t x, uint16_t y, uint32_t color) {
 	if ( (x >= l->width) || (y >= l->height) ) return;
-	const size_t i = (y+1) * l->width - x;
-	const uint32_t bites = LTDC_COLOR_MODELS[l->m].pixSize * 8;
+	// x = l->width - x; // mirroring x
+	const uint32_t bites = LTDC_COLOR_MODELS[l->cm].pixSize * 8;
 	const uint32_t mask = UINT32_MAX >> (32 - bites);
 
-	void * buf = ltdc_getFramebuf(l);
-	uint32_t * addr = (uint32_t *)(buf + i * LTDC_COLOR_MODELS[l->m].pixSize);
+	uint32_t * addr = ltdc_getPixelAddr(l, x, y);
 	*addr &= ~mask;
 	*addr |= color & mask;
 }

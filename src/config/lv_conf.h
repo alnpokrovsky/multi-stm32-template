@@ -38,7 +38,7 @@
 
 /* Default display refresh period.
  * Can be changed in the display driver (`lv_disp_drv_t`).*/
-#define LV_DISP_DEF_REFR_PERIOD      500      /*[ms]*/
+#define LV_DISP_DEF_REFR_PERIOD      33      /*[ms]*/
 
 /* Dot Per Inch: used to initialize default sizes.
  * E.g. a button with width = LV_DPI / 2 -> half inch wide
@@ -104,7 +104,7 @@ typedef int16_t lv_coord_t;
  * Can be changed in the Input device driver (`lv_indev_drv_t`)*/
 
 /* Input device read period in milliseconds */
-#define LV_INDEV_DEF_READ_PERIOD          30
+#define LV_INDEV_DEF_READ_PERIOD          33
 
 /* Drag threshold in pixels */
 #define LV_INDEV_DEF_DRAG_LIMIT           10
@@ -166,7 +166,7 @@ typedef void * lv_group_user_data_t;
 #endif  /*LV_USE_GROUP*/
 
 /* 1: Enable GPU interface*/
-#define LV_USE_GPU              0   /*Only enables `gpu_fill_cb` and `gpu_blend_cb` in the disp. drv- */
+#define LV_USE_GPU              1   /*Only enables `gpu_fill_cb` and `gpu_blend_cb` in the disp. drv- */
 #define LV_USE_GPU_STM32_DMA2D  0
 
 /* 1: Enable file system (might be required for images */
@@ -623,8 +623,8 @@ typedef void * lv_obj_user_data_t;
 #define LV_USE_SPINNER      1
 #if LV_USE_SPINNER != 0
 #  define LV_SPINNER_DEF_ARC_LENGTH   60      /*[deg]*/
-#  define LV_SPINNER_DEF_SPIN_TIME    5000    /*[ms]*/
-#  define LV_SPINNER_DEF_ANIM         LV_SPINNER_TYPE_FILLSPIN_ARC
+#  define LV_SPINNER_DEF_SPIN_TIME    1000    /*[ms]*/
+#  define LV_SPINNER_DEF_ANIM         LV_SPINNER_TYPE_SPINNING_ARC
 #endif
 
 /*Roller (dependencies: lv_ddlist)*/

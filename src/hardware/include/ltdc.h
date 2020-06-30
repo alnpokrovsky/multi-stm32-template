@@ -3,6 +3,18 @@
 
 #include <stdint.h>
 
+#if defined(STM32F4)
+#define LTDC_WIDTH  240
+#define LTDC_HEIGHT 320
+#elif defined(STM32F7)
+#define LTDC_WIDTH  1024
+#define LTDC_HEIGHT 600
+#else
+#error "not supported"
+#endif
+
+#define LTDC_SIZE   (LTDC_WIDTH * LTDC_HEIGHT)
+
 typedef enum
 {
 	ARGB8888,
@@ -13,7 +25,7 @@ typedef enum
 
 typedef struct {
     uint8_t layerN;
-	const LTDC_COLOR_MODEL m;
+	const LTDC_COLOR_MODEL cm;
 	uint16_t x;
 	uint16_t y;
 	uint16_t width;
@@ -21,19 +33,15 @@ typedef struct {
     uint32_t transp;
 } LTDC_Layer;
 
-#define LTDC_WIDTH  1024
-#define LTDC_HEIGHT 600
-#define LTDC_SIZE   (LTDC_WIDTH * LTDC_HEIGHT)
-
 void ltdc_init(const LTDC_Layer * l1, const LTDC_Layer * l2);
 
 void ltdc_setBackground(uint32_t color);
 
 void ltdc_setLayer(const LTDC_Layer * l);
 
-void ltdc_setPixel(const LTDC_Layer * l, uint16_t x, uint16_t y, uint32_t color);
+uint32_t * ltdc_getPixelAddr(const LTDC_Layer * l, uint16_t x, uint16_t y);
 
-void * ltdc_getFramebuf(const LTDC_Layer * l);
+void ltdc_setPixel(const LTDC_Layer * l, uint16_t x, uint16_t y, uint32_t color);
 
 
 void ltdc_handler(void);
