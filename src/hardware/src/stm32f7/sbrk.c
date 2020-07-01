@@ -5,18 +5,6 @@
 #include <malloc.h>
 #include "sdram.h"
 
-/**
- *     ...
- *   __data_end__
- *   __bss_start__
- *   __bss_end__
- *   __end__
- *   end
- *   __HeapLimit
- *   __StackLimit
- *   __StackTop
- *   __stack
- */
 
 #define INIT_MEM() sdram_init()
 #define HEAP_START _sdram

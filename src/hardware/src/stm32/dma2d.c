@@ -1,4 +1,4 @@
-#if defined(STM32F4)
+#if defined(STM32F4) || defined(STM32F7)
 
 #include "dma2d.h"
 #include <libopencm3/stm32/rcc.h>
@@ -19,6 +19,8 @@ typedef struct
 static const colormodel_descript COLOR_MODELS[] = {
     { DMA2D_OPFCCR_CM_ARGB8888, sizeof(uint32_t) },
     { DMA2D_OPFCCR_CM_ARGB4444, sizeof(uint16_t) },
+    { DMA2D_OPFCCR_CM_RGB888,   3 },
+    { DMA2D_OPFCCR_CM_RGB565,   sizeof(uint16_t) },
 };
 
 static void dma2d_transfer(uint32_t mode,
