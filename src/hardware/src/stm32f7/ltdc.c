@@ -27,6 +27,8 @@ typedef struct {
 static const colormodel_descript LTDC_COLOR_MODELS[] = {
 	{ LTDC_LxPFCR_ARGB8888, sizeof(uint32_t) },
 	{ LTDC_LxPFCR_ARGB4444, sizeof(uint16_t) },
+	{ LTDC_LxPFCR_RGB888, 	3 },
+	{ LTDC_LxPFCR_RGB565, 	4 },
 };
 
 static void * FRAMEBUFFER_1;
@@ -55,9 +57,6 @@ static const ltdc_pins_descript LTDC_PINS[] = {
 #define LTDC_PINS_SIZE sizeof(LTDC_PINS)/sizeof(LTDC_PINS[0])
 
 void ltdc_init(const LTDC_Layer * l1, const LTDC_Layer * l2) {
-	/* my heap is located in sdram (look sbrk.c) */
-	FRAMEBUFFER_1 = malloc(LTDC_SIZE * LTDC_COLOR_MODELS[l1->m].pixSize);
-	FRAMEBUFFER_2 = malloc(LTDC_SIZE * LTDC_COLOR_MODELS[l2->m].pixSize);
 
 	for (uint8_t i = 0; i < LTDC_PINS_SIZE; ++i) {
 		/* init GPIO clocks */
@@ -74,13 +73,20 @@ void ltdc_init(const LTDC_Layer * l1, const LTDC_Layer * l2) {
 	digitalpin_set(PA_3, 0);
 
 	/* configure rcc pll clocking */
+	RCC_PLLSAICFGR &= ~(RCC_PLLSAICFGR_PLLSAIN_MASK << RCC_PLLSAICFGR_PLLSAIN_SHIFT);
+	RCC_PLLSAICFGR &= ~(RCC_PLLSAICFGR_PLLSAIR_MASK << RCC_PLLSAICFGR_PLLSAIR_SHIFT);
+	RCC_PLLSAICFGR &= ~(RCC_PLLSAICFGR_PLLSAIQ_MASK << RCC_PLLSAICFGR_PLLSAIQ_SHIFT);
 	RCC_PLLSAICFGR |= 192 << RCC_PLLSAICFGR_PLLSAIN_SHIFT;
 	RCC_PLLSAICFGR |= 3   << RCC_PLLSAICFGR_PLLSAIR_SHIFT;
 	RCC_PLLSAICFGR |= 2   << RCC_PLLSAICFGR_PLLSAIQ_SHIFT;
 	RCC_DCKCFGR1 &= ~(RCC_DCKCFGR1_PLLSAIDIVR_MASK << RCC_DCKCFGR1_PLLSAIDIVR_SHIFT);
+	RCC_DCKCFGR1 |= RCC_DCKCFGR1_PLLSAIDIVR_DIVR_2 << RCC_DCKCFGR1_PLLSAIDIVR_SHIFT;
 	/* wait till RCC configured */
 	RCC_CR |= RCC_CR_PLLSAION;
 	while ((RCC_CR & RCC_CR_PLLSAIRDY) == 0) ;
+
+	/* enable RCC */
+	RCC_APB2ENR |= RCC_APB2ENR_LTDCEN;
 	
 	/*
 	 * Configure the Synchronous timings: VSYNC, HSNC,
@@ -98,7 +104,9 @@ void ltdc_init(const LTDC_Layer * l1, const LTDC_Layer * l2) {
 	    (VSYNC + VBP + LTDC_HEIGHT + VFP - 1) << LTDC_TWCR_TOTALH_SHIFT;
 
 	/* Configure the synchronous signals and clock polarity. */
-	LTDC_GCR |= LTDC_GCR_PCPOL_ACTIVE_HIGH;
+	LTDC_GCR |= LTDC_GCR_PCPOL_ACTIVE_LOW;
+	LTDC_GCR |= LTDC_GCR_VSPOL_ACTIVE_LOW;
+	LTDC_GCR |= LTDC_GCR_HSPOL_ACTIVE_LOW;
 
 
 	/* Configure the Layer 1 parameters.
@@ -106,6 +114,7 @@ void ltdc_init(const LTDC_Layer * l1, const LTDC_Layer * l2) {
 	if (l1) {
 		ltdc_setLayer(l1);
 		/* The color frame buffer start address */
+		FRAMEBUFFER_1 = malloc(LTDC_SIZE * LTDC_COLOR_MODELS[l1->cm].pixSize);
 		LTDC_L1CFBAR = (uint32_t)FRAMEBUFFER_1;
 		/* Enable Layer1 and if needed the CLUT */
 		LTDC_L1CR |= LTDC_LxCR_LAYER_ENABLE;
@@ -115,6 +124,7 @@ void ltdc_init(const LTDC_Layer * l1, const LTDC_Layer * l2) {
 	if (l2) {
 		ltdc_setLayer(l2);
 		/* The color frame buffer start address */
+		FRAMEBUFFER_2 = malloc(LTDC_SIZE * LTDC_COLOR_MODELS[l2->cm].pixSize);
 		LTDC_L2CFBAR = (uint32_t)FRAMEBUFFER_2;
 		/* Enable Layer2 and if needed the CLUT */
 		LTDC_L2CR |= LTDC_LxCR_LAYER_ENABLE;
@@ -123,8 +133,9 @@ void ltdc_init(const LTDC_Layer * l1, const LTDC_Layer * l2) {
 	ltdc_setBackground(0);
 
 	/* Configure the needed interrupts. */
-	LTDC_IER = LTDC_IER_RRIE;
-	nvic_enable_irq(NVIC_LCD_TFT_IRQ);
+	// LTDC_IER = LTDC_IER_RRIE;
+	// nvic_enable_irq(NVIC_LCD_TFT_IRQ);
+
 	/* Reload the shadow registers to active registers. */
 	LTDC_SRCR |= LTDC_SRCR_VBR;
 	/* Enable the LTDC-TFT controller. */
@@ -134,7 +145,7 @@ void ltdc_init(const LTDC_Layer * l1, const LTDC_Layer * l2) {
 
 void ltdc_setLayer(const LTDC_Layer * l) {
 	/* The pixel input format */
-	LTDC_LxPFCR(l->layerN) = LTDC_COLOR_MODELS[l->m].pixFormat;
+	LTDC_LxPFCR(l->layerN) = LTDC_COLOR_MODELS[l->cm].pixFormat;
 
 	/* x shift */
 	uint32_t h_start = HSYNC + HBP + l->x;
@@ -148,7 +159,7 @@ void ltdc_setLayer(const LTDC_Layer * l) {
 		       v_start << LTDC_LxWVPCR_WVSTPOS_SHIFT;
 
 	/* The line length and pitch of the color frame buffer */
-	uint32_t pitch = l->width * LTDC_COLOR_MODELS[l->m].pixSize;
+	uint32_t pitch = l->width * LTDC_COLOR_MODELS[l->cm].pixSize;
 	LTDC_LxCFBLR(l->layerN) = pitch << LTDC_LxCFBLR_CFBP_SHIFT |
 				(pitch+3) << LTDC_LxCFBLR_CFBLL_SHIFT;
 
@@ -166,18 +177,19 @@ void ltdc_setBackground(uint32_t color) {
 	LTDC_BCCR = color;
 }
 
-void * ltdc_getFramebuf(const LTDC_Layer * l) {
-	return (l->layerN == 1) ? FRAMEBUFFER_1 : FRAMEBUFFER_2;
+void * ltdc_getPixelAddr(const LTDC_Layer * l, uint16_t x, uint16_t y) {
+	uint32_t offset = (y * l->width + x) * LTDC_COLOR_MODELS[l->cm].pixSize;
+	uint32_t buf = (uint32_t)((l->layerN == 1) ? FRAMEBUFFER_1 : FRAMEBUFFER_2);
+	return (void*)(buf + offset);
 }
 
 void ltdc_setPixel(const LTDC_Layer * l, uint16_t x, uint16_t y, uint32_t color) {
 	if ( (x >= l->width) || (y >= l->height) ) return;
-	const size_t i = (y+1) * l->width - x;
-	const uint32_t bites = LTDC_COLOR_MODELS[l->m].pixSize * 8;
+	// x = l->width - x; // mirroring x
+	const uint32_t bites = LTDC_COLOR_MODELS[l->cm].pixSize * 8;
 	const uint32_t mask = UINT32_MAX >> (32 - bites);
 
-	void * buf = ltdc_getFramebuf(l);
-	uint32_t * addr = (uint32_t *)(buf + i * LTDC_COLOR_MODELS[l->m].pixSize);
+	uint32_t * addr = ltdc_getPixelAddr(l, x, y);
 	*addr &= ~mask;
 	*addr |= color & mask;
 }

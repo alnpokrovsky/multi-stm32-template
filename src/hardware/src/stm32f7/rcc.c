@@ -3,12 +3,26 @@
 #include "rcc.h"
 #include "DeviceConfig.h"
 #include <libopencm3/stm32/rcc.h>
-#include <libopencm3/stm32/flash.h>
 
 uint32_t rcc_core_freq = 216000000;
 
 void rcc_init() {
-	rcc_clock_setup_hse(&rcc_3v3[RCC_CLOCK_3V3_216MHZ], HSE_Value/1000000);
+	const struct rcc_clock_scale rcc = {
+		.plln = 400,
+		.pllp = 2,
+		.pllq = 8,
+		.hpre = RCC_CFGR_HPRE_DIV_NONE,
+		.ppre1 = RCC_CFGR_PPRE_DIV_4,
+		.ppre2 = RCC_CFGR_PPRE_DIV_2,
+		.vos_scale = PWR_SCALE1,
+		.overdrive = 1,
+		.flash_waitstates = 6,
+		.ahb_frequency = 200000000,
+		.apb1_frequency = 50000000,
+		.apb2_frequency = 100000000,
+	};
+	rcc_clock_setup_hse(&rcc, HSE_Value/1000000);
+	// rcc_clock_setup_hse(&rcc_3v3[RCC_CLOCK_3V3_168MHZ], HSE_Value/1000000);
     // // Enable HSE
     // RCC_CR |= RCC_CR_HSEON;
 	// while (!(RCC_CR & RCC_CR_HSERDY));

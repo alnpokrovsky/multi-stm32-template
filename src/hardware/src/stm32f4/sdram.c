@@ -84,7 +84,7 @@ void sdram_init(void) {
 	delay_ms(1); /* sleep at least 100mS */
 	
 	sdram_command(SDRAM_BANK2, SDRAM_PALL, 1, 0);
-	sdram_command(SDRAM_BANK2, SDRAM_AUTO_REFRESH, 4, 0);
+	sdram_command(SDRAM_BANK2, SDRAM_AUTO_REFRESH, 8, 0);
 	tr_tmp = SDRAM_MODE_BURST_LENGTH_2				|
 				SDRAM_MODE_BURST_TYPE_SEQUENTIAL	|
 				SDRAM_MODE_CAS_LATENCY_3		|
@@ -92,10 +92,9 @@ void sdram_init(void) {
 				SDRAM_MODE_WRITEBURST_MODE_SINGLE;
 	sdram_command(SDRAM_BANK2, SDRAM_LOAD_MODE, 1, tr_tmp);
 
-	/*
-	 * set the refresh counter to insure we kick off an
-	 * auto refresh often enough to prevent data loss.
-	 */
+	/* Set the refresh rate counter */
+	/* (7.81 us x Freq) - 20 = (7.81 * 90MHz) - 20 = 683 */
+	/* Set the device refresh counter */
 	FMC_SDRTR = 683;
 	/* and Poof! a 8 megabytes of ram shows up in the address space */
 }

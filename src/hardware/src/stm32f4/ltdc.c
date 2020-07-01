@@ -28,6 +28,8 @@ typedef struct {
 static const colormodel_descript LTDC_COLOR_MODELS[] = {
 	{ LTDC_LxPFCR_ARGB8888, sizeof(uint32_t) },
 	{ LTDC_LxPFCR_ARGB4444, sizeof(uint16_t) },
+	{ LTDC_LxPFCR_RGB888, 	3 },
+	{ LTDC_LxPFCR_RGB565, 	sizeof(uint16_t) },
 };
 
 static void * FRAMEBUFFER_1;
@@ -250,9 +252,6 @@ static const ltdc_pins_descript LTDC_PINS[] = {
  *     NRST    = NRST
  */
 void ltdc_init(const LTDC_Layer * l1, const LTDC_Layer * l2) {
-	/* my heap is located in sdram (look sbrk.c) */
-	FRAMEBUFFER_1 = malloc(LTDC_SIZE * LTDC_COLOR_MODELS[l1->cm].pixSize);
-	FRAMEBUFFER_2 = malloc(LTDC_SIZE * LTDC_COLOR_MODELS[l2->cm].pixSize);
 
 	for (uint8_t i = 0; i < LTDC_PINS_SIZE; ++i) {
 		/* init GPIO clocks */
@@ -291,10 +290,10 @@ void ltdc_init(const LTDC_Layer * l1, const LTDC_Layer * l2) {
 	RCC_PLLSAICFGR |= 4   << RCC_PLLSAICFGR_PLLSAIR_SHIFT;
 	RCC_DCKCFGR &= ~(RCC_DCKCFGR_PLLSAIDIVR_MASK << RCC_DCKCFGR_PLLSAIDIVR_SHIFT);
 	RCC_DCKCFGR |= RCC_DCKCFGR_PLLSAIDIVR_DIVR_8 << RCC_DCKCFGR_PLLSAIDIVR_SHIFT;
-	
 	/* wait till RCC configured */
 	RCC_CR |= RCC_CR_PLLSAION;
 	while ((RCC_CR & RCC_CR_PLLSAIRDY) == 0) ;
+
 	/* enable RCC */
 	RCC_APB2ENR |= RCC_APB2ENR_LTDCEN;
 
@@ -322,6 +321,7 @@ void ltdc_init(const LTDC_Layer * l1, const LTDC_Layer * l2) {
 	if (l1) {
 		ltdc_setLayer(l1);
 		/* The color frame buffer start address */
+		FRAMEBUFFER_1 = malloc(LTDC_SIZE * LTDC_COLOR_MODELS[l1->cm].pixSize);
 		LTDC_L1CFBAR = (uint32_t)FRAMEBUFFER_1;
 		/* Enable Layer1 and if needed the CLUT */
 		LTDC_L1CR |= LTDC_LxCR_LAYER_ENABLE;
@@ -331,6 +331,7 @@ void ltdc_init(const LTDC_Layer * l1, const LTDC_Layer * l2) {
 	if (l2) {
 		ltdc_setLayer(l2);
 		/* The color frame buffer start address */
+		FRAMEBUFFER_2 = malloc(LTDC_SIZE * LTDC_COLOR_MODELS[l2->cm].pixSize);
 		LTDC_L2CFBAR = (uint32_t)FRAMEBUFFER_2;
 		/* Enable Layer2 and if needed the CLUT */
 		LTDC_L2CR |= LTDC_LxCR_LAYER_ENABLE;
