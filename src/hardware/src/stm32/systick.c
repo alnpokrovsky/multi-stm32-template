@@ -6,12 +6,12 @@
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/cm3/nvic.h>
 
-static void null_handler(void)
+
+__attribute__((weak))
+void systick_handler(void)
 {
 	/* Do nothing. */
 }
-
-#pragma weak systick_handler = null_handler
 
 static const uint32_t PRESCAL_UNITS[] = {
     1000,     /* MILLISEC */

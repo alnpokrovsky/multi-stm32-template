@@ -100,14 +100,21 @@ void ltdc_init(void) {
 
 	/* Configure the needed interrupts. */
 	LTDC_IER |= LTDC_IER_LIE; // line interrupt
-	LTDC_LIPCR |= (VSYNC + VBP + LTDC_HEIGHT - 1) << LTDC_LIPCR_LIPOS_SHIFT; // line number
-	// nvic_enable_irq(NVIC_LCD_TFT_IRQ);
+	LTDC_LIPCR |= (VSYNC + VBP + LTDC_HEIGHT + VFP - 1) << LTDC_LIPCR_LIPOS_SHIFT; // line number
+	// LTDC_LIPCR |= LTDC_HEIGHT << LTDC_LIPCR_LIPOS_SHIFT; // line number
 
 	/* Reload the shadow registers to active registers. */
 	LTDC_SRCR |= LTDC_SRCR_VBR;
 	/* Enable the LTDC-TFT controller. */
 	LTDC_GCR |= LTDC_GCR_LTDC_ENABLE;
+}
 
+void ltdc_setInterrupt(bool enable) {
+	if (enable) {
+		nvic_enable_irq(NVIC_LCD_TFT_IRQ);
+	} else {
+		nvic_disable_irq(NVIC_LCD_TFT_IRQ);
+	}
 }
 
 void ltdc_setLayer(const LTDC_Layer * l) {
@@ -185,12 +192,11 @@ void ltdc_setPixel(const LTDC_Layer * l, uint16_t x, uint16_t y, uint32_t color)
 #include "sramfunc.h"
 void SRAM_FUNC lcd_tft_isr(void)
 {
-	LTDC_ICR |= LTDC_ICR_CRRIF;
 	ltdc_handler();
-	LTDC_SRCR |= LTDC_SRCR_VBR;
+	LTDC_ICR |= LTDC_ICR_CLIF;
 }
 
-static void null_handler(void) {;}
-#pragma weak ltdc_handler = null_handler
+__attribute__((weak))
+void ltdc_handler(void) {;}
 
 #endif

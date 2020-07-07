@@ -38,10 +38,9 @@ void rtc_alarm_isr(void) {
     rtc_clear_flag(RTC_SEC);
 }
 
-static void null_handler(uint32_t cnt) {
+__attribute__((weak))
+void rtc_handler(uint32_t cnt) {
     (void)cnt;
 }
-
-#pragma weak rtc_handler = null_handler
 
 #endif

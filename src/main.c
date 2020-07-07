@@ -7,6 +7,14 @@
 #include "controls/rtos.h"
 #include "delay.h"
 
+static void vLed1Task(void * arg) {
+    (void)arg;
+    digitalpin_mode(PB_6, DIGITALPIN_OUTPUT);
+    RTOS_DELAY_LOOP {
+        digitalpin_toggle(PB_6);
+        RTOS_DELAY_NEXT_MS( 500 );
+    }
+}
 
 // static void vLed1Task(void * arg) {
 //     (void)arg;
@@ -106,15 +114,6 @@
 //     }
 // }
 
-// static void vGraphicsTask(void * arg) {
-//     (void) arg;
-
-//     RTOS_DELAY_LOOP {
-//         lv_tick_inc(80);
-//         RTOS_DELAY_NEXT_MS(10);
-//     }
-// }
-
 
 // #include "ltdc.h"
 
@@ -147,21 +146,17 @@ int main(void) {
     label = lv_label_create(btn2, NULL);
     lv_label_set_text(label, "Toggled");
 
-
+    gui_startPolling();
     
 
-    // RTOS_TASK_CREATE(RTOS_LOW_PRIORITY, vLed1Task);
-    // RTOS_TASK_CREATE(RTOS_LOW_PRIORITY+1, vGraphicsTask);
+    RTOS_TASK_CREATE(RTOS_LOW_PRIORITY, vLed1Task);
 
     // RTOS_TASK_CREATE(RTOS_MEDIUM_PRIORITY, vDriverTask);
 
     // RTOS_TASK_CREATE(RTOS_HIGH_PRIORITY+5, vLed2Task);
 
-    // RTOS_START();
+    RTOS_START();
 
-    while (1) {
-        gui_poll(10);
-        delay_ms(10);
-    }
+    while (1);
 }
 

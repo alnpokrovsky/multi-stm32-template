@@ -15,13 +15,12 @@
 #define ENDP_ADDRESS_OUT    USB_ENDPOINT_ADDR_OUT(USB_INTERFACE_HID)
 
 
-static void null_handler(uint8_t * buf, uint16_t len)
+__attribute__((weak))
+void usb_hid_rx_handler(uint8_t * buf, uint16_t len)
 {
 	/* echo by default */
 	usb_hid_send(buf, len);
 }
-
-#pragma weak usb_hid_rx_handler = null_handler
 
 
 static const uint8_t hid_report_descriptor[] =

@@ -19,13 +19,12 @@
 #define USB_CDC_REQ_GET_LINE_CODING		0x21
 
 
-static void null_handler(char * buf, uint16_t len)
+__attribute__((weak))
+void usb_cdc_rx_handler(char * buf, uint16_t len)
 {
 	/* echo by default */
 	usb_cdc_tx(buf, len);
 }
-
-#pragma weak usb_cdc_rx_handler = null_handler
 
 
 //  Line config to be returned.

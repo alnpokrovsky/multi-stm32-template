@@ -16,13 +16,12 @@ void usb_cdc_read_handler(uint8_t* Buffer, uint32_t Length);
 #define BUFFER_LENGTH 64
 static uint8_t USB_Buffer[BUFFER_LENGTH];
 
-static void null_handler(uint8_t * buf, uint32_t len)
+__attribute__((weak))
+void null_hausb_cdc_read_handlerndler(uint8_t * buf, uint32_t len)
 {
 	/* echo by default */
 	usb_cdc_send(buf, len);
 }
-
-#pragma weak usb_cdc_read_handler = null_handler
 
 
 #ifdef USB_CDC_LINE_CODING_SUPPORTED

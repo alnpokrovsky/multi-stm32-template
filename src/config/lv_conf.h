@@ -180,7 +180,7 @@ typedef void * lv_fs_drv_user_data_t;
 #define LV_USE_USER_DATA        0
 
 /*1: Show CPU usage and FPS count in the right bottom corner*/
-#define LV_USE_PERF_MONITOR     0
+#define LV_USE_PERF_MONITOR     1
 
 /*1: Use the functions and types from the older API if possible */
 #define LV_USE_API_EXTENSION_V6  0
@@ -221,7 +221,7 @@ typedef void * lv_img_decoder_user_data_t;
 /* With size optimization (-Os) the compiler might not align data to
  * 4 or 8 byte boundary. This alignment will be explicitly applied where needed.
  * E.g. __attribute__((aligned(4))) */
-#define LV_ATTRIBUTE_MEM_ALIGN __attribute__((aligned(4)))
+#define LV_ATTRIBUTE_MEM_ALIGN
 
 /* Attribute to mark large constant arrays for example
  * font's bitmaps */
@@ -245,10 +245,10 @@ typedef void * lv_img_decoder_user_data_t;
 
 /* 1: use a custom tick source.
  * It removes the need to manually update the tick with `lv_tick_inc`) */
-#define LV_TICK_CUSTOM     0
+#define LV_TICK_CUSTOM     1
 #if LV_TICK_CUSTOM == 1
-#define LV_TICK_CUSTOM_INCLUDE  "something.h"       /*Header for the sys time function*/
-#define LV_TICK_CUSTOM_SYS_TIME_EXPR (millis())     /*Expression evaluating to current systime in ms*/
+#define LV_TICK_CUSTOM_INCLUDE  "controls/rtos.h"       /*Header for the sys time function*/
+#define LV_TICK_CUSTOM_SYS_TIME_EXPR (xTaskGetTickCount())     /*Expression evaluating to current systime in ms*/
 #endif   /*LV_TICK_CUSTOM*/
 
 typedef void * lv_disp_drv_user_data_t;             /*Type of user data in the display driver*/

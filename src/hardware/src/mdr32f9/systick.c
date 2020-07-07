@@ -5,12 +5,12 @@
 #include <MDR32Fx.h>
 #include <MDR32F9Qx_it.h>
 
-static void null_handler(void)
+__attribute__((weak))
+void systick_handler(void)
 {
 	/* Do nothing. */
 }
 
-#pragma weak systick_handler = null_handler
 
 void systick_start_interrupt(uint32_t ticks, SYSTICK_UNITS units) {
     (void)ticks;

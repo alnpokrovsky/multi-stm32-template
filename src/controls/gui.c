@@ -11,7 +11,7 @@
 static LTDC_Layer layer = {1, true, RGB565, 0, 0, LTDC_WIDTH, LTDC_HEIGHT, 0xFF, NULL};
 
 
-static void flush_cb(struct _disp_drv_t * disp, const lv_area_t * area, lv_color_t * color_p)
+static void SRAM_FUNC flush_cb(struct _disp_drv_t * disp, const lv_area_t * area, lv_color_t * color_p)
 {
     ltdc_waitVSync();
 
@@ -121,13 +121,13 @@ void gui_init(void) {
     ltdc_setLayer(&layer);
 }
 
-void SRAM_FUNC gui_poll(int ms) {
-    lv_tick_inc(ms);
-    lv_task_handler();
+void gui_startPolling(void) {
+    ltdc_setInterrupt(true);
 }
 
 void SRAM_FUNC ltdc_handler(void) {
-    gui_poll(1);
+    // lv_tick_inc(ms);
+    lv_task_handler();
 }
 
 #endif

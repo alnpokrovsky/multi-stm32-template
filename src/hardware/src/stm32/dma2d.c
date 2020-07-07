@@ -123,7 +123,7 @@ void dma2d_isr(void) {
     DMA2D_IFCR |= DMA2D_IFCR_CCEIF;
 }
 
-static void null_handler(void) {;}
-#pragma weak dma2d_handler = null_handler
+__attribute__((weak))
+void dma2d_handler(void) {;}
 
 #endif

@@ -44,6 +44,8 @@ void ltdc_setLayer(const LTDC_Layer * l);
 
 void ltdc_setPixel(const LTDC_Layer * l, uint16_t x, uint16_t y, uint32_t color);
 
+void ltdc_setInterrupt(bool enable);
+
 void ltdc_waitVSync(void);
 
 
