@@ -121,10 +121,6 @@
 int main(void) {
     rcc_init();
 
-    // LTDC_Layer layer = {1, ARGB8888, 0, 0, LTDC_WIDTH, LTDC_HEIGHT, 0x1f};
-    // ltdc_init(NULL, NULL);
-    // ltdc_setBackground(0xff0000FF);
-
     // usb_core_init();
 
     // milua_init();

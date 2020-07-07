@@ -74,6 +74,8 @@ static void dma2d_transfer(uint32_t mode,
 
     /* Start transfer */
 	DMA2D_CR |= DMA2D_CR_START;
+
+    DMA2D_WAIT;
 }
 
 

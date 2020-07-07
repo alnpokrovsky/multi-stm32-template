@@ -2,6 +2,7 @@
 #define __HARDWARE_LTDC_H__
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #if defined(STM32F4)
 #define LTDC_WIDTH  240
@@ -25,23 +26,25 @@ typedef enum
 
 typedef struct {
     uint8_t layerN;
+	bool enable;
 	const LTDC_COLOR_MODEL cm;
 	uint16_t x;
 	uint16_t y;
 	uint16_t width;
 	uint16_t height;
     uint32_t transp;
+	void * framebuf;
 } LTDC_Layer;
 
-void ltdc_init(const LTDC_Layer * l1, const LTDC_Layer * l2);
+void ltdc_init(void);
 
 void ltdc_setBackground(uint32_t color);
 
 void ltdc_setLayer(const LTDC_Layer * l);
 
-void * ltdc_getPixelAddr(const LTDC_Layer * l, uint16_t x, uint16_t y);
-
 void ltdc_setPixel(const LTDC_Layer * l, uint16_t x, uint16_t y, uint32_t color);
+
+void ltdc_waitVSync(void);
 
 
 void ltdc_handler(void);

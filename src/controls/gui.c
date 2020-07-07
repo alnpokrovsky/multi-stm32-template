@@ -8,11 +8,13 @@
 #include <malloc.h>
 #include "sramfunc.h"
 
-static LTDC_Layer layer = {1, ARGB4444, 0, 0, LTDC_WIDTH, LTDC_HEIGHT, 0x7F};
+static LTDC_Layer layer = {1, true, RGB565, 0, 0, LTDC_WIDTH, LTDC_HEIGHT, 0xFF, NULL};
 
 
 static void flush_cb(struct _disp_drv_t * disp, const lv_area_t * area, lv_color_t * color_p)
 {
+    ltdc_waitVSync();
+
     DMA2D_Rect r = { 
         .cm = layer.cm, 
         .x1 = area->x1,
@@ -20,7 +22,7 @@ static void flush_cb(struct _disp_drv_t * disp, const lv_area_t * area, lv_color
         .x2 = area->x2,
         .y2 = area->y2,
     };
-    dma2d_copy(ltdc_getPixelAddr(&layer, 0, 0), disp->hor_res, color_p, &r);
+    dma2d_copy(layer.framebuf, disp->hor_res, color_p, &r);
     
     /* Indicate you are ready with the flushing*/
     lv_disp_flush_ready(disp);
@@ -92,9 +94,10 @@ void gui_init(void) {
     lv_init();
     /* buffer init */
     static lv_disp_buf_t disp_buf;
-    lv_color_t * buf1 = malloc(LTDC_SIZE * sizeof(lv_color_t));
-    // lv_color_t * buf2 = malloc(LTDC_SIZE * sizeof(lv_color_t));    
-    lv_disp_buf_init(&disp_buf, buf1, NULL, LTDC_SIZE); /*Initialize the display buffer*/
+    static lv_color_t buf1[1024*32];
+    // lv_color_t * buf1 = malloc(LTDC_SIZE * sizeof(lv_color_t));
+    // lv_color_t * buf2 = malloc(LTDC_SIZE * sizeof(lv_color_t));
+    lv_disp_buf_init(&disp_buf, buf1, 0, 1024*32); /*Initialize the display buffer*/
     /* display driver init */
     lv_disp_drv_t disp_drv;               /*Descriptor of a display driver*/
     lv_disp_drv_init(&disp_drv);          /*Basic initialization*/
@@ -113,8 +116,9 @@ void gui_init(void) {
     lv_indev_drv_register(&indev_drv);
 
     dma2d_init();
-    ltdc_init(&layer, NULL);
-    ltdc_setBackground(0xffff0000);
+    ltdc_init();
+    layer.framebuf = malloc(LTDC_SIZE * sizeof(lv_color_t));
+    ltdc_setLayer(&layer);
 }
 
 void SRAM_FUNC gui_poll(int ms) {
@@ -123,8 +127,7 @@ void SRAM_FUNC gui_poll(int ms) {
 }
 
 void SRAM_FUNC ltdc_handler(void) {
-    lv_tick_inc(33); // 30Hz
-    lv_task_handler();
+    gui_poll(1);
 }
 
 #endif

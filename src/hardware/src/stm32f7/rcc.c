@@ -4,7 +4,7 @@
 #include "DeviceConfig.h"
 #include <libopencm3/stm32/rcc.h>
 
-uint32_t rcc_core_freq = 216000000;
+uint32_t rcc_core_freq = 200000000;
 
 void rcc_init() {
 	const struct rcc_clock_scale rcc = {
