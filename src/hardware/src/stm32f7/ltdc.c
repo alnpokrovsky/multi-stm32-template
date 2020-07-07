@@ -13,7 +13,7 @@
 
 #define HSYNC       20
 #define HBP         140
-#define HFP         32
+#define HFP         160
 
 #define VSYNC        3
 #define VBP          20
@@ -28,7 +28,7 @@ static const colormodel_descript LTDC_COLOR_MODELS[] = {
 	{ LTDC_LxPFCR_ARGB8888, sizeof(uint32_t) },
 	{ LTDC_LxPFCR_ARGB4444, sizeof(uint16_t) },
 	{ LTDC_LxPFCR_RGB888, 	3 },
-	{ LTDC_LxPFCR_RGB565, 	4 },
+	{ LTDC_LxPFCR_RGB565, 	sizeof(uint16_t) },
 };
 
 static void * FRAMEBUFFER_1;
@@ -72,19 +72,6 @@ void ltdc_init(const LTDC_Layer * l1, const LTDC_Layer * l2) {
 	digitalpin_mode(PA_3, DIGITALPIN_OUTPUT);
 	digitalpin_set(PA_3, 0);
 
-	/* configure rcc pll clocking */
-	RCC_PLLSAICFGR &= ~(RCC_PLLSAICFGR_PLLSAIN_MASK << RCC_PLLSAICFGR_PLLSAIN_SHIFT);
-	RCC_PLLSAICFGR &= ~(RCC_PLLSAICFGR_PLLSAIR_MASK << RCC_PLLSAICFGR_PLLSAIR_SHIFT);
-	RCC_PLLSAICFGR &= ~(RCC_PLLSAICFGR_PLLSAIQ_MASK << RCC_PLLSAICFGR_PLLSAIQ_SHIFT);
-	RCC_PLLSAICFGR |= 192 << RCC_PLLSAICFGR_PLLSAIN_SHIFT;
-	RCC_PLLSAICFGR |= 3   << RCC_PLLSAICFGR_PLLSAIR_SHIFT;
-	RCC_PLLSAICFGR |= 2   << RCC_PLLSAICFGR_PLLSAIQ_SHIFT;
-	RCC_DCKCFGR1 &= ~(RCC_DCKCFGR1_PLLSAIDIVR_MASK << RCC_DCKCFGR1_PLLSAIDIVR_SHIFT);
-	RCC_DCKCFGR1 |= RCC_DCKCFGR1_PLLSAIDIVR_DIVR_2 << RCC_DCKCFGR1_PLLSAIDIVR_SHIFT;
-	/* wait till RCC configured */
-	RCC_CR |= RCC_CR_PLLSAION;
-	while ((RCC_CR & RCC_CR_PLLSAIRDY) == 0) ;
-
 	/* enable RCC */
 	RCC_APB2ENR |= RCC_APB2ENR_LTDCEN;
 	
@@ -104,9 +91,10 @@ void ltdc_init(const LTDC_Layer * l1, const LTDC_Layer * l2) {
 	    (VSYNC + VBP + LTDC_HEIGHT + VFP - 1) << LTDC_TWCR_TOTALH_SHIFT;
 
 	/* Configure the synchronous signals and clock polarity. */
-	LTDC_GCR |= LTDC_GCR_PCPOL_ACTIVE_LOW;
+	LTDC_GCR |= LTDC_GCR_PCPOL_ACTIVE_HIGH;
 	LTDC_GCR |= LTDC_GCR_VSPOL_ACTIVE_LOW;
 	LTDC_GCR |= LTDC_GCR_HSPOL_ACTIVE_LOW;
+	LTDC_GCR |= LTDC_GCR_DEPOL_ACTIVE_LOW;
 
 
 	/* Configure the Layer 1 parameters.

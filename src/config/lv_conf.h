@@ -19,7 +19,7 @@
  * - 16: RGB565
  * - 32: ARGB8888
  */
-#define LV_COLOR_DEPTH     32
+#define LV_COLOR_DEPTH     16
 
 /* Swap the 2 bytes of RGB565 color.
  * Useful if the display has a 8 bit interface (e.g. SPI)*/
@@ -28,7 +28,7 @@
 /* 1: Enable screen transparency.
  * Useful for OSD or other overlapping GUIs.
  * Requires `LV_COLOR_DEPTH = 32` colors and the screen's style should be modified: `style.body.opa = ...`*/
-#define LV_COLOR_SCREEN_TRANSP    1
+#define LV_COLOR_SCREEN_TRANSP    0
 
 /*Images pixels with this color will not be drawn (with chroma keying)*/
 #define LV_COLOR_TRANSP    LV_COLOR_LIME         /*LV_COLOR_LIME: pure green*/
@@ -38,7 +38,7 @@
 
 /* Default display refresh period.
  * Can be changed in the display driver (`lv_disp_drv_t`).*/
-#define LV_DISP_DEF_REFR_PERIOD      33      /*[ms]*/
+#define LV_DISP_DEF_REFR_PERIOD      50      /*[ms]*/
 
 /* Dot Per Inch: used to initialize default sizes.
  * E.g. a button with width = LV_DPI / 2 -> half inch wide
@@ -104,7 +104,7 @@ typedef int16_t lv_coord_t;
  * Can be changed in the Input device driver (`lv_indev_drv_t`)*/
 
 /* Input device read period in milliseconds */
-#define LV_INDEV_DEF_READ_PERIOD          33
+#define LV_INDEV_DEF_READ_PERIOD          50
 
 /* Drag threshold in pixels */
 #define LV_INDEV_DEF_DRAG_LIMIT           10
@@ -151,7 +151,7 @@ typedef void * lv_anim_user_data_t;
 #endif
 
 /* 1: Use other blend modes than normal (`LV_BLEND_MODE_...`)*/
-#define LV_USE_BLEND_MODES      1
+#define LV_USE_BLEND_MODES      LV_BLEND_MODE_NORMAL
 
 /* 1: Use the `opa_scale` style property to set the opacity of an object and its children at once*/
 #define LV_USE_OPA_SCALE        1

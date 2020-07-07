@@ -39,7 +39,7 @@ void ltdc_setBackground(uint32_t color);
 
 void ltdc_setLayer(const LTDC_Layer * l);
 
-uint32_t * ltdc_getPixelAddr(const LTDC_Layer * l, uint16_t x, uint16_t y);
+void * ltdc_getPixelAddr(const LTDC_Layer * l, uint16_t x, uint16_t y);
 
 void ltdc_setPixel(const LTDC_Layer * l, uint16_t x, uint16_t y, uint32_t color);
 

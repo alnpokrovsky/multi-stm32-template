@@ -8,7 +8,7 @@
 #include <malloc.h>
 #include "sramfunc.h"
 
-static LTDC_Layer layer = {1, ARGB8888, 0, 0, LTDC_WIDTH, LTDC_HEIGHT, 0xff};
+static LTDC_Layer layer = {1, ARGB4444, 0, 0, LTDC_WIDTH, LTDC_HEIGHT, 0x7F};
 
 
 static void flush_cb(struct _disp_drv_t * disp, const lv_area_t * area, lv_color_t * color_p)
@@ -71,14 +71,14 @@ static bool read_cb(lv_indev_drv_t * drv, lv_indev_data_t*data)
 
     static uint16_t touchpad_x = 0;
     static uint16_t touchpad_y = 0;
-    STMPE811_Point p = stmpe811_read();
-    if (p.z) {
-        touchpad_x = p.x;
-        touchpad_y = p.y;
-        data->state = LV_INDEV_STATE_PR;
-    } else {
-        data->state = LV_INDEV_STATE_REL;
-    }
+    // STMPE811_Point p = stmpe811_read();
+    // if (p.z) {
+    //     touchpad_x = p.x;
+    //     touchpad_y = p.y;
+    //     data->state = LV_INDEV_STATE_PR;
+    // } else {
+    //     data->state = LV_INDEV_STATE_REL;
+    // }
     data->point.x = touchpad_x;
     data->point.y = touchpad_y;    
     return false;
@@ -86,10 +86,7 @@ static bool read_cb(lv_indev_drv_t * drv, lv_indev_data_t*data)
 
 void gui_init(void) {
     /* init hardware */
-    stmpe811_init();
-    ltdc_init(&layer, NULL);
-    ltdc_setBackground(0xff000000);
-    dma2d_init();
+    // stmpe811_init();
 
     /* lv initiation */
     lv_init();
@@ -114,10 +111,15 @@ void gui_init(void) {
     indev_drv.type = LV_INDEV_TYPE_POINTER;
     indev_drv.read_cb = read_cb;
     lv_indev_drv_register(&indev_drv);
+
+    dma2d_init();
+    ltdc_init(&layer, NULL);
+    ltdc_setBackground(0xffff0000);
 }
 
 void SRAM_FUNC gui_poll(int ms) {
     lv_tick_inc(ms);
+    lv_task_handler();
 }
 
 void SRAM_FUNC ltdc_handler(void) {

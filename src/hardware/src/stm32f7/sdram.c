@@ -28,8 +28,8 @@ static const struct {
 static struct sdram_timing TIMING = {
 	.trcd = 2,		/* RCD Delay */
 	.trp = 2,		/* RP Delay */
-	.twr = 2,		/* Write Recovery Time */
-	.trc = 6,		/* Row Cycle Delay */
+	.twr = 3,		/* Write Recovery Time */
+	.trc = 7,		/* Row Cycle Delay */
 	.tras = 4,		/* Self Refresh Time */
 	.txsr = 7,		/* Exit Self Refresh Time */
 	.tmrd = 2,		/* Load to Active Delay */
@@ -57,11 +57,12 @@ void sdram_init(void) {
 
 	uint32_t cr_tmp  = FMC_SDCR_RPIPE_1CLK;
 	cr_tmp |= FMC_SDCR_SDCLK_2HCLK;
-	cr_tmp |= FMC_SDCR_CAS_3CYC;
+	cr_tmp |= FMC_SDCR_CAS_2CYC;
 	cr_tmp |= FMC_SDCR_NB4;
 	cr_tmp |= FMC_SDCR_MWID_16b;
 	cr_tmp |= FMC_SDCR_NR_12;
 	cr_tmp |= FMC_SDCR_NC_8;
+	cr_tmp |= FMC_SDCR_RBURST;
 
 	/* We're programming BANK 2, but per the manual some of the parameters
 	 * only work in CR1 and TR1 so we pull those off and put them in the
@@ -84,10 +85,10 @@ void sdram_init(void) {
 	delay_ms(1); /* sleep at least 100mS */
 	
 	sdram_command(SDRAM_BANK2, SDRAM_PALL, 1, 0);
-	sdram_command(SDRAM_BANK2, SDRAM_AUTO_REFRESH, 4, 0);
+	sdram_command(SDRAM_BANK2, SDRAM_AUTO_REFRESH, 8, 0);
 	tr_tmp = SDRAM_MODE_BURST_LENGTH_2				|
 				SDRAM_MODE_BURST_TYPE_SEQUENTIAL	|
-				SDRAM_MODE_CAS_LATENCY_3		|
+				SDRAM_MODE_CAS_LATENCY_2			|
 				SDRAM_MODE_OPERATING_MODE_STANDARD	|
 				SDRAM_MODE_WRITEBURST_MODE_SINGLE;
 	sdram_command(SDRAM_BANK2, SDRAM_LOAD_MODE, 1, tr_tmp);
@@ -96,7 +97,7 @@ void sdram_init(void) {
 	 * set the refresh counter to insure we kick off an
 	 * auto refresh often enough to prevent data loss.
 	 */
-	FMC_SDRTR = 683;
+	FMC_SDRTR = 1543 << FMC_SDRTR_COUNT_SHIFT;
 	/* and Poof! a 8 megabytes of ram shows up in the address space */
 }
 

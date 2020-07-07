@@ -37,9 +37,15 @@ static void dma2d_transfer(uint32_t mode,
 	RCC_AHB1RSTR |= RCC_AHB1RSTR_DMA2DRST;
 	RCC_AHB1RSTR &= ~RCC_AHB1RSTR_DMA2DRST;
 
-	/* Configures the color mode of the output image */
+	/* Configures mode */
     DMA2D_CR &= 0xFFFCE0FC;
 	DMA2D_CR |= mode << DMA2D_CR_MODE_SHIFT;
+
+	/* Configures the color mode of the input images */
+    DMA2D_FGPFCCR &= ~(DMA2D_xPFCCR_CM_MASK << DMA2D_xPFCCR_CM_SHIFT);
+    DMA2D_FGPFCCR |= COLOR_MODELS[r->cm].pixFormat << DMA2D_xPFCCR_CM_SHIFT;
+	DMA2D_BGPFCCR &= ~(DMA2D_xPFCCR_CM_MASK << DMA2D_xPFCCR_CM_SHIFT);
+    DMA2D_BGPFCCR |= COLOR_MODELS[r->cm].pixFormat << DMA2D_xPFCCR_CM_SHIFT;
 	/* Configures the color mode of the output image */
 	DMA2D_OPFCCR &= ~(DMA2D_OPFCCR_CM_MASK << DMA2D_OPFCCR_CM_SHIFT);
 	DMA2D_OPFCCR |= COLOR_MODELS[r->cm].pixFormat << DMA2D_OPFCCR_CM_SHIFT;
@@ -56,6 +62,10 @@ static void dma2d_transfer(uint32_t mode,
     DMA2D_NLR &= ~(DMA2D_NLR_PL_MASK << DMA2D_NLR_PL_SHIFT);
     DMA2D_NLR |= width << DMA2D_NLR_PL_SHIFT;
 
+    /* Configures the output blending alpha */
+    DMA2D_FGPFCCR |= DMA2D_xPFCCR_AM_FORCE << DMA2D_xPFCCR_AM_SHIFT;
+    DMA2D_FGPFCCR &= ~(DMA2D_xPFCCR_ALPHA_MASK << DMA2D_xPFCCR_ALPHA_SHIFT);
+    DMA2D_FGPFCCR |= r->color;
     /* Configures the output color */
 	DMA2D_OCOLR = r->color;
     /* Configure DMA2D source address */
@@ -64,7 +74,6 @@ static void dma2d_transfer(uint32_t mode,
 
     /* Start transfer */
 	DMA2D_CR |= DMA2D_CR_START;
-    DMA2D_WAIT;
 }
 
 

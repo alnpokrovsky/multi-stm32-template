@@ -161,8 +161,11 @@ int main(void) {
 
     // RTOS_TASK_CREATE(RTOS_HIGH_PRIORITY+5, vLed2Task);
 
-    RTOS_START();
+    // RTOS_START();
 
-    while (1);
+    while (1) {
+        gui_poll(10);
+        delay_ms(10);
+    }
 }
 
