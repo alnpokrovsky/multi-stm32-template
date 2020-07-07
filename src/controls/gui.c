@@ -8,6 +8,8 @@
 #include <malloc.h>
 #include "sramfunc.h"
 
+#define BUF_SIZE (LTDC_WIDTH*32)
+
 static LTDC_Layer layer = {1, true, RGB565, 0, 0, LTDC_WIDTH, LTDC_HEIGHT, 0xFF, NULL};
 
 
@@ -94,10 +96,8 @@ void gui_init(void) {
     lv_init();
     /* buffer init */
     static lv_disp_buf_t disp_buf;
-    static lv_color_t buf1[1024*32];
-    // lv_color_t * buf1 = malloc(LTDC_SIZE * sizeof(lv_color_t));
-    // lv_color_t * buf2 = malloc(LTDC_SIZE * sizeof(lv_color_t));
-    lv_disp_buf_init(&disp_buf, buf1, 0, 1024*32); /*Initialize the display buffer*/
+    static lv_color_t buf1[BUF_SIZE];
+    lv_disp_buf_init(&disp_buf, buf1, 0, BUF_SIZE); /*Initialize the display buffer*/
     /* display driver init */
     lv_disp_drv_t disp_drv;               /*Descriptor of a display driver*/
     lv_disp_drv_init(&disp_drv);          /*Basic initialization*/
