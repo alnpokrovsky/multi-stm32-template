@@ -1,14 +1,10 @@
 #if defined (STM32F7)
 
 #include "ltdc.h"
-#include <libopencm3/stm32/rcc.h>
-#include <libopencm3/stm32/gpio.h>
-#include <libopencm3/stm32/ltdc.h>
-#include <libopencm3/cm3/nvic.h>
-#include "digitalpin.h"
-#include <stdint.h>
+#include <stm32f7xx.h>
+#include <stm32f7xx_it.h>
+#include "gpio.h"
 #include <stdlib.h>
-#include <malloc.h>
 
 
 #define HSYNC       20
@@ -24,6 +20,25 @@ typedef struct {
 	size_t pixSize;
 } colormodel_descript;
 
+/* LTDC_LxPFCR - Pixel formats */
+#define LTDC_LxPFCR_ARGB8888       (0b000)
+#define LTDC_LxPFCR_RGB888         (0b001)
+#define LTDC_LxPFCR_RGB565         (0b010)
+#define LTDC_LxPFCR_ARGB1555       (0b011)
+#define LTDC_LxPFCR_ARGB4444       (0b100)
+#define LTDC_LxPFCR_L8             (0b101)
+#define LTDC_LxPFCR_AL44           (0b110)
+#define LTDC_LxPFCR_AL88           (0b111)
+/* LTDC_LxBFCR - Blending factors - BF1 */
+#define LTDC_LxBFCR_BF1_CONST_ALPHA               (0b100)
+#define LTDC_LxBFCR_BF1_PIXEL_ALPHA_x_CONST_ALPHA (0b110)
+/* LTDC_LxBFCR - Blending factors - BF2 */
+#define LTDC_LxBFCR_BF2_CONST_ALPHA               (0b101)
+#define LTDC_LxBFCR_BF2_PIXEL_ALPHA_x_CONST_ALPHA (0b111)
+/* layer selector */
+#define LTDC_Layer(l) ( l==1 ? LTDC_Layer1 : LTDC_Layer2 )
+
+
 static const colormodel_descript LTDC_COLOR_MODELS[] = {
 	{ LTDC_LxPFCR_ARGB8888, sizeof(uint32_t) },
 	{ LTDC_LxPFCR_ARGB4444, sizeof(uint16_t) },
@@ -31,150 +46,162 @@ static const colormodel_descript LTDC_COLOR_MODELS[] = {
 	{ LTDC_LxPFCR_RGB565, 	sizeof(uint16_t) },
 };
 
-static void * FRAMEBUFFER_1;
-static void * FRAMEBUFFER_2;
-
-typedef struct {
-	uint32_t gpio_port;
-	uint32_t gpio_rcc;
-	uint32_t gpio_pins;
-	uint8_t  gpio_af;
-} ltdc_pins_descript;
-
-static const ltdc_pins_descript LTDC_PINS[] = {
-	{ GPIOB, RCC_GPIOB, GPIO1, GPIO_AF9 },
-	{ GPIOC, RCC_GPIOC, GPIO0, GPIO_AF14 },
-	{ GPIOD, RCC_GPIOD, GPIO6, GPIO_AF14 },
-	{ GPIOE, RCC_GPIOE, GPIO4 | GPIO5 | GPIO6, GPIO_AF14 },
-	{ GPIOF, RCC_GPIOF, GPIO10, GPIO_AF14 },
-	{ GPIOG, RCC_GPIOG, GPIO10, GPIO_AF9 },
-	{ GPIOG, RCC_GPIOG, GPIO6 | GPIO7 | GPIO11 | GPIO12, GPIO_AF14 },
-	{ GPIOH, RCC_GPIOH, GPIO2 | GPIO3 | GPIO8 | GPIO9 | 
-						GPIO10 | GPIO13 | GPIO15, GPIO_AF14 },
-	{ GPIOI, RCC_GPIOI, GPIO0 | GPIO1 | GPIO2 | GPIO4 | GPIO5 |
-						GPIO6 | GPIO7 | GPIO9 | GPIO10, GPIO_AF14 },
+static const GPIO_Pins LTDC_PINS[] = {
+	{
+		GPIO_PORT_B, GPIO_PIN_1, 
+		GPIO_PUPD_NONE, GPIO_MODE_AF, 9
+	},
+	{
+		GPIO_PORT_C, GPIO_PIN_0, 
+		GPIO_PUPD_NONE, GPIO_MODE_AF, 14
+	},
+	{
+		GPIO_PORT_D, GPIO_PIN_6, 
+		GPIO_PUPD_NONE, GPIO_MODE_AF, 14
+	},
+	{
+		GPIO_PORT_E, GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6, 
+		GPIO_PUPD_NONE, GPIO_MODE_AF, 14
+	},
+	{
+		GPIO_PORT_F, GPIO_PIN_10, 
+		GPIO_PUPD_NONE, GPIO_MODE_AF, 14
+	},
+	{
+		GPIO_PORT_G, GPIO_PIN_10, 
+		GPIO_PUPD_NONE, GPIO_MODE_AF, 9
+	},
+	{
+		GPIO_PORT_G, GPIO_PIN_6 | GPIO_PIN_7 | GPIO_PIN_11 | GPIO_PIN_12, 
+		GPIO_PUPD_NONE, GPIO_MODE_AF, 14
+	},
+	{
+		GPIO_PORT_H, GPIO_PIN_2 | GPIO_PIN_3 | GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10 | GPIO_PIN_13 | GPIO_PIN_15, 
+		GPIO_PUPD_NONE, GPIO_MODE_AF, 14
+	},
+	{
+		GPIO_PORT_I, GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7 | GPIO_PIN_9 | GPIO_PIN_10, 
+		GPIO_PUPD_NONE, GPIO_MODE_AF, 14
+	},
 };
 #define LTDC_PINS_SIZE sizeof(LTDC_PINS)/sizeof(LTDC_PINS[0])
 
 void ltdc_init(void) {
 
 	for (uint8_t i = 0; i < LTDC_PINS_SIZE; ++i) {
-		/* init GPIO clocks */
-		rcc_periph_clock_enable(LTDC_PINS[i].gpio_rcc);
-		/* set GPIO pin modes */
-		gpio_mode_setup(LTDC_PINS[i].gpio_port, GPIO_MODE_AF, GPIO_PUPD_NONE, LTDC_PINS[i].gpio_pins);
-		gpio_set_output_options(LTDC_PINS[i].gpio_port, 
-			GPIO_OTYPE_PP, GPIO_OSPEED_100MHZ, LTDC_PINS[i].gpio_pins);
-		gpio_set_af(LTDC_PINS[i].gpio_port, LTDC_PINS[i].gpio_af, LTDC_PINS[i].gpio_pins);
+		gpio_init(&LTDC_PINS[i]);
 	}
 
-	/* max led_pwm */
-	digitalpin_mode(PA_3, DIGITALPIN_OUTPUT);
-	digitalpin_set(PA_3, 0);
-
 	/* enable RCC */
-	RCC_APB2ENR |= RCC_APB2ENR_LTDCEN;
+	RCC->APB2ENR |= RCC_APB2ENR_LTDCEN;
 	
 	/*
 	 * Configure the Synchronous timings: VSYNC, HSNC,
 	 * Vertical and Horizontal back porch, active data area, and
 	 * the front porch timings.
 	 */
-	LTDC_SSCR = (HSYNC - 1) << LTDC_SSCR_HSW_SHIFT |
-		    (VSYNC - 1) << LTDC_SSCR_VSH_SHIFT;
-	LTDC_BPCR = (HSYNC + HBP - 1) << LTDC_BPCR_AHBP_SHIFT |
-		    (VSYNC + VBP - 1) << LTDC_BPCR_AVBP_SHIFT;
-	LTDC_AWCR = (HSYNC + HBP + LTDC_WIDTH - 1) << LTDC_AWCR_AAW_SHIFT |
-		    (VSYNC + VBP + LTDC_HEIGHT - 1) << LTDC_AWCR_AAH_SHIFT;
-	LTDC_TWCR =
-	    (HSYNC + HBP + LTDC_WIDTH + HFP - 1) << LTDC_TWCR_TOTALW_SHIFT |
-	    (VSYNC + VBP + LTDC_HEIGHT + VFP - 1) << LTDC_TWCR_TOTALH_SHIFT;
+	LTDC->SSCR = (HSYNC - 1) << LTDC_SSCR_HSW_Pos |
+		    (VSYNC - 1) << LTDC_SSCR_VSH_Pos;
+	LTDC->BPCR = (HSYNC + HBP - 1) << LTDC_BPCR_AHBP_Pos |
+		    (VSYNC + VBP - 1) << LTDC_BPCR_AVBP_Pos;
+	LTDC->AWCR = (HSYNC + HBP + LTDC_WIDTH - 1) << LTDC_AWCR_AAW_Pos |
+		    (VSYNC + VBP + LTDC_HEIGHT - 1) << LTDC_AWCR_AAH_Pos;
+	LTDC->TWCR =
+	    (HSYNC + HBP + LTDC_WIDTH + HFP - 1) << LTDC_TWCR_TOTALW_Pos |
+	    (VSYNC + VBP + LTDC_HEIGHT + VFP - 1) << LTDC_TWCR_TOTALH_Pos;
 
-	/* Configure the synchronous signals and clock polarity. */
-	LTDC_GCR |= LTDC_GCR_PCPOL_ACTIVE_HIGH;
-	LTDC_GCR |= LTDC_GCR_VSPOL_ACTIVE_LOW;
-	LTDC_GCR |= LTDC_GCR_HSPOL_ACTIVE_LOW;
-	LTDC_GCR |= LTDC_GCR_DEPOL_ACTIVE_LOW;
+	/**
+	 * Configure the synchronous signals and clock polarity.
+	 * 1 - active high; 0 - active low
+	 */
+	LTDC->GCR |= LTDC_GCR_PCPOL;
+	LTDC->GCR &= ~LTDC_GCR_DEPOL;
+	LTDC->GCR &= ~LTDC_GCR_VSPOL;
+	LTDC->GCR &= ~LTDC_GCR_HSPOL;
 
-	ltdc_setBackground(0);
+	ltdc_setBackground(0xffff0000);
 
 	/* Configure the needed interrupts. */
-	LTDC_IER |= LTDC_IER_LIE; // line interrupt
-	LTDC_LIPCR |= (VSYNC + VBP + LTDC_HEIGHT + VFP - 1) << LTDC_LIPCR_LIPOS_SHIFT; // line number
-	// LTDC_LIPCR |= LTDC_HEIGHT << LTDC_LIPCR_LIPOS_SHIFT; // line number
+	LTDC->IER |= LTDC_IER_LIE; // line interrupt
+	LTDC->LIPCR |= (VSYNC + VBP + LTDC_HEIGHT + VFP - 1) << LTDC_LIPCR_LIPOS_Pos; // line number
+	// LTDC_LIPCR |= LTDC_HEIGHT << LTDC_LIPCR_LIPOS_Pos; // line number
 
 	/* Reload the shadow registers to active registers. */
-	LTDC_SRCR |= LTDC_SRCR_VBR;
+	LTDC->SRCR |= LTDC_SRCR_VBR;
 	/* Enable the LTDC-TFT controller. */
-	LTDC_GCR |= LTDC_GCR_LTDC_ENABLE;
+	LTDC->GCR |= LTDC_GCR_LTDCEN;
+
+	/* max led_pwm */
+	GPIO_Pins pa_3 = { GPIO_PORT_A, GPIO_PIN_3, GPIO_PUPD_NONE, GPIO_MODE_OUTPUT, 0x00 };
+	gpio_init(&pa_3);
+	gpio_set(&pa_3, GPIO_PINS_OFF);
 }
 
 void ltdc_setInterrupt(bool enable) {
 	if (enable) {
-		nvic_enable_irq(NVIC_LCD_TFT_IRQ);
+		NVIC_EnableIRQ(LTDC_IRQn);
 	} else {
-		nvic_disable_irq(NVIC_LCD_TFT_IRQ);
+		NVIC_DisableIRQ(LTDC_IRQn);
 	}
 }
 
 void ltdc_setLayer(const LTDC_Layer * l) {
 	if (!l->enable) {
-		LTDC_LxCR(l->layerN) &= ~LTDC_LxCR_LAYER_ENABLE;
+		LTDC_Layer(l->layerN)->CR &= ~LTDC_LxCR_LEN;
 	} else {
 		/* Enable Layer and if needed the CLUT */
-		LTDC_LxCR(l->layerN) |= LTDC_LxCR_LAYER_ENABLE;
+		LTDC_Layer(l->layerN)->CR |= LTDC_LxCR_LEN;
 
 		/* The pixel input format */
-		LTDC_LxPFCR(l->layerN) = LTDC_COLOR_MODELS[l->cm].pixFormat;
+		LTDC_Layer(l->layerN)->PFCR = LTDC_COLOR_MODELS[l->cm].pixFormat;
 
 		/* x shift */
 		uint32_t h_start = HSYNC + HBP + l->x;
 		uint32_t h_stop = h_start + l->width - 1;
-		LTDC_LxWHPCR(l->layerN) = h_stop << LTDC_LxWHPCR_WHSPPOS_SHIFT |
-				h_start << LTDC_LxWHPCR_WHSTPOS_SHIFT;
+		LTDC_Layer(l->layerN)->WHPCR = h_stop << LTDC_LxWHPCR_WHSPPOS_Pos |
+								 	  h_start << LTDC_LxWHPCR_WHSTPOS_Pos;
 		/* y shift */
 		uint32_t v_start = VSYNC + VBP + l->y;
 		uint32_t v_stop = v_start + l->height - 1;
-		LTDC_LxWVPCR(l->layerN) = v_stop << LTDC_LxWVPCR_WVSPPOS_SHIFT |
-				v_start << LTDC_LxWVPCR_WVSTPOS_SHIFT;
+		LTDC_Layer(l->layerN)->WVPCR = v_stop << LTDC_LxWVPCR_WVSPPOS_Pos |
+									  v_start << LTDC_LxWVPCR_WVSTPOS_Pos;
 
 		/* The line length and pitch of the color frame buffer */
 		uint32_t pitch = l->width * LTDC_COLOR_MODELS[l->cm].pixSize;
-		LTDC_LxCFBLR(l->layerN) = pitch << LTDC_LxCFBLR_CFBP_SHIFT |
-					(pitch+3) << LTDC_LxCFBLR_CFBLL_SHIFT;
+		LTDC_Layer(l->layerN)->CFBLR = pitch << LTDC_LxCFBLR_CFBP_Pos |
+								   (pitch+3) << LTDC_LxCFBLR_CFBLL_Pos;
 
 		/* The number of lines of the color frame buffer */
-		LTDC_LxCFBLNR(l->layerN) = l->height;
+		LTDC_Layer(l->layerN)->CFBLNR = l->height;
 
 		/* If needed, configure blendingfactors */
-		LTDC_LxBFCR(l->layerN) = LTDC_LxBFCR_BF1_PIXEL_ALPHA_x_CONST_ALPHA |
-					LTDC_LxBFCR_BF2_PIXEL_ALPHA_x_CONST_ALPHA;
+		LTDC_Layer(l->layerN)->BFCR = LTDC_LxBFCR_BF1_PIXEL_ALPHA_x_CONST_ALPHA << LTDC_LxBFCR_BF1_Pos;
+		LTDC_Layer(l->layerN)->BFCR = LTDC_LxBFCR_BF2_PIXEL_ALPHA_x_CONST_ALPHA << LTDC_LxBFCR_BF2_Pos;
 		/* transparency */
-		LTDC_LxCACR(l->layerN) = l->transp;
+		LTDC_Layer(l->layerN)->CACR = l->transp;
 
 		/* framebuffer */
-		LTDC_LxCFBAR(l->layerN) = (uint32_t)l->framebuf;
+		LTDC_Layer(l->layerN)->CFBAR = (uint32_t)l->framebuf;
 	}
 
 	/* Reload the shadow registers to active on Vsync */
-	LTDC_SRCR |= LTDC_SRCR_VBR;
+	LTDC->SRCR |= LTDC_SRCR_VBR;
 }
 
 /**
  * wait till next frame ready
  */
 void ltdc_waitVSync(void) {
-	while (LTDC_SRCR_IS_RELOADING()) ;
-	while ( !(LTDC_CDSR & LTDC_CDSR_VSYNCS) );
+	while ( !(LTDC->CDSR & LTDC_CDSR_VSYNCS) );
 }
 
 void ltdc_setBackground(uint32_t color) {
-	LTDC_BCCR = color;
+	LTDC->BCCR = color;
 }
 
 static void * ltdc_getPixelAddr(const LTDC_Layer * l, uint16_t x, uint16_t y) {
 	uint32_t offset = (y * l->width + x) * LTDC_COLOR_MODELS[l->cm].pixSize;
-	uint32_t buf = (uint32_t)((l->layerN == 1) ? FRAMEBUFFER_1 : FRAMEBUFFER_2);
+	uint32_t buf = (uint32_t)(l->framebuf);
 	return (void*)(buf + offset);
 }
 
@@ -190,10 +217,10 @@ void ltdc_setPixel(const LTDC_Layer * l, uint16_t x, uint16_t y, uint32_t color)
 }
 
 #include "sramfunc.h"
-void SRAM_FUNC lcd_tft_isr(void)
+void SRAM_FUNC LTDC_IRQHandler(void)
 {
 	ltdc_handler();
-	LTDC_ICR |= LTDC_ICR_CLIF;
+	LTDC->ICR |= LTDC_ICR_CLIF;
 }
 
 __attribute__((weak))

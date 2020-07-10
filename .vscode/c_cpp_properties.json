@@ -2,11 +2,8 @@
     "configurations": [
         {
             "defines": [
-                "STM32F1",
-                "STM32F3",
-                "STM32F4",
-                "STM32F7",
-                "USE_MDR1986VE9x",
+                "HSE_VALUE=8000000",
+                "STM32F7", "STM32F746xx",
                 "FREERTOS_LIB",
                 "LVGL_LIB", "LV_CONF_INCLUDE_SIMPLE",
                 "LUA_32BITS"
@@ -22,6 +19,8 @@
                 "core/libopencm3/include",
                 "core/emdr1986x-std-per-lib/CMSIS/CM3/DeviceSupport/MDR32F9Qx/inc",
                 "core/emdr1986x-std-per-lib/MDR32F9Qx_StdPeriph_Driver/inc",
+                "CMSIS/Core/Include",
+                "CMSIS/Device/ST/STM32F7xx/Include",
                 "libs/ugui/include",
                 "libs/freertos/include",
                 "libs/lvgl",

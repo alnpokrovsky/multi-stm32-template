@@ -27,9 +27,11 @@ void dma2d_fill(
 void dma2d_copy(void* dest, uint16_t dest_width, 
     const void* src, const DMA2D_Rect * r);
 
+void dma2d_copyTransform(uint8_t dest_cm, void* dest, uint16_t dest_width,
+    const void* src, const DMA2D_Rect * r);
+
 void dma2d_blend(void* dest, uint16_t dest_width, 
     const void* src1, const void* src2, const DMA2D_Rect * r);
-
 
 void dma2d_abort(void);
 

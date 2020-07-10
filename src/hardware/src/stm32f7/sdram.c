@@ -2,104 +2,223 @@
 
 #include "sdram.h"
 #include "delay.h"
-#include <libopencm3/stm32/gpio.h>
-#include <libopencm3/stm32/rcc.h>
-#include <libopencm3/stm32/fsmc.h>
+#include "stm32f7xx_hal.h"
 
 uint8_t * const _sdram = (uint8_t *)(0xd0000000);
 uint8_t * const _esdram = (uint8_t *)(0xd0000000 + 8*1024*1024);
 
-static const struct {
-	uint32_t	gpio;
-	uint32_t	rcc;
-	uint16_t	pins;
-} SDRAM_PINS[] = {
-	{GPIOD, RCC_GPIOD, GPIO0 | GPIO1 | GPIO8 | GPIO9 | GPIO10 | GPIO14 | GPIO15},
-	{GPIOE, RCC_GPIOE, GPIO0 | GPIO1 | GPIO7 | GPIO8 |
-			GPIO9 | GPIO10 | GPIO11 | GPIO12 | GPIO13 | GPIO14 | GPIO15},
-	{GPIOF, RCC_GPIOF, GPIO0 | GPIO1 | GPIO2 | GPIO3 | GPIO4 | GPIO5 |
-			GPIO11 | GPIO12 | GPIO13 | GPIO14 | GPIO15 },
-	{GPIOG, RCC_GPIOG, GPIO0 | GPIO1 | GPIO4 | GPIO5 | GPIO8 | GPIO15},
-	{GPIOH, RCC_GPIOH, GPIO5 | GPIO6 | GPIO7},
-};
-#define PINS_SIZE sizeof(SDRAM_PINS)/sizeof(SDRAM_PINS[0])
 
+#define SDRAM_TIMEOUT                    ((uint32_t)0xFFFF)
 
-static struct sdram_timing TIMING = {
-	.trcd = 2,		/* RCD Delay */
-	.trp = 2,		/* RP Delay */
-	.twr = 3,		/* Write Recovery Time */
-	.trc = 7,		/* Row Cycle Delay */
-	.tras = 4,		/* Self Refresh Time */
-	.txsr = 7,		/* Exit Self Refresh Time */
-	.tmrd = 2,		/* Load to Active Delay */
-};
+/**
+  * @brief  FMC SDRAM Mode definition register defines
+  */
+#define SDRAM_MODEREG_BURST_LENGTH_1             ((uint16_t)0x0000)
+#define SDRAM_MODEREG_BURST_LENGTH_2             ((uint16_t)0x0001)
+#define SDRAM_MODEREG_BURST_LENGTH_4             ((uint16_t)0x0002)
+#define SDRAM_MODEREG_BURST_LENGTH_8             ((uint16_t)0x0004)
+#define SDRAM_MODEREG_BURST_TYPE_SEQUENTIAL      ((uint16_t)0x0000)
+#define SDRAM_MODEREG_BURST_TYPE_INTERLEAVED     ((uint16_t)0x0008)
+#define SDRAM_MODEREG_CAS_LATENCY_2              ((uint16_t)0x0020)
+#define SDRAM_MODEREG_CAS_LATENCY_3              ((uint16_t)0x0030)
+#define SDRAM_MODEREG_OPERATING_MODE_STANDARD    ((uint16_t)0x0000)
+#define SDRAM_MODEREG_WRITEBURST_MODE_PROGRAMMED ((uint16_t)0x0000) 
+#define SDRAM_MODEREG_WRITEBURST_MODE_SINGLE     ((uint16_t)0x0200) 
+/**
+  * @}
+  */ 
+ 
+SDRAM_HandleTypeDef hsdram1;
 
-void sdram_init(void) {
-	/*
-	* First all the GPIO pins that end up as SDRAM pins
-	*/
-	for (uint8_t i = 0; i < PINS_SIZE; i++) {
-		rcc_periph_clock_enable(SDRAM_PINS[i].rcc);
-		gpio_mode_setup(SDRAM_PINS[i].gpio, GPIO_MODE_AF,
-				GPIO_PUPD_NONE, SDRAM_PINS[i].pins);
-		gpio_set_output_options(SDRAM_PINS[i].gpio, GPIO_OTYPE_PP,
-				GPIO_OSPEED_100MHZ, SDRAM_PINS[i].pins);
-		gpio_set_af(SDRAM_PINS[i].gpio, GPIO_AF12, SDRAM_PINS[i].pins);
-	}
+static void HAL_FMC_MspInit(void){
+  /* USER CODE BEGIN FMC_MspInit 0 */
 
-	/* Enable the SDRAM Controller */
-	rcc_periph_clock_enable(RCC_FMC);
+  /* USER CODE END FMC_MspInit 0 */
+  GPIO_InitTypeDef GPIO_InitStruct;
+ 
+  /* Peripheral clock enable */
+  __FMC_CLK_ENABLE();
+  
+  /** FMC GPIO Configuration  
+  PF0   ------> FMC_A0
+  PF1   ------> FMC_A1
+  PF2   ------> FMC_A2
+  PF3   ------> FMC_A3
+  PF4   ------> FMC_A4
+  PF5   ------> FMC_A5
+  PH5   ------> FMC_SDNWE
+  PF11   ------> FMC_SDNRAS
+  PF12   ------> FMC_A6
+  PF13   ------> FMC_A7
+  PF14   ------> FMC_A8
+  PF15   ------> FMC_A9
+  PG0   ------> FMC_A10
+  PG1   ------> FMC_A11
+  PE7   ------> FMC_D4
+  PE8   ------> FMC_D5
+  PE9   ------> FMC_D6
+  PE10   ------> FMC_D7
+  PE11   ------> FMC_D8
+  PE12   ------> FMC_D9
+  PE13   ------> FMC_D10
+  PE14   ------> FMC_D11
+  PE15   ------> FMC_D12
+  PH6   ------> FMC_SDNE1
+  PH7   ------> FMC_SDCKE1
+  PD8   ------> FMC_D13
+  PD9   ------> FMC_D14
+  PD10   ------> FMC_D15
+  PD14   ------> FMC_D0
+  PD15   ------> FMC_D1
+  PG4   ------> FMC_BA0
+  PG5   ------> FMC_BA1
+  PG8   ------> FMC_SDCLK
+  PD0   ------> FMC_D2
+  PD1   ------> FMC_D3
+  PG15   ------> FMC_SDNCAS
+  PE0   ------> FMC_NBL0
+  PE1   ------> FMC_NBL1
+  */
+  /* GPIO_InitStruct */
+  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3 
+                          |GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_11|GPIO_PIN_12 
+                          |GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
+  GPIO_InitStruct.Alternate = GPIO_AF12_FMC;
 
-	/* Note the STM32F429-DISCO board has the ram attached to bank 2 */
-	/* Timing parameters computed for a 168Mhz clock */
-	/* These parameters are specific to the SDRAM chip on the board */
+  HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
 
-	uint32_t cr_tmp  = FMC_SDCR_RPIPE_1CLK;
-	cr_tmp |= FMC_SDCR_SDCLK_2HCLK;
-	cr_tmp |= FMC_SDCR_CAS_2CYC;
-	cr_tmp |= FMC_SDCR_NB4;
-	cr_tmp |= FMC_SDCR_MWID_16b;
-	cr_tmp |= FMC_SDCR_NR_12;
-	cr_tmp |= FMC_SDCR_NC_8;
-	cr_tmp |= FMC_SDCR_RBURST;
+  /* GPIO_InitStruct */
+  GPIO_InitStruct.Pin = GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
+  GPIO_InitStruct.Alternate = GPIO_AF12_FMC;
 
-	/* We're programming BANK 2, but per the manual some of the parameters
-	 * only work in CR1 and TR1 so we pull those off and put them in the
-	 * right place.
-	 */
-	FMC_SDCR1 |= (cr_tmp & FMC_SDCR_DNC_MASK);
-	FMC_SDCR2 = cr_tmp;
+  HAL_GPIO_Init(GPIOH, &GPIO_InitStruct);
 
-	uint32_t tr_tmp = sdram_timing(&TIMING);
-	FMC_SDTR1 |= (tr_tmp & FMC_SDTR_DNC_MASK);
-	FMC_SDTR2 = tr_tmp;
+  /* GPIO_InitStruct */
+  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_4|GPIO_PIN_5 
+                          |GPIO_PIN_8|GPIO_PIN_15;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
+  GPIO_InitStruct.Alternate = GPIO_AF12_FMC;
 
-	/* Now start up the Controller per the manual
-	 *	- Clock config enable
-	 *	- PALL state
-	 *	- set auto refresh
-	 *	- Load the Mode Register
-	 */
-	sdram_command(SDRAM_BANK2, SDRAM_CLK_CONF, 1, 0);
-	delay_ms(1); /* sleep at least 100mS */
-	
-	sdram_command(SDRAM_BANK2, SDRAM_PALL, 1, 0);
-	sdram_command(SDRAM_BANK2, SDRAM_AUTO_REFRESH, 8, 0);
-	tr_tmp = SDRAM_MODE_BURST_LENGTH_2				|
-				SDRAM_MODE_BURST_TYPE_SEQUENTIAL	|
-				SDRAM_MODE_CAS_LATENCY_2			|
-				SDRAM_MODE_OPERATING_MODE_STANDARD	|
-				SDRAM_MODE_WRITEBURST_MODE_SINGLE;
-	sdram_command(SDRAM_BANK2, SDRAM_LOAD_MODE, 1, tr_tmp);
+  HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
 
-	/*
-	 * set the refresh counter to insure we kick off an
-	 * auto refresh often enough to prevent data loss.
-	 */
-	FMC_SDRTR = 1543 << FMC_SDRTR_COUNT_SHIFT;
-	/* and Poof! a 8 megabytes of ram shows up in the address space */
+  /* GPIO_InitStruct */
+  GPIO_InitStruct.Pin = GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10 
+                          |GPIO_PIN_11|GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14 
+                          |GPIO_PIN_15|GPIO_PIN_0|GPIO_PIN_1;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
+  GPIO_InitStruct.Alternate = GPIO_AF12_FMC;
+
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+  /* GPIO_InitStruct */
+  GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_14 
+                          |GPIO_PIN_15|GPIO_PIN_0|GPIO_PIN_1;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
+  GPIO_InitStruct.Alternate = GPIO_AF12_FMC;
+
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+  /* USER CODE BEGIN FMC_MspInit 1 */
+
+  /* USER CODE END FMC_MspInit 1 */
 }
+
+#define sdramHandle hsdram1
+void sdram_init(void) {
+	HAL_FMC_MspInit();
+
+	FMC_SDRAM_TimingTypeDef SdramTiming;
+	FMC_SDRAM_CommandTypeDef Command;
+
+  /** Perform the SDRAM1 memory initialization sequence
+  */
+  hsdram1.Instance = FMC_SDRAM_DEVICE;
+  /* hsdram1.Init */
+  hsdram1.Init.SDBank = FMC_SDRAM_BANK2;
+  hsdram1.Init.ColumnBitsNumber = FMC_SDRAM_COLUMN_BITS_NUM_8;
+  hsdram1.Init.RowBitsNumber = FMC_SDRAM_ROW_BITS_NUM_12;
+  hsdram1.Init.MemoryDataWidth = FMC_SDRAM_MEM_BUS_WIDTH_16;
+  hsdram1.Init.InternalBankNumber = FMC_SDRAM_INTERN_BANKS_NUM_4;
+  hsdram1.Init.CASLatency = FMC_SDRAM_CAS_LATENCY_2;
+  hsdram1.Init.WriteProtection = FMC_SDRAM_WRITE_PROTECTION_DISABLE;
+  hsdram1.Init.SDClockPeriod = FMC_SDRAM_CLOCK_PERIOD_2;
+  hsdram1.Init.ReadBurst = FMC_SDRAM_RBURST_ENABLE;
+  hsdram1.Init.ReadPipeDelay = FMC_SDRAM_RPIPE_DELAY_1;
+  /* SdramTiming */
+  SdramTiming.LoadToActiveDelay = 2;
+  SdramTiming.ExitSelfRefreshDelay = 7;
+  SdramTiming.SelfRefreshTime = 4;
+  SdramTiming.RowCycleDelay = 7;
+  SdramTiming.WriteRecoveryTime = 2;
+  SdramTiming.RPDelay = 2;
+  SdramTiming.RCDDelay = 2;
+  HAL_SDRAM_Init(&hsdram1, &SdramTiming);
+
+
+	 __IO uint32_t tmpmrd = 0;
+  
+  /* Step 1: Configure a clock configuration enable command */
+  Command.CommandMode            = FMC_SDRAM_CMD_CLK_ENABLE;
+  Command.CommandTarget          = FMC_SDRAM_CMD_TARGET_BANK2;
+  Command.AutoRefreshNumber      = 1;
+  Command.ModeRegisterDefinition = 0;
+
+  /* Send the command */
+  HAL_SDRAM_SendCommand(&sdramHandle, &Command, SDRAM_TIMEOUT);
+
+  /* Step 2: Insert 100 us minimum delay */ 
+  /* Inserted delay is equal to 1 ms due to systick time base unit (ms) */
+  delay_ms(1);
+    
+  /* Step 3: Configure a PALL (precharge all) command */ 
+  Command.CommandMode            = FMC_SDRAM_CMD_PALL;
+  Command.CommandTarget          = FMC_SDRAM_CMD_TARGET_BANK2;
+  Command.AutoRefreshNumber      = 1;
+  Command.ModeRegisterDefinition = 0;
+
+  /* Send the command */
+  HAL_SDRAM_SendCommand(&sdramHandle, &Command, SDRAM_TIMEOUT);  
+  
+  /* Step 4: Configure an Auto Refresh command */ 
+  Command.CommandMode            = FMC_SDRAM_CMD_AUTOREFRESH_MODE;
+  Command.CommandTarget          = FMC_SDRAM_CMD_TARGET_BANK2;
+  Command.AutoRefreshNumber      = 8;
+  Command.ModeRegisterDefinition = 0;
+
+  /* Send the command */
+  HAL_SDRAM_SendCommand(&sdramHandle, &Command, SDRAM_TIMEOUT);
+  
+  /* Step 5: Program the external memory mode register */
+  tmpmrd = (uint32_t)SDRAM_MODEREG_BURST_LENGTH_1          |\
+                     SDRAM_MODEREG_BURST_TYPE_SEQUENTIAL   |\
+                     SDRAM_MODEREG_CAS_LATENCY_2           |\
+                     SDRAM_MODEREG_OPERATING_MODE_STANDARD |\
+                     SDRAM_MODEREG_WRITEBURST_MODE_SINGLE;
+  
+  Command.CommandMode            = FMC_SDRAM_CMD_LOAD_MODE;
+  Command.CommandTarget          = FMC_SDRAM_CMD_TARGET_BANK2;
+  Command.AutoRefreshNumber      = 1;
+  Command.ModeRegisterDefinition = tmpmrd;
+
+  /* Send the command */
+  HAL_SDRAM_SendCommand(&sdramHandle, &Command, SDRAM_TIMEOUT);
+  
+  /* Step 6: Set the refresh rate counter */
+  /* Set the device refresh rate */
+  HAL_SDRAM_ProgramRefreshRate(&sdramHandle, 1543); 
+ }
 
 
 #endif

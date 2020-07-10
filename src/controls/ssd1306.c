@@ -1,7 +1,8 @@
 #include "ssd1306.h"
 #include "spibus.h"
-#include "digitalpin.h"
+#include "gpio.h"
 #include <string.h>
+#include <stdbool.h>
 
 static void set_bit_brightness(
     uint8_t * point, 
@@ -16,24 +17,24 @@ static void set_bit_brightness(
 }
 
 static void command(SSD1306 * oled, uint8_t b) {
-    digitalpin_set(oled->dc, 0);
+    gpio_set(&oled->dc, GPIO_PINS_OFF);
     spibus_xfer(oled->spi, b);
 }
 
 static void data(SSD1306 * oled, uint8_t b) {
-    digitalpin_set(oled->dc, 1);
+    gpio_set(&oled->dc, GPIO_PINS_ON);
     spibus_xfer(oled->spi, b);
 }
 
 void ssd1306_init(SSD1306 * oled) {
     // init periph
     spibus_init(SPI_1, DFF_8BIT);
-    digitalpin_mode(oled->dc, DIGITALPIN_OUTPUT);
-    digitalpin_mode(oled->cs, DIGITALPIN_OUTPUT);
-    digitalpin_set(oled->cs, 1);
+    gpio_init(&oled->dc);
+    gpio_init(&oled->cs);
+    gpio_set(&oled->cs, GPIO_PINS_ON);
 
     // initiation commands
-    digitalpin_set(oled->cs, 0);
+    gpio_set(&oled->cs, GPIO_PINS_OFF);
     static const uint8_t INIT_COMMANDS[] = {
 		0xAE, 0x00, 0x10, 0x40, 0x81, 0xCF, 0xA1, 0xA6, 
 		0xA8, 0x3F, 0xD3, 0x00, 0xD5, 0x80, 0xD9, 0xF1, 
@@ -42,7 +43,7 @@ void ssd1306_init(SSD1306 * oled) {
     for (int i = 0; INIT_COMMANDS[i] != 0xFF; ++i) {
         command(oled, INIT_COMMANDS[i]);
     }
-    digitalpin_set(oled->cs, 1);
+    gpio_set(&oled->cs, GPIO_PINS_ON);
 
     // init draw
     ssd1306_clear(oled);
@@ -68,7 +69,7 @@ void ssd1306_flush(SSD1306 * oled) {
     if (!oled->isNeedRedraw) return;
     oled->isNeedRedraw = false;
 
-    digitalpin_set(oled->cs, 0);
+    gpio_set(&oled->cs, GPIO_PINS_OFF);
 
     command(oled, 0x20); command(oled, 0x02); //page mode
     command(oled, 0x40);
@@ -81,5 +82,5 @@ void ssd1306_flush(SSD1306 * oled) {
         data(oled, oled->buffer[bx][px]);
     }
     
-    digitalpin_set(oled->cs, 1);
+    gpio_set(&oled->cs, GPIO_PINS_ON);
 }

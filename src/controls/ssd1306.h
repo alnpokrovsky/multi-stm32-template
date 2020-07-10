@@ -2,8 +2,9 @@
 #define __CONTROLS_SSD1306_H__
 
 #include <stdint.h>
+#include <stdbool.h>
 #include "spibus.h"
-#include "digitalpin.h"
+#include "gpio.h"
 
 #define SSD1306_WIDTH 128
 #define SSD1306_HEIGHT 64
@@ -16,8 +17,8 @@
  */
 typedef struct {
     SPIBUS_PORT spi;
-    DIGITALPIN_NAME cs; /* chip select */
-    DIGITALPIN_NAME dc; /* DC-pin switches data/command mode */ 
+    GPIO_Pins cs; /* chip select */
+    GPIO_Pins dc; /* DC-pin switches data/command mode */ 
     bool isNeedRedraw;
     uint8_t buffer[SSD1306_WIDTH][SSD1306_HEIGHT/8];
 } SSD1306;

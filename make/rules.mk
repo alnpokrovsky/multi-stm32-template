@@ -91,7 +91,7 @@ TGT_ASFLAGS += $(OPT) $(ARCH_FLAGS) $(DEBUG)
 # C & C++ preprocessor common flags
 
 WARNINGS := -Wall -Werror \
-			# -Wno-unused-value -Wno-unused-parameter
+			-Wno-unused-value -Wno-unused-parameter -Wno-redundant-decls
 
 # TGT_CPPFLAGS	+= -mlong-calls
 TGT_CPPFLAGS	+= -MD
@@ -101,8 +101,8 @@ TGT_CPPFLAGS	+= $(addprefix -I, $(INC))
 
 ###############################################################################
 # Linker flags
-
-TGT_LDFLAGS		+= --static -nostartfiles
+TGT_LDFLAGS		+= --static
+# TGT_LDFLAGS		+= -nostartfiles -nodefaultlibs -nostdlib
 TGT_LDFLAGS		+= -T$(LDSCRIPT)
 TGT_LDFLAGS		+= $(ARCH_FLAGS) $(DEBUG)
 TGT_LDFLAGS 	+= -specs=nano.specs
@@ -114,7 +114,6 @@ TGT_LDFLAGS		+= -Wl,--gc-sections
 
 ###############################################################################
 # Used libraries
-
 LDLIBS		+= -Wl,--start-group -lc -lgcc -lnosys -lm -Wl,--end-group
 
 ###############################################################################
@@ -122,10 +121,10 @@ LDLIBS		+= -Wl,--start-group -lc -lgcc -lnosys -lm -Wl,--end-group
 ###############################################################################
 
 # Look objectives from source files
-SRC_AS := $(filter %.S, $(SRC))
+SRC_AS := $(filter %.s, $(SRC))
 SRC_C := $(filter %.c, $(SRC))
 SRC_CXX := $(filter %.cpp, $(SRC))
-OBJS_AS := $(SRC_AS:%.S=$(BUILD_DIR)/%.o)
+OBJS_AS := $(SRC_AS:%.s=$(BUILD_DIR)/%.o)
 OBJS_C := $(SRC_C:%.c=$(BUILD_DIR)/%.o)
 OBJS_CXX := $(SRC_CXX:%.cpp=$(BUILD_DIR)/%.o)
 OBJS := $(OBJS_AS) $(OBJS_C) $(OBJS_CXX)
@@ -173,7 +172,7 @@ print-%:
 	@echo $*=$($*)
 
 # assembler rule
-$(BUILD_DIR)/%.o: %.S
+$(BUILD_DIR)/%.o: %.s
 	@printf "  AS \t$<\n"
 	@mkdir -p $(dir $@)
 	$(Q)$(CC) $(TGT_ASFLAGS) $(ASFLAGS) $(TGT_CPPFLAGS) $(CPPFLAGS) -o $@ -c $<

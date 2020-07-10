@@ -221,7 +221,7 @@ typedef void * lv_img_decoder_user_data_t;
 /* With size optimization (-Os) the compiler might not align data to
  * 4 or 8 byte boundary. This alignment will be explicitly applied where needed.
  * E.g. __attribute__((aligned(4))) */
-#define LV_ATTRIBUTE_MEM_ALIGN
+#define LV_ATTRIBUTE_MEM_ALIGN __attribute__((aligned(4)))
 
 /* Attribute to mark large constant arrays for example
  * font's bitmaps */

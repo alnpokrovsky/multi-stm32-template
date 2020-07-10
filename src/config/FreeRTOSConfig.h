@@ -28,8 +28,7 @@
 #ifndef FREERTOS_CONFIG_H
 #define FREERTOS_CONFIG_H
 
-#include "sramfunc.h"
-#include "rcc.h"
+extern uint32_t SystemCoreClock;
 
 /*-----------------------------------------------------------
  * Application specific definitions.
@@ -46,7 +45,7 @@
 #define configUSE_PREEMPTION		1
 #define configUSE_IDLE_HOOK			0
 #define configUSE_TICK_HOOK			0
-#define configCPU_CLOCK_HZ			( ( unsigned long ) rcc_core_freq )
+#define configCPU_CLOCK_HZ			( ( unsigned long ) SystemCoreClock )
 #define configTICK_RATE_HZ			( ( TickType_t ) 1000 )
 #define configMAX_PRIORITIES		( 16 )
 #define configMINIMAL_STACK_SIZE	( ( unsigned short ) 256 )
@@ -93,27 +92,18 @@ See http://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html. */
 #define configMAX_SYSCALL_INTERRUPT_PRIORITY 	191 /* equivalent to 0xb0, or priority 11. */
 
 
-/* This is the value being used as per the ST library which permits 16
-priority values, 0 to 15.  This must correspond to the
-configKERNEL_INTERRUPT_PRIORITY setting.  Here 15 corresponds to the lowest
-NVIC value of 255. */
-#define configLIBRARY_KERNEL_INTERRUPT_PRIORITY	15
+#define configLIBRARY_KERNEL_INTERRUPT_PRIORITY	255
 
 
-/* target specific params */
+#include "sramfunc.h"
+
+#define vPortSVCHandler     CCMRAM_FUNC SVC_Handler
+#define xPortPendSVHandler  CCMRAM_FUNC PendSV_Handler
+#define xPortSysTickHandler CCMRAM_FUNC SysTick_Handler
+
+
 #if defined(STM32F1) || defined(STM32F3) || defined(STM32F4) || defined(STM32F7)
     #define configSYSTICK_CLOCK_HZ      ( configCPU_CLOCK_HZ / 8 )
-    /* LibopenCm3 redefines */
-    #define vPortSVCHandler     SRAM_FUNC sv_call_handler
-    #define xPortPendSVHandler  SRAM_FUNC pend_sv_handler
-    #define xPortSysTickHandler SRAM_FUNC sys_tick_handler
-#elif defined(USE_MDR1986VE9x)
-    /* milandr redefines */
-    #define vPortSVCHandler     SRAM_FUNC SVC_Handler
-    #define xPortPendSVHandler  SRAM_FUNC PendSV_Handler
-    #define xPortSysTickHandler SRAM_FUNC SysTick_Handler
-#else
-#error "You have no FreeRTOS config for this device"
 #endif
 
 #endif /* FREERTOS_CONFIG_H */

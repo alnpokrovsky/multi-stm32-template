@@ -1,5 +1,4 @@
 #include "rcc.h"
-#include "digitalpin.h"
 #include "uart.h"
 // #include "controls/milua.h"
 #include "controls/isdriver.h"
@@ -7,14 +6,14 @@
 #include "controls/rtos.h"
 #include "delay.h"
 
-static void vLed1Task(void * arg) {
-    (void)arg;
-    digitalpin_mode(PB_6, DIGITALPIN_OUTPUT);
-    RTOS_DELAY_LOOP {
-        digitalpin_toggle(PB_6);
-        RTOS_DELAY_NEXT_MS( 500 );
-    }
-}
+// static void vLed1Task(void * arg) {
+//     (void)arg;
+//     digitalpin_mode(PB_6, DIGITALPIN_OUTPUT);
+//     RTOS_DELAY_LOOP {
+//         digitalpin_toggle(PB_6);
+//         RTOS_DELAY_NEXT_MS( 500 );
+//     }
+// }
 
 // static void vLed1Task(void * arg) {
 //     (void)arg;
@@ -149,7 +148,7 @@ int main(void) {
     gui_startPolling();
     
 
-    RTOS_TASK_CREATE(RTOS_LOW_PRIORITY, vLed1Task);
+    // RTOS_TASK_CREATE(RTOS_LOW_PRIORITY, vLed1Task);
 
     // RTOS_TASK_CREATE(RTOS_MEDIUM_PRIORITY, vDriverTask);
 

@@ -1,0 +1,5 @@
+# etl lib
+
+INC += HAL/STM32F7xx_HAL_Driver/Inc
+
+SRC += $(shell find HAL/STM32F7xx_HAL_Driver/Src -name "*.c")

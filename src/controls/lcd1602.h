@@ -1,7 +1,7 @@
 #ifndef __CONTROLS_LCD_H__
 #define __CONTROLS_LCD_H__
 
-#include "digitalpin.h"
+#include "gpio.h"
 
 /** @example
  * lcd1602_init(PA_4, PA_5, PA_0, PA_1, PA_2, PA_3);
@@ -12,12 +12,12 @@
  */
 
 typedef struct {
-    DIGITALPIN_NAME rs;
-    DIGITALPIN_NAME en;
-    DIGITALPIN_NAME db4;
-    DIGITALPIN_NAME db5;
-    DIGITALPIN_NAME db6;
-    DIGITALPIN_NAME db7;
+    GPIO_Pins rs;
+    GPIO_Pins en;
+    GPIO_Pins db4;
+    GPIO_Pins db5;
+    GPIO_Pins db6;
+    GPIO_Pins db7;
 } LCD1602;
 
 void lcd1602_init(LCD1602 * lcd);
