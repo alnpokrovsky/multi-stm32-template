@@ -1,9 +1,6 @@
 #ifndef __CONTROLS_RTOS_H__
 #define __CONTROLS_RTOS_H__
 
-#ifndef FREERTOS_LIB
-#error "FreeRTOS lib not included to build" 
-#endif
 
 #include "FreeRTOS.h"
 #include "task.h"

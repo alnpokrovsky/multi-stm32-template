@@ -1,0 +1,11 @@
+# cmsis core
+
+INC += \
+    core/CMSIS/Core/Include \
+    core/CMSIS/Core_A/Include
+
+SRC += core/CMSIS/Core_A/Source/irq_ctrl_gic.c
+
+INC += core/CMSIS/RTOS2/Include
+
+include core/CMSIS/RTOS2/freertos.include

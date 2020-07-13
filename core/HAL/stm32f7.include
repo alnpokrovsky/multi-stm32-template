@@ -1,0 +1,5 @@
+# hal lib
+
+INC += core/HAL/STM32F7xx_HAL_Driver/Inc
+
+SRC += $(shell find core/HAL/STM32F7xx_HAL_Driver/Src -name "*.c")

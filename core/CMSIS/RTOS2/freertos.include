@@ -1,0 +1,12 @@
+# freertos
+
+TGT_LDFLAGS += -Wl,--undefined=uxTopUsedPriority
+
+# freeRTOS includes
+INC += core/CMSIS/RTOS2/FreeRTOS/Source/freertos/include
+
+# freeRTOS config for CORTEX-M
+INC += core/CMSIS/RTOS2/FreeRTOS/Config/ARMCM
+
+
+SRC += $(shell find core/CMSIS/RTOS2/FreeRTOS/Source -name "*.c")
