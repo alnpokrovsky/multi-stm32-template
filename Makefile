@@ -28,9 +28,10 @@ INC += src/hardware/include
 # include libs/libopencm3-usb.include
 # include libs/saxml.include
 # include libs/ugui.include
-include libs/lvgl.include
+# include libs/lvgl.include
 # include libs/lua.include
-include core/HAL/stm32f7.include
+# include core/HAL/stm32f7.include
+include core/emdr1986x-std-per-lib/mdr32f9.include
 
 ########### BUILD DEVICE ##############
 # LDSCRIPT := make/stm32/f1/stm32f103x8.ld
@@ -44,6 +45,8 @@ include core/HAL/stm32f7.include
 # include make/stm32/f7.mk
 # include make/mdr1986/ve9.mk
 
-DEVICE = STM32F746xx
-include core/CMSIS/stm32f7.mk
+# DEVICE = STM32F746xx
+# include core/CMSIS/stm32f7.mk
+include core/CMSIS/mdr32f9.mk
+
 include make/rules.mk

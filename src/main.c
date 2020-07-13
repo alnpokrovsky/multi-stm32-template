@@ -2,7 +2,7 @@
 #include "uart.h"
 // #include "controls/milua.h"
 #include "controls/isdriver.h"
-#include "controls/gui.h"
+// #include "controls/gui.h"
 #include "controls/rtos.h"
 #include "delay.h"
 
@@ -123,29 +123,29 @@ int main(void) {
 
     // milua_init();
 
-    gui_init();
+    // gui_init();
 
-    lv_obj_t * preload = lv_spinner_create(lv_scr_act(), NULL);
-    lv_obj_set_size(preload, 100, 100);
-    lv_obj_align(preload, NULL, LV_ALIGN_CENTER, 0, 0);
+    // lv_obj_t * preload = lv_spinner_create(lv_scr_act(), NULL);
+    // lv_obj_set_size(preload, 100, 100);
+    // lv_obj_align(preload, NULL, LV_ALIGN_CENTER, 0, 0);
 
-    lv_obj_t * btn1 = lv_btn_create(lv_scr_act(), NULL);
-    lv_obj_align(btn1, NULL, LV_ALIGN_CENTER, 0, -40);
+    // lv_obj_t * btn1 = lv_btn_create(lv_scr_act(), NULL);
+    // lv_obj_align(btn1, NULL, LV_ALIGN_CENTER, 0, -40);
 
-    lv_obj_t * label = lv_label_create(btn1, NULL);
-    lv_label_set_text(label, "Button");
+    // lv_obj_t * label = lv_label_create(btn1, NULL);
+    // lv_label_set_text(label, "Button");
 
-    lv_obj_t * btn2 = lv_btn_create(lv_scr_act(), NULL);
-    lv_obj_align(btn2, NULL, LV_ALIGN_CENTER, 0, 40);
-    lv_btn_set_checkable(btn2, true);
-    lv_btn_toggle(btn2);
-    lv_btn_set_fit2(btn2, LV_FIT_NONE, LV_FIT_TIGHT);
+    // lv_obj_t * btn2 = lv_btn_create(lv_scr_act(), NULL);
+    // lv_obj_align(btn2, NULL, LV_ALIGN_CENTER, 0, 40);
+    // lv_btn_set_checkable(btn2, true);
+    // lv_btn_toggle(btn2);
+    // lv_btn_set_fit2(btn2, LV_FIT_NONE, LV_FIT_TIGHT);
 
 
-    label = lv_label_create(btn2, NULL);
-    lv_label_set_text(label, "Toggled");
+    // label = lv_label_create(btn2, NULL);
+    // lv_label_set_text(label, "Toggled");
 
-    gui_startPolling();
+    // gui_startPolling();
     
 
     // RTOS_TASK_CREATE(RTOS_LOW_PRIORITY, vLed1Task);

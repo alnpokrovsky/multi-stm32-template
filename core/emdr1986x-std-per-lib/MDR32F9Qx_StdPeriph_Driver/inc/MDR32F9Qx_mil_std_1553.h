@@ -14,6 +14,21 @@ extern "C" {
 #include "MDR32F9Qx_config.h"
 #include "MDR32F9Qx_lib.h"
 
+/* MDR_MIL_STD_1553_TypeDef structure */
+typedef struct {
+  uint32_t RESERVED0[1024];
+  __IO uint32_t CONTROL;
+  __IO uint32_t STATUS;
+  __IO uint32_t ERROR;
+  __IO uint32_t CommandWord1;
+  __IO uint32_t CommandWord2;
+  __IO uint32_t ModeData;
+  __IO uint32_t StatusWord1;
+  __IO uint32_t StatusWord2;
+  __IO uint32_t INTEN;
+  __IO uint32_t MSG;
+} MDR_MIL_STD_1553_TypeDef;
+
 /** @addtogroup __MDR32F9Qx_StdPeriph_Driver MDR32F9Qx Standard Peripherial Driver
   * @{
   */
@@ -29,7 +44,6 @@ extern "C" {
 /**
   * @brief	MIL_STD_1553 Init Structure definition
   */
-
 typedef struct {
 	uint32_t MIL_STD_1553_Mode; 					/*!< This member configures the MIL_STD_1553 mode.
 										 	 	 	 	 This parameter is one of @ref MIL_STD_1553_Mode values. */

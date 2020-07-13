@@ -1,0 +1,7 @@
+
+SRC += $(shell find core/emdr1986x-std-per-lib/MDR32F9Qx_StdPeriph_Driver/src -name "*.c")
+
+INC += \
+    core/emdr1986x-std-per-lib/Config \
+    core/emdr1986x-std-per-lib/MDR32F9Qx_StdPeriph_Driver/inc \
+    core/emdr1986x-std-per-lib/MDR32F9Qx_StdPeriph_Driver/inc/USB_Library

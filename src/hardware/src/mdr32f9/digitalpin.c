@@ -1,4 +1,4 @@
-#if defined(USE_MDR1986VE9x)
+#if defined(USE_MDR1986VE9x) && defined(NO)
 
 #include "digitalpin.h"
 #include <MDR32Fx.h>

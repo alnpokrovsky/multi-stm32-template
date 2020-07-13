@@ -3,9 +3,11 @@
         {
             "defines": [
                 "HSE_VALUE=8000000",
-                "STM32F7", "STM32F746xx",
+                "STM32F7",
+                "STM32F746xx",
                 "FREERTOS_LIB",
-                "LVGL_LIB", "LV_CONF_INCLUDE_SIMPLE",
+                "LVGL_LIB",
+                "LV_CONF_INCLUDE_SIMPLE",
                 "LUA_32BITS"
             ],
             "intelliSenseMode": "gcc-x64",
@@ -16,13 +18,11 @@
                 "src/config",
                 "src/utils",
                 "src/hardware/include",
-                "core/libopencm3/include",
-                "core/emdr1986x-std-per-lib/CMSIS/CM3/DeviceSupport/MDR32F9Qx/inc",
+                "core/CMSIS/Core/Include",
+                "core/CMSIS/Device/ST/STM32F7xx/Include",
+                "core/emdr1986x-std-per-lib/Config",
                 "core/emdr1986x-std-per-lib/MDR32F9Qx_StdPeriph_Driver/inc",
-                "CMSIS/Core/Include",
-                "CMSIS/Device/ST/STM32F7xx/Include",
                 "libs/ugui/include",
-                "libs/freertos/include",
                 "libs/lvgl",
                 "libs/libopencm3-usb/include",
                 "libs/lua"

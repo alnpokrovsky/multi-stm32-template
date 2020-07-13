@@ -6,7 +6,8 @@ include core/CMSIS/cmsis.include
 ####### specific #######
 
 # compile flags
-DEFS		+= -DSTM32F7
+DEFS += -DSTM32F7
+DEFS += -DCMSIS_device_header="<stm32f7xx.h>"
 FP_FLAGS	?= -mfloat-abi=hard -mfpu=fpv4-sp-d16
 ARCH_FLAGS	= -mthumb -mcpu=cortex-m7 $(FP_FLAGS)
 
@@ -14,7 +15,6 @@ ARCH_FLAGS	= -mthumb -mcpu=cortex-m7 $(FP_FLAGS)
 DEVICE_FOLDER := core/CMSIS/Device/ST/STM32F7xx
 INC += $(DEVICE_FOLDER)/Include
 SRC += $(DEVICE_FOLDER)/Source/system_stm32f7xx.c
-DEFS += -DCMSIS_device_header="<stm32f7xx.h>"
 
 # OpenOCD specific variables
 OOCD			?= openocd

@@ -2,6 +2,7 @@
 
 #include "delay.h"
 #include <MDR32Fx.h>
+#include <MDR32F9Qx_it.h>
 #include <MDR32F9Qx_usb_handlers.h>
 #include <MDR32F9Qx_rst_clk.h>
 #include <assert.h>
@@ -17,7 +18,7 @@ void usb_cdc_read_handler(uint8_t* Buffer, uint32_t Length);
 static uint8_t USB_Buffer[BUFFER_LENGTH];
 
 __attribute__((weak))
-void null_hausb_cdc_read_handlerndler(uint8_t * buf, uint32_t len)
+void usb_cdc_read_handler(uint8_t * buf, uint32_t len)
 {
 	/* echo by default */
 	usb_cdc_send(buf, len);

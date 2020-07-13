@@ -2,14 +2,8 @@
   * FILE MDR32F9Qx_eth.c
   */
 
-/* Includes ------------------------------------------------------------------*/
 #include "MDR32F9Qx_config.h"
-#include "MDR32F9Qx_dma.h"
-#include "MDR32F9Qx_eth.h"
-#include "MDR32F9Qx_rst_clk.h"
 
-#include <math.h>
-#include <stdio.h>
 
 #define ASSERT_INFO_FILE_ID FILEID__MDR32F9X_ETH_C
 
@@ -24,6 +18,13 @@
   */
 
 #if defined (USE_MDR1986VE1T) || defined (USE_MDR1986VE3)
+
+#include "MDR32F9Qx_dma.h"
+#include "MDR32F9Qx_eth.h"
+#include "MDR32F9Qx_rst_clk.h"
+
+#include <math.h>
+#include <stdio.h>
 
 /** @defgroup ETH_Exported_Variables ETH Exported Variables
  *  @{

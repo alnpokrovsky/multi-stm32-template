@@ -40,6 +40,7 @@
  */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
+
 #ifndef __MDR32F9Qx_CONFIG_H
 #define __MDR32F9Qx_CONFIG_H
 
@@ -47,9 +48,6 @@
 extern "C" {
 #endif
 
-#if ((__CC_ARM == 0) || (__ARMCC_VERSION < 5000000))
-	#include "MDR32F9Qx_board.h"
-#endif
 #include "MDR32F9Qx_lib.h"
 #include <stdint.h>
 
@@ -89,14 +87,14 @@ extern "C" {
 /* Target system parameters */
 /* RST_CLK generators frequencies in HZ */
 #define HSI_Value       ((uint32_t)8000000)
-#define HSE_Value       ((uint32_t)8000000)
+#define HSE_Value       ((uint32_t)16000000)
 #define HSE2_Value      ((uint32_t)25000000)
 #define LSI_Value       ((uint32_t)40000)
 #define LSE_Value       ((uint32_t)32768)
 
 /* RST_CLK frequencies startup timeouts settings */
 #define HSEonTimeOut    ((uint16_t)0x0600)
-#define HSE2onTimeOut	((uint16_t)0x8000)
+#define HSE2onTimeOut	  ((uint16_t)0x8000)
 #define LSEonTimeOut    ((uint16_t)0x0600)
 #define HSIonTimeOut    ((uint16_t)0x0600)
 #define LSIonTimeOut    ((uint16_t)0x0600)
@@ -105,7 +103,7 @@ extern "C" {
 #define PLLDSPonTimeOut ((uint16_t)0x0600)
 
 /* EEPROM programming the max MCU frequency */
-/* #define FLASH_PROG_FREQ_MHZ     (8.0) */
+#define FLASH_PROG_FREQ_MHZ     (8.0)
 
 /* Use debug uart */
 /* #define _USE_DEBUG_UART_ */
@@ -257,8 +255,8 @@ extern "C" {
 } // extern "C" block end
 #endif
 
-#endif /* __MDR32F9Qx_CONFIG_H */
 
+#endif
 /******************* (C) COPYRIGHT 2011 Milandr *********************************
 *
 * END OF FILE MDR32F9Qx_config.h */
