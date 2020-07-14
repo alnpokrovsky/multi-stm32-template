@@ -1,106 +1,53 @@
 #if defined(STM32F7)
 
 #include "rcc.h"
-#include <stm32f7xx.h>
-#include <stm32f7xx_it.h>
-#include "pwr.h"
-#include "reg.h"
-
-
-#define RCC_DCKCFGR1_PLLSAIDIVR_DIVR_2		0
-#define RCC_DCKCFGR1_PLLSAIDIVR_DIVR_4		1
-#define RCC_DCKCFGR1_PLLSAIDIVR_DIVR_8		2
-#define RCC_DCKCFGR1_PLLSAIDIVR_DIVR_16		3
+#include <stm32f7xx_hal.h>
 
 
 void rcc_init() {
-	// const struct rcc_clock_scale rcc = {
-	// 	.plln = 400,
-	// 	.pllp = 2,
-	// 	.pllq = 8,
-	// 	.hpre = RCC_CFGR_HPRE_DIV_NONE,
-	// 	.ppre1 = RCC_CFGR_PPRE_DIV_4,
-	// 	.ppre2 = RCC_CFGR_PPRE_DIV_2,
-	// 	.vos_scale = PWR_SCALE1,
-	// 	.overdrive = 1,
-	// 	.flash_waitstates = 6,
-	// 	.ahb_frequency = 200000000,
-	// 	.apb1_frequency = 50000000,
-	// 	.apb2_frequency = 100000000,
-	// };
+	HAL_Init();
 
-	uint32_t m,n,p,q,r;
+	RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+	RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+	RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
 
-	/* Enable internal high-speed oscillator. */
-	RCC->CR |= RCC_CR_HSION;
-	while ((RCC->CR & RCC_CR_HSIRDY) == 0);
-
-	/* Select HSI as SYSCLK source. */
-	REG_SUBSET(RCC->CFGR, RCC_CFGR_SW, RCC_CFGR_SW_HSI);
-
-	/* Enable external high-speed oscillator. */
-	RCC->CR |= RCC_CR_HSEON;
-	while ((RCC->CR & RCC_CR_HSERDY) == 0);
-
-	pwr_init(1); // max power
-	pwr_setOverdrive(true);
-
-	/*
-	 * Set prescalers for AHB, ADC, APB1, APB2.
-	 * Do this before touching the PLL (TODO: why?).
+	/** Configure the main internal regulator output voltage 
 	 */
-	REG_SUBSET(RCC->CFGR, RCC_CFGR_HPRE,  RCC_CFGR_HPRE_DIV1);
-	REG_SUBSET(RCC->CFGR, RCC_CFGR_PPRE1, RCC_CFGR_PPRE1_DIV4);
-	REG_SUBSET(RCC->CFGR, RCC_CFGR_PPRE2, RCC_CFGR_PPRE2_DIV2);
+	__HAL_RCC_PWR_CLK_ENABLE();
+	__HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+	/** Initializes the CPU, AHB and APB busses clocks 
+	 */
+	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+	RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+	RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+	RCC_OscInitStruct.PLL.PLLM = 8;
+	RCC_OscInitStruct.PLL.PLLN = 400;
+	RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+	RCC_OscInitStruct.PLL.PLLQ = 8;
+	HAL_RCC_OscConfig(&RCC_OscInitStruct);
+	/** Activate the Over-Drive mode 
+	 */
+	HAL_PWREx_EnableOverDrive();
+	/** Initializes the CPU, AHB and APB busses clocks 
+	 */
+	RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+								|RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+	RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+	RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
+	RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
 
-	/* Disable PLL oscillator before changing its configuration. */
-	RCC->CR &= ~RCC_CR_PLLON;
-	/* Configure the PLL oscillator. */
-	m = HSE_VALUE / 1000000; // this get us 1MHz on PLL input
-	n = 400;
-	p = 2;
-	q = 8;
-	RCC->PLLCFGR = RCC_PLLCFGR_PLLSRC_HSE;
-	RCC->PLLCFGR |= m 	<< RCC_PLLCFGR_PLLM_Pos;
-	RCC->PLLCFGR |= n << RCC_PLLCFGR_PLLN_Pos;
-	RCC->PLLCFGR |= ((p >> 1) - 1) 	<< RCC_PLLCFGR_PLLP_Pos;
-	RCC->PLLCFGR |= q 	<< RCC_PLLCFGR_PLLQ_Pos;
-
-	/* Disable internal high-speed oscillator. */
-	RCC->CR &= ~RCC_CR_HSION;
-	/* Enable PLL oscillator and wait for it to stabilize. */
-	RCC->CR |= RCC_CR_PLLON;
-	while ((RCC->CR & RCC_CR_PLLRDY) == 0);
-
-	/* Configure flash settings. */
-	REG_SUBSET(FLASH->ACR, FLASH_ACR_LATENCY, 6);
-	FLASH->ACR |= FLASH_ACR_ARTEN;
-	FLASH->ACR |= FLASH_ACR_PRFTEN;
-
-	/* Select PLL as SYSCLK source. */
-	REG_SUBSET(RCC->CFGR, RCC_CFGR_SW, RCC_CFGR_SW_PLL);
-	/* Wait for PLL clock to be selected. */
-	while ((RCC->CFGR & RCC_CFGR_SWS_Msk) != RCC_CFGR_SWS_PLL);
-
-	
-    
-	/* configure display and usb pll clocking */
-	RCC->PLLSAICFGR = 0;
-	n = 192;
-	p = 4;
-	q = 2;
-	r = 2;
-	RCC->PLLSAICFGR |= n << RCC_PLLSAICFGR_PLLSAIN_Pos;
-	RCC->PLLSAICFGR |= ((p >> 1) - 1) << RCC_PLLSAICFGR_PLLSAIP_Pos;
-	RCC->PLLSAICFGR |= q   << RCC_PLLSAICFGR_PLLSAIQ_Pos;
-	RCC->PLLSAICFGR |= r   << RCC_PLLSAICFGR_PLLSAIR_Pos;
-	RCC->DCKCFGR1 &= ~(RCC_DCKCFGR1_PLLSAIDIVR_Msk << RCC_DCKCFGR1_PLLSAIDIVR_Pos);
-	RCC->DCKCFGR1 |= RCC_DCKCFGR1_PLLSAIDIVR_DIVR_2 << RCC_DCKCFGR1_PLLSAIDIVR_Pos;
-	/* src for clk48 is pllsaip */
-	RCC->DCKCFGR2 |= RCC_DCKCFGR2_CK48MSEL;
-	/* wait till RCC configured */
-	RCC->CR |= RCC_CR_PLLSAION;
-	while ((RCC->CR & RCC_CR_PLLSAIRDY) == 0) ;
+	HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_6);
+	PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_LTDC|RCC_PERIPHCLK_CLK48;
+	PeriphClkInitStruct.PLLSAI.PLLSAIN = 192;
+	PeriphClkInitStruct.PLLSAI.PLLSAIR = 2;
+	PeriphClkInitStruct.PLLSAI.PLLSAIQ = 2;
+	PeriphClkInitStruct.PLLSAI.PLLSAIP = RCC_PLLSAIP_DIV4;
+	PeriphClkInitStruct.PLLSAIDivQ = 1;
+	PeriphClkInitStruct.PLLSAIDivR = RCC_PLLSAIDIVR_2;
+	PeriphClkInitStruct.Clk48ClockSelection = RCC_CLK48SOURCE_PLLSAIP;
+	HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct);
 
 	SystemCoreClockUpdate();
 }

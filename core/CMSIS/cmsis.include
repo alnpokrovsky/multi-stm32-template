@@ -4,7 +4,8 @@ INC += \
     core/CMSIS/Core/Include \
     core/CMSIS/Core_A/Include
 
-SRC += core/CMSIS/Core_A/Source/irq_ctrl_gic.c
+SRC += $(shell find core/CMSIS/Core/Source/ -name "*.c")
+SRC += $(shell find core/CMSIS/Core_A/Source/ -name "*.c")
 
 INC += core/CMSIS/RTOS2/Include
 

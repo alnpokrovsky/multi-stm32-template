@@ -2,6 +2,7 @@
     "configurations": [
         {
             "defines": [
+                "__GNUC__=7",
                 "HSE_VALUE=8000000",
                 "STM32F7",
                 "STM32F746xx",
@@ -19,7 +20,11 @@
                 "src/utils",
                 "src/hardware/include",
                 "core/CMSIS/Core/Include",
+                "core/CMSIS/RTOS2/Include",
+                "core/CMSIS/RTOS2/FreeRTOS/Config/ARMCM",
+                "core/CMSIS/RTOS2/FreeRTOS/Source/freertos/include",
                 "core/CMSIS/Device/ST/STM32F7xx/Include",
+                "core/HAL/STM32F7xx_HAL_Driver/Inc",
                 "core/emdr1986x-std-per-lib/Config",
                 "core/emdr1986x-std-per-lib/MDR32F9Qx_StdPeriph_Driver/inc",
                 "libs/ugui/include",

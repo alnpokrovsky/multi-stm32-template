@@ -35,10 +35,10 @@ static void HAL_FMC_MspInit(void){
 
   /* USER CODE END FMC_MspInit 0 */
   GPIO_InitTypeDef GPIO_InitStruct;
- 
+
   /* Peripheral clock enable */
   __FMC_CLK_ENABLE();
-  
+
   /** FMC GPIO Configuration  
   PF0   ------> FMC_A0
   PF1   ------> FMC_A1
@@ -87,7 +87,6 @@ static void HAL_FMC_MspInit(void){
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
   GPIO_InitStruct.Alternate = GPIO_AF12_FMC;
-
   HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
 
   /* GPIO_InitStruct */
@@ -96,7 +95,6 @@ static void HAL_FMC_MspInit(void){
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
   GPIO_InitStruct.Alternate = GPIO_AF12_FMC;
-
   HAL_GPIO_Init(GPIOH, &GPIO_InitStruct);
 
   /* GPIO_InitStruct */
@@ -106,7 +104,6 @@ static void HAL_FMC_MspInit(void){
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
   GPIO_InitStruct.Alternate = GPIO_AF12_FMC;
-
   HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
 
   /* GPIO_InitStruct */
@@ -117,7 +114,6 @@ static void HAL_FMC_MspInit(void){
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
   GPIO_InitStruct.Alternate = GPIO_AF12_FMC;
-
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
   /* GPIO_InitStruct */
@@ -127,19 +123,13 @@ static void HAL_FMC_MspInit(void){
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
   GPIO_InitStruct.Alternate = GPIO_AF12_FMC;
-
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
-
-  /* USER CODE BEGIN FMC_MspInit 1 */
-
-  /* USER CODE END FMC_MspInit 1 */
 }
 
 #define sdramHandle hsdram1
 void sdram_init(void) {
 	HAL_FMC_MspInit();
 
-	FMC_SDRAM_TimingTypeDef SdramTiming;
 	FMC_SDRAM_CommandTypeDef Command;
 
   /** Perform the SDRAM1 memory initialization sequence
@@ -157,17 +147,16 @@ void sdram_init(void) {
   hsdram1.Init.ReadBurst = FMC_SDRAM_RBURST_ENABLE;
   hsdram1.Init.ReadPipeDelay = FMC_SDRAM_RPIPE_DELAY_1;
   /* SdramTiming */
-  SdramTiming.LoadToActiveDelay = 2;
-  SdramTiming.ExitSelfRefreshDelay = 7;
-  SdramTiming.SelfRefreshTime = 4;
-  SdramTiming.RowCycleDelay = 7;
-  SdramTiming.WriteRecoveryTime = 2;
-  SdramTiming.RPDelay = 2;
-  SdramTiming.RCDDelay = 2;
+  FMC_SDRAM_TimingTypeDef SdramTiming = {
+    .LoadToActiveDelay = 2,
+    .ExitSelfRefreshDelay = 7,
+    .SelfRefreshTime = 4,
+    .RowCycleDelay = 7,
+    .WriteRecoveryTime = 2,
+    .RPDelay = 2,
+    .RCDDelay = 2,
+  };
   HAL_SDRAM_Init(&hsdram1, &SdramTiming);
-
-
-	 __IO uint32_t tmpmrd = 0;
   
   /* Step 1: Configure a clock configuration enable command */
   Command.CommandMode            = FMC_SDRAM_CMD_CLK_ENABLE;
@@ -201,7 +190,7 @@ void sdram_init(void) {
   HAL_SDRAM_SendCommand(&sdramHandle, &Command, SDRAM_TIMEOUT);
   
   /* Step 5: Program the external memory mode register */
-  tmpmrd = (uint32_t)SDRAM_MODEREG_BURST_LENGTH_1          |\
+  uint32_t tmpmrd = (uint32_t)SDRAM_MODEREG_BURST_LENGTH_1 |\
                      SDRAM_MODEREG_BURST_TYPE_SEQUENTIAL   |\
                      SDRAM_MODEREG_CAS_LATENCY_2           |\
                      SDRAM_MODEREG_OPERATING_MODE_STANDARD |\
@@ -218,7 +207,7 @@ void sdram_init(void) {
   /* Step 6: Set the refresh rate counter */
   /* Set the device refresh rate */
   HAL_SDRAM_ProgramRefreshRate(&sdramHandle, 1543); 
- }
+}
 
 
 #endif

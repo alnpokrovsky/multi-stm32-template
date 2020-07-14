@@ -120,16 +120,6 @@ void gui_init(void) {
     sdram_init();
     layer.framebuf = _sdram;
     ltdc_setLayer(&layer);
-
-    DMA2D_Rect r = { 
-        .cm = layer.cm, 
-        .x1 = 124,
-        .y1 = 20,
-        .x2 =  900,
-        .y2 = 580,
-        .color = 0xFFFF,
-    };
-    dma2d_fill(_sdram, 1024, &r);
 }
 
 void gui_startPolling(void) {

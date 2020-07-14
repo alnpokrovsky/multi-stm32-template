@@ -249,12 +249,13 @@
 #define INCLUDE_vTaskSuspend                    1
 #define INCLUDE_xTimerPendFunctionCall          1
 
-/* Map the FreeRTOS port interrupt handlers to their CMSIS standard names. */
-#define xPortPendSVHandler                      PendSV_Handler
-#define vPortSVCHandler                         SVC_Handler
 
+#include "sramfunc.h"
+/* Map the FreeRTOS port interrupt handlers to their CMSIS standard names. */
+#define xPortPendSVHandler                      CCMRAM_FUNC PendSV_Handler
+#define vPortSVCHandler                         CCMRAM_FUNC SVC_Handler
 /* Ensure Cortex-M port compatibility. */
-#define SysTick_Handler                         xPortSysTickHandler
+#define SysTick_Handler                         CCMRAM_FUNC xPortSysTickHandler
 
 #if (defined(__ARMCC_VERSION) || defined(__GNUC__) || defined(__ICCARM__))
 /* Include debug event definitions */
