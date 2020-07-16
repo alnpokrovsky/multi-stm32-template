@@ -1,0 +1,8 @@
+# usb
+
+DEFS += -DUSB_LIB
+
+INC += libs/usb/include
+INC += libs/usb/Core/Inc
+
+SRC += $(shell find libs/usb -name "*.c")

@@ -3,7 +3,6 @@
 #include "rcc.h"
 #include <stm32f7xx_hal.h>
 
-
 void rcc_init() {
 	HAL_Init();
 
@@ -52,5 +51,9 @@ void rcc_init() {
 	SystemCoreClockUpdate();
 }
 
+#include "delay.h"
+void HAL_Delay(uint32_t Delay) {
+	delay_ms(Delay);
+}
 
 #endif

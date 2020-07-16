@@ -30,6 +30,7 @@ INC += src/hardware/include
 # include libs/ugui.include
 include libs/lvgl.include
 # include libs/lua.include
+include libs/usb.include
 
 ########### BUILD DEVICE ##############
 # DEVICE = STM32F746xx

@@ -29,7 +29,7 @@
                 "core/emdr1986x-std-per-lib/MDR32F9Qx_StdPeriph_Driver/inc",
                 "libs/ugui/include",
                 "libs/lvgl",
-                "libs/libopencm3-usb/include",
+                "libs/usb/include",
                 "libs/lua"
             ],
             "name": "arm-embeded"

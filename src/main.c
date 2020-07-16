@@ -3,7 +3,7 @@
 // #include "controls/milua.h"
 #include "controls/isdriver.h"
 #include "controls/gui.h"
-#include "cmsis_os2.h"
+#include <cmsis_os2.h>
 #include "delay.h"
 
 // static void vLed1Task(void * arg) {
@@ -128,10 +128,13 @@ static void app_led1(void * arg) {
     }
 }
 
+
+#include "usb_core.h"
+
 int main(void) {
     rcc_init();
 
-    // usb_core_init();
+    usb_core_init();
 
     // milua_init();
 

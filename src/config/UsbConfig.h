@@ -17,9 +17,9 @@
 //  Index of each USB interface.  Must be consecutive and must sync with interfaces[].
 // #define USB_INTERFACE_DFU         0 /* TODO */
 // #define USB_INTERFACE_MSC         1
-#define USB_INTERFACE_CDC_COMM    2
-#define USB_INTERFACE_CDC_DATA    3
-// #define USB_INTERFACE_KEYBOARD    4
+// #define USB_INTERFACE_CDC_COMM    2
+// #define USB_INTERFACE_CDC_DATA    3
+#define USB_INTERFACE_KEYBOARD    4
 // #define USB_INTERFACE_HID         5
 // #define USB21_INTERFACE              /* Enable USB 2.1 with WebUSB and BOS support.*/
 
