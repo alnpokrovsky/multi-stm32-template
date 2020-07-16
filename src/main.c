@@ -7,14 +7,14 @@
 #include "controls/rtos.h"
 #include "delay.h"
 
-static void vLed1Task(void * arg) {
-    (void)arg;
-    digitalpin_mode(PB_6, DIGITALPIN_OUTPUT);
-    RTOS_DELAY_LOOP {
-        digitalpin_toggle(PB_6);
-        RTOS_DELAY_NEXT_MS( 500 );
-    }
-}
+// static void vLed1Task(void * arg) {
+//     (void)arg;
+//     digitalpin_mode(PB_6, DIGITALPIN_OUTPUT);
+//     RTOS_DELAY_LOOP {
+//         digitalpin_toggle(PB_6);
+//         RTOS_DELAY_NEXT_MS( 500 );
+//     }
+// }
 
 // static void vLed1Task(void * arg) {
 //     (void)arg;
@@ -116,11 +116,12 @@ static void vLed1Task(void * arg) {
 
 
 // #include "ltdc.h"
+#include "usb_core.h"
 
 int main(void) {
     rcc_init();
 
-    // usb_core_init();
+    usb_core_init();
 
     // milua_init();
 
@@ -149,7 +150,7 @@ int main(void) {
     gui_startPolling();
     
 
-    RTOS_TASK_CREATE(RTOS_LOW_PRIORITY, vLed1Task);
+    // RTOS_TASK_CREATE(RTOS_LOW_PRIORITY, vLed1Task);
 
     // RTOS_TASK_CREATE(RTOS_MEDIUM_PRIORITY, vDriverTask);
 

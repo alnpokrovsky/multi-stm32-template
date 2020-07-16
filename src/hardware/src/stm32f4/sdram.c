@@ -44,7 +44,7 @@ void sdram_init(void) {
 		gpio_mode_setup(SDRAM_PINS[i].gpio, GPIO_MODE_AF,
 				GPIO_PUPD_NONE, SDRAM_PINS[i].pins);
 		gpio_set_output_options(SDRAM_PINS[i].gpio, GPIO_OTYPE_PP,
-				GPIO_OSPEED_50MHZ, SDRAM_PINS[i].pins);
+				GPIO_OSPEED_100MHZ, SDRAM_PINS[i].pins);
 		gpio_set_af(SDRAM_PINS[i].gpio, GPIO_AF12, SDRAM_PINS[i].pins);
 	}
 
@@ -55,13 +55,15 @@ void sdram_init(void) {
 	/* Timing parameters computed for a 168Mhz clock */
 	/* These parameters are specific to the SDRAM chip on the board */
 
-	uint32_t cr_tmp  = FMC_SDCR_RPIPE_1CLK;
-	cr_tmp |= FMC_SDCR_SDCLK_2HCLK;
-	cr_tmp |= FMC_SDCR_CAS_3CYC;
-	cr_tmp |= FMC_SDCR_NB4;
-	cr_tmp |= FMC_SDCR_MWID_16b;
-	cr_tmp |= FMC_SDCR_NR_12;
-	cr_tmp |= FMC_SDCR_NC_8;
+	uint32_t cr_tmp = 0;
+	cr_tmp = FMC_SDCR_RPIPE_1CLK 	|
+			 FMC_SDCR_SDCLK_2HCLK	|
+			 FMC_SDCR_CAS_2CYC		|
+			 FMC_SDCR_NB4			|
+			 FMC_SDCR_MWID_16b		|
+			 FMC_SDCR_NR_12			|
+			 FMC_SDCR_NC_8			|
+			 FMC_SDCR_RBURST;
 
 	/* We're programming BANK 2, but per the manual some of the parameters
 	 * only work in CR1 and TR1 so we pull those off and put them in the
@@ -85,17 +87,17 @@ void sdram_init(void) {
 	
 	sdram_command(SDRAM_BANK2, SDRAM_PALL, 1, 0);
 	sdram_command(SDRAM_BANK2, SDRAM_AUTO_REFRESH, 8, 0);
-	tr_tmp = SDRAM_MODE_BURST_LENGTH_2				|
+	tr_tmp = SDRAM_MODE_BURST_LENGTH_1				|
 				SDRAM_MODE_BURST_TYPE_SEQUENTIAL	|
-				SDRAM_MODE_CAS_LATENCY_3		|
+				SDRAM_MODE_CAS_LATENCY_2		|
 				SDRAM_MODE_OPERATING_MODE_STANDARD	|
 				SDRAM_MODE_WRITEBURST_MODE_SINGLE;
 	sdram_command(SDRAM_BANK2, SDRAM_LOAD_MODE, 1, tr_tmp);
 
 	/* Set the refresh rate counter */
-	/* (7.81 us x Freq) - 20 = (7.81 * 90MHz) - 20 = 683 */
+	/* (7.81 us x Freq) - 20 = (7.81 * 84MHz) - 20 = 636 */
 	/* Set the device refresh counter */
-	FMC_SDRTR = 683;
+	FMC_SDRTR = 636 << FMC_SDRTR_COUNT_SHIFT;
 	/* and Poof! a 8 megabytes of ram shows up in the address space */
 }
 

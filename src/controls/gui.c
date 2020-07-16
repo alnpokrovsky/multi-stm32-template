@@ -7,6 +7,7 @@
 #include "controls/stmpe811.h"
 #include <malloc.h>
 #include "sramfunc.h"
+#include "sdram.h"
 
 #define BUF_SIZE (LTDC_WIDTH*32)
 
@@ -116,8 +117,9 @@ void gui_init(void) {
     lv_indev_drv_register(&indev_drv);
 
     dma2d_init();
+    sdram_init();
     ltdc_init();
-    layer.framebuf = malloc(LTDC_SIZE * sizeof(lv_color_t));
+    layer.framebuf = _sdram;
     ltdc_setLayer(&layer);
 }
 

@@ -6,10 +6,8 @@
 #include <libopencm3/stm32/spi.h>
 #include <libopencm3/stm32/ltdc.h>
 #include <libopencm3/cm3/nvic.h>
-#include "dma2d.h"
 #include "delay.h"
 #include <stdint.h>
-#include <malloc.h>
 
 
 #define HSYNC       10
@@ -31,9 +29,6 @@ static const colormodel_descript LTDC_COLOR_MODELS[] = {
 	{ LTDC_LxPFCR_RGB888, 	3 },
 	{ LTDC_LxPFCR_RGB565, 	sizeof(uint16_t) },
 };
-
-static void * FRAMEBUFFER_1;
-static void * FRAMEBUFFER_2;
 
 static void ltdc_command(uint8_t cmd, int delay, int n_args, const uint8_t *args)
 {
@@ -251,13 +246,15 @@ static const ltdc_pins_descript LTDC_PINS[] = {
  *     SDA     = PF9         used in lcd-spi
  *     NRST    = NRST
  */
-void ltdc_init(const LTDC_Layer * l1, const LTDC_Layer * l2) {
+void ltdc_init(void) {
 
 	for (uint8_t i = 0; i < LTDC_PINS_SIZE; ++i) {
 		/* init GPIO clocks */
 		rcc_periph_clock_enable(LTDC_PINS[i].gpio_rcc);
 		/* set GPIO pin modes */
 		gpio_mode_setup(LTDC_PINS[i].gpio_port, GPIO_MODE_AF, GPIO_PUPD_NONE, LTDC_PINS[i].gpio_pins);
+		gpio_set_output_options(LTDC_PINS[i].gpio_port, 
+			GPIO_OTYPE_PP, GPIO_OSPEED_100MHZ, LTDC_PINS[i].gpio_pins);
 		gpio_set_af(LTDC_PINS[i].gpio_port, LTDC_PINS[i].gpio_af, LTDC_PINS[i].gpio_pins);
 	}
 
@@ -287,7 +284,7 @@ void ltdc_init(const LTDC_Layer * l1, const LTDC_Layer * l2) {
 	 * So the refresh frequency is 6 MHz / 91840 ~= 65.6 Hz.
 	 */
 	RCC_PLLSAICFGR |= 192 << RCC_PLLSAICFGR_PLLSAIN_SHIFT;
-	RCC_PLLSAICFGR |= 4   << RCC_PLLSAICFGR_PLLSAIR_SHIFT;
+	RCC_PLLSAICFGR |= 2   << RCC_PLLSAICFGR_PLLSAIR_SHIFT;
 	RCC_DCKCFGR &= ~(RCC_DCKCFGR_PLLSAIDIVR_MASK << RCC_DCKCFGR_PLLSAIDIVR_SHIFT);
 	RCC_DCKCFGR |= RCC_DCKCFGR_PLLSAIDIVR_DIVR_8 << RCC_DCKCFGR_PLLSAIDIVR_SHIFT;
 	/* wait till RCC configured */
@@ -315,40 +312,18 @@ void ltdc_init(const LTDC_Layer * l1, const LTDC_Layer * l2) {
 	/* Configure the synchronous signals and clock polarity. */
 	LTDC_GCR |= LTDC_GCR_PCPOL_ACTIVE_HIGH;
 
-
-	/* Configure the Layer 1 parameters.
-	 * (Layer 1 is the bottom l->layerN.)    */
-	if (l1) {
-		ltdc_setLayer(l1);
-		/* The color frame buffer start address */
-		FRAMEBUFFER_1 = malloc(LTDC_SIZE * LTDC_COLOR_MODELS[l1->cm].pixSize);
-		LTDC_L1CFBAR = (uint32_t)FRAMEBUFFER_1;
-		/* Enable Layer1 and if needed the CLUT */
-		LTDC_L1CR |= LTDC_LxCR_LAYER_ENABLE;
-	}
-
-	/* Configure the Layer 2 parameters. */
-	if (l2) {
-		ltdc_setLayer(l2);
-		/* The color frame buffer start address */
-		FRAMEBUFFER_2 = malloc(LTDC_SIZE * LTDC_COLOR_MODELS[l2->cm].pixSize);
-		LTDC_L2CFBAR = (uint32_t)FRAMEBUFFER_2;
-		/* Enable Layer2 and if needed the CLUT */
-		LTDC_L2CR |= LTDC_LxCR_LAYER_ENABLE;
-	}
-
-	ltdc_setBackground(0);
+	ltdc_setBackground(0xffff0000);
 
 	/* Configure the needed interrupts. */
-	LTDC_IER = LTDC_IER_RRIE;
-	nvic_enable_irq(NVIC_LCD_TFT_IRQ);
+	LTDC_IER |= LTDC_IER_LIE; // line interrupt
+	LTDC_LIPCR |= (VSYNC + VBP + LTDC_HEIGHT + VFP - 1) << LTDC_LIPCR_LIPOS_SHIFT; // line number
+	// LTDC_LIPCR |= LTDC_HEIGHT << LTDC_LIPCR_LIPOS_SHIFT; // line number
+	
 	/* Reload the shadow registers to active registers. */
 	LTDC_SRCR |= LTDC_SRCR_VBR;
 	/* Enable the LTDC-TFT controller. */
 	LTDC_GCR |= LTDC_GCR_LTDC_ENABLE;
 
-	dma2d_init();
-	
 	/**
 	 * Initialize the SPI port, and the through that port
 	 * initialize the LTDC controller. Note that this code
@@ -383,7 +358,7 @@ void ltdc_init(const LTDC_Layer * l1, const LTDC_Layer * l2) {
 	spi_enable(SPI5);
 
 	/* Set up the display */
-	for (size_t i = 0; i < INIT_SIZE; i++) {
+	for (unsigned i = 0; i < INIT_SIZE; ++i) {
 		uint8_t arg_count = INIT[i].n_args;
 		const uint8_t *args = (arg_count > MAX_INLINE_ARGS) ?
 								 INIT[i].aptr : INIT[i].args;
@@ -391,65 +366,78 @@ void ltdc_init(const LTDC_Layer * l1, const LTDC_Layer * l2) {
 	}
 }
 
+void ltdc_setInterrupt(bool enable) {
+	if (enable) {
+		nvic_enable_irq(NVIC_LCD_TFT_IRQ);
+	} else {
+		nvic_disable_irq(NVIC_LCD_TFT_IRQ);
+	}
+}
+
 void ltdc_setLayer(const LTDC_Layer * l) {
-	/* The pixel input format */
-	LTDC_LxPFCR(l->layerN) = LTDC_COLOR_MODELS[l->cm].pixFormat;
+	if (!l->enable) {
+		LTDC_LxCR(l->layerN) &= ~LTDC_LxCR_LAYER_ENABLE;
+	} else {
+		/* Enable Layer and if needed the CLUT */
+		LTDC_LxCR(l->layerN) |= LTDC_LxCR_LAYER_ENABLE;
 
-	/* x shift */
-	uint32_t h_start = HSYNC + HBP + l->x;
-	uint32_t h_stop = h_start + l->width - 1;
-	LTDC_LxWHPCR(l->layerN) = h_stop << LTDC_LxWHPCR_WHSPPOS_SHIFT |
-		       h_start << LTDC_LxWHPCR_WHSTPOS_SHIFT;
-	/* y shift */
-	uint32_t v_start = VSYNC + VBP + l->y;
-	uint32_t v_stop = v_start + l->height - 1;
-	LTDC_LxWVPCR(l->layerN) = v_stop << LTDC_LxWVPCR_WVSPPOS_SHIFT |
-		       v_start << LTDC_LxWVPCR_WVSTPOS_SHIFT;
+		/* The pixel input format */
+		LTDC_LxPFCR(l->layerN) = LTDC_COLOR_MODELS[l->cm].pixFormat;
 
-	/* The line length and pitch of the color frame buffer */
-	uint32_t pitch = l->width * LTDC_COLOR_MODELS[l->cm].pixSize;
-	LTDC_LxCFBLR(l->layerN) = pitch << LTDC_LxCFBLR_CFBP_SHIFT |
-				(pitch+3) << LTDC_LxCFBLR_CFBLL_SHIFT;
+		/* x shift */
+		uint32_t h_start = HSYNC + HBP + l->x;
+		uint32_t h_stop = h_start + l->width - 1;
+		LTDC_LxWHPCR(l->layerN) = h_stop << LTDC_LxWHPCR_WHSPPOS_SHIFT |
+				h_start << LTDC_LxWHPCR_WHSTPOS_SHIFT;
+		/* y shift */
+		uint32_t v_start = VSYNC + VBP + l->y;
+		uint32_t v_stop = v_start + l->height - 1;
+		LTDC_LxWVPCR(l->layerN) = v_stop << LTDC_LxWVPCR_WVSPPOS_SHIFT |
+				v_start << LTDC_LxWVPCR_WVSTPOS_SHIFT;
 
-	/* The number of lines of the color frame buffer */
-	LTDC_LxCFBLNR(l->layerN) = l->height;
+		/* The line length and pitch of the color frame buffer */
+		uint32_t pitch = l->width * LTDC_COLOR_MODELS[l->cm].pixSize;
+		LTDC_LxCFBLR(l->layerN) = pitch << LTDC_LxCFBLR_CFBP_SHIFT |
+					(pitch+3) << LTDC_LxCFBLR_CFBLL_SHIFT;
 
-	/* If needed, configure blendingfactors */
-	LTDC_LxBFCR(l->layerN) = LTDC_LxBFCR_BF1_PIXEL_ALPHA_x_CONST_ALPHA |
-				LTDC_LxBFCR_BF2_PIXEL_ALPHA_x_CONST_ALPHA;
-	/* transparency */
-	LTDC_LxCACR(l->layerN) = l->transp;
+		/* The number of lines of the color frame buffer */
+		LTDC_LxCFBLNR(l->layerN) = l->height;
+
+		/* If needed, configure blendingfactors */
+		LTDC_LxBFCR(l->layerN) = LTDC_LxBFCR_BF1_PIXEL_ALPHA_x_CONST_ALPHA |
+					LTDC_LxBFCR_BF2_PIXEL_ALPHA_x_CONST_ALPHA;
+		/* transparency */
+		LTDC_LxCACR(l->layerN) = l->transp;
+
+		/* framebuffer */
+		LTDC_LxCFBAR(l->layerN) = (uint32_t)l->framebuf;
+	}
+
+	/* Reload the shadow registers to active on Vsync */
+	LTDC_SRCR |= LTDC_SRCR_VBR;
+}
+
+/**
+ * wait till next frame ready
+ */
+void ltdc_waitVSync(void) {
+	while (LTDC_SRCR_IS_RELOADING()) ;
+	while ( !(LTDC_CDSR & LTDC_CDSR_VSYNCS) );
 }
 
 void ltdc_setBackground(uint32_t color) {
 	LTDC_BCCR = color;
 }
 
-uint32_t * ltdc_getPixelAddr(const LTDC_Layer * l, uint16_t x, uint16_t y) {
-	uint32_t offset = (y * l->width + x) * LTDC_COLOR_MODELS[l->cm].pixSize;
-	void * buf = (l->layerN == 1) ? FRAMEBUFFER_1 : FRAMEBUFFER_2;
-	return (uint32_t *)(buf + offset);
-}
 
-void ltdc_setPixel(const LTDC_Layer * l, uint16_t x, uint16_t y, uint32_t color) {
-	if ( (x >= l->width) || (y >= l->height) ) return;
-	// x = l->width - x; // mirroring x
-	const uint32_t bites = LTDC_COLOR_MODELS[l->cm].pixSize * 8;
-	const uint32_t mask = UINT32_MAX >> (32 - bites);
-
-	uint32_t * addr = ltdc_getPixelAddr(l, x, y);
-	*addr &= ~mask;
-	*addr |= color & mask;
-}
-
-void lcd_tft_isr(void)
+#include "sramfunc.h"
+void SRAM_FUNC lcd_tft_isr(void)
 {
-	LTDC_ICR |= LTDC_ICR_CRRIF;
 	ltdc_handler();
-	LTDC_SRCR |= LTDC_SRCR_VBR;
+	LTDC_ICR |= LTDC_ICR_CLIF;
 }
 
-static void null_handler(void) {;}
-#pragma weak ltdc_handler = null_handler
+__attribute__((weak))
+void ltdc_handler(void) {;}
 
 #endif

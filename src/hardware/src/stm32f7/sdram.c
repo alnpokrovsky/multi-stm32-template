@@ -24,11 +24,21 @@ static const struct {
 };
 #define PINS_SIZE sizeof(SDRAM_PINS)/sizeof(SDRAM_PINS[0])
 
-
+/**
+ * 200/2=100MHz freq = 10ns one clock cycle
+ * trcd min Trcd = 15ns = 2cycles
+ * trp min Trp = 15ns = 2cycles
+ * twr min Twr = 2cycles
+ * trc min Trc = 60-63ns = 6-7 cycles
+ * tras min Tdal = 2cycles + Trp = 4cycles
+ * txsr min Txsr = 66-70ns = 7 cycles
+ * tmrd min Tmrd  = 2 cycles
+ * 
+ */
 static struct sdram_timing TIMING = {
 	.trcd = 2,		/* RCD Delay */
 	.trp = 2,		/* RP Delay */
-	.twr = 3,		/* Write Recovery Time */
+	.twr = 2,		/* Write Recovery Time */
 	.trc = 7,		/* Row Cycle Delay */
 	.tras = 4,		/* Self Refresh Time */
 	.txsr = 7,		/* Exit Self Refresh Time */
@@ -50,10 +60,6 @@ void sdram_init(void) {
 
 	/* Enable the SDRAM Controller */
 	rcc_periph_clock_enable(RCC_FMC);
-
-	/* Note the STM32F429-DISCO board has the ram attached to bank 2 */
-	/* Timing parameters computed for a 168Mhz clock */
-	/* These parameters are specific to the SDRAM chip on the board */
 
 	uint32_t cr_tmp  = FMC_SDCR_RPIPE_1CLK;
 	cr_tmp |= FMC_SDCR_SDCLK_2HCLK;
@@ -93,12 +99,11 @@ void sdram_init(void) {
 				SDRAM_MODE_WRITEBURST_MODE_SINGLE;
 	sdram_command(SDRAM_BANK2, SDRAM_LOAD_MODE, 1, tr_tmp);
 
-	/*
-	 * set the refresh counter to insure we kick off an
-	 * auto refresh often enough to prevent data loss.
+	/**
+	 * sdramRefr/numberOfRows*cycleFreq - 20 
+	 * 64ms/4096 * 100 - 20 = 1542.5
 	 */
 	FMC_SDRTR = 1543 << FMC_SDRTR_COUNT_SHIFT;
-	/* and Poof! a 8 megabytes of ram shows up in the address space */
 }
 
 

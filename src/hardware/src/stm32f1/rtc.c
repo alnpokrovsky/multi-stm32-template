@@ -1,15 +1,13 @@
-#if defined(STM32F1)||defined(STM32F3)||defined(STM32F4)
+#if defined(STM32F1)
 
 #include "rtc.h"
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/rtc.h>
 #include <libopencm3/cm3/nvic.h>
 
-#if defined(STM32F1)
 #define RCC_RTC RCC_LSE
 #define rtc_alarm_isr rtc_isr
 #define NVIC_RTC_ALARM_IRQ NVIC_RTC_IRQ
-#endif
 
 void rtc_init() {
     rcc_periph_clock_enable(RCC_RTC);

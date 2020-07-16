@@ -8,7 +8,6 @@
 #include "digitalpin.h"
 #include <stdint.h>
 #include <stdlib.h>
-#include <malloc.h>
 
 
 #define HSYNC       20
@@ -30,9 +29,6 @@ static const colormodel_descript LTDC_COLOR_MODELS[] = {
 	{ LTDC_LxPFCR_RGB888, 	3 },
 	{ LTDC_LxPFCR_RGB565, 	sizeof(uint16_t) },
 };
-
-static void * FRAMEBUFFER_1;
-static void * FRAMEBUFFER_2;
 
 typedef struct {
 	uint32_t gpio_port;
@@ -67,10 +63,6 @@ void ltdc_init(void) {
 			GPIO_OTYPE_PP, GPIO_OSPEED_100MHZ, LTDC_PINS[i].gpio_pins);
 		gpio_set_af(LTDC_PINS[i].gpio_port, LTDC_PINS[i].gpio_af, LTDC_PINS[i].gpio_pins);
 	}
-
-	/* max led_pwm */
-	digitalpin_mode(PA_3, DIGITALPIN_OUTPUT);
-	digitalpin_set(PA_3, 0);
 
 	/* enable RCC */
 	RCC_APB2ENR |= RCC_APB2ENR_LTDCEN;
@@ -107,6 +99,10 @@ void ltdc_init(void) {
 	LTDC_SRCR |= LTDC_SRCR_VBR;
 	/* Enable the LTDC-TFT controller. */
 	LTDC_GCR |= LTDC_GCR_LTDC_ENABLE;
+
+	/* max led_pwm */
+	digitalpin_mode(PA_3, DIGITALPIN_OUTPUT);
+	digitalpin_set(PA_3, 0);
 }
 
 void ltdc_setInterrupt(bool enable) {
@@ -170,23 +166,6 @@ void ltdc_waitVSync(void) {
 
 void ltdc_setBackground(uint32_t color) {
 	LTDC_BCCR = color;
-}
-
-static void * ltdc_getPixelAddr(const LTDC_Layer * l, uint16_t x, uint16_t y) {
-	uint32_t offset = (y * l->width + x) * LTDC_COLOR_MODELS[l->cm].pixSize;
-	uint32_t buf = (uint32_t)((l->layerN == 1) ? FRAMEBUFFER_1 : FRAMEBUFFER_2);
-	return (void*)(buf + offset);
-}
-
-void ltdc_setPixel(const LTDC_Layer * l, uint16_t x, uint16_t y, uint32_t color) {
-	if ( (x >= l->width) || (y >= l->height) ) return;
-	// x = l->width - x; // mirroring x
-	const uint32_t bites = LTDC_COLOR_MODELS[l->cm].pixSize * 8;
-	const uint32_t mask = UINT32_MAX << bites;
-
-	uint32_t * addr = ltdc_getPixelAddr(l, x, y);
-	*addr &= mask;
-	*addr |= color & mask;
 }
 
 #include "sramfunc.h"
