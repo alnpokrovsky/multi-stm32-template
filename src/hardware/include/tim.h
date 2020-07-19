@@ -2,7 +2,6 @@
 #define __HARDWARE_TIM_H__
 
 #include <stdint.h>
-#include "nvicprior.h"
 
 typedef enum {
     TIM_2,

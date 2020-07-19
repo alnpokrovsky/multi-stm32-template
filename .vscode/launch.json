@@ -86,6 +86,49 @@
           "MIMode": "gdb",
           "miDebuggerPath": "arm-none-eabi-gdb.exe"
         }
+      },
+      {
+        "name": "Debug-MDR32F9",
+        "type": "cppdbg",
+        "request": "launch",
+        "targetArchitecture": "arm",
+        "program": "${workspaceRoot}/build/debug.elf",
+        "preLaunchTask": "build-debug",
+
+        "stopAtEntry": true,
+        "cwd": "${workspaceRoot}",
+        "environment": [],
+        "externalConsole": true,
+
+        "debugServerPath": "openocd",
+        "debugServerArgs": "-f interface/stlink-v2.cfg -f target/mdr32f9q2i.cfg -c init -c \"reset init\"",
+        "serverLaunchTimeout": 20000,
+        "filterStderr": true,
+        "filterStdout": false,
+        "serverStarted": "Info : mdr32f",
+        
+        "setupCommands": [
+            {"text": "-enable-pretty-printing", "ignoreFailures": true },
+            { "text": "-environment-cd ${workspaceRoot}/build" },
+            { "text": "-target-select remote localhost:3333" },
+            { "text": "-file-exec-and-symbols debug.elf" },
+            { "text": "-target-download" },
+            { "text": "-interpreter-exec console \"monitor endian little\"" },
+            { "text": "-interpreter-exec console \"monitor reset halt\"" },
+            { "text": "-interpreter-exec console \"monitor arm semihosting enable\"" },
+            { "text": "-interpreter-exec console \"monitor poll\"" },
+        ],
+        "linux": {
+          "MIMode": "gdb",
+          "miDebuggerPath": "/usr/bin/arm-none-eabi-gdb"
+        },
+        "osx": {
+          "MIMode": "lldb"
+        },
+        "windows": {
+          "MIMode": "gdb",
+          "miDebuggerPath": "arm-none-eabi-gdb.exe"
+        }
       }
     ]
   }
