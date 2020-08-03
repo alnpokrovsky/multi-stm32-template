@@ -25,7 +25,6 @@ INC += src/hardware/include
 # include libs/freertos.include
 # include libs/freemodbus.include
 # include libs/fatfs.include
-# include libs/libopencm3-usb.include
 # include libs/saxml.include
 # include libs/ugui.include
 include libs/lvgl.include
