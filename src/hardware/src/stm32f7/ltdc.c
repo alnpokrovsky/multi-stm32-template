@@ -139,6 +139,7 @@ void ltdc_init(void) {
 
 void ltdc_setInterrupt(bool enable) {
 	if (enable) {
+		NVIC_SetPriority(LTDC_IRQn, 17);
 		NVIC_EnableIRQ(LTDC_IRQn);
 	} else {
 		NVIC_DisableIRQ(LTDC_IRQn);

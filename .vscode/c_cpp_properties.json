@@ -2,7 +2,6 @@
     "configurations": [
         {
             "defines": [
-                "__GNUC__=7",
                 "HSE_VALUE=8000000",
                 "STM32F7",
                 "STM32F746xx",
@@ -17,9 +16,10 @@
             "includePath": [
                 "src",
                 "src/config",
-                "src/utils",
                 "src/hardware/include",
                 "core/CMSIS/Core/Include",
+                "core/CMSIS/Core_A/Include",
+                "core/CMSIS/utils/Include",
                 "core/CMSIS/RTOS2/Include",
                 "core/CMSIS/RTOS2/FreeRTOS/Config/ARMCM",
                 "core/CMSIS/RTOS2/FreeRTOS/Source/freertos/include",
@@ -30,7 +30,8 @@
                 "libs/ugui/include",
                 "libs/lvgl",
                 "libs/usb/include",
-                "libs/lua"
+                "libs/lua",
+                "libs/usb/Core/Inc"
             ],
             "name": "arm-embeded"
         }

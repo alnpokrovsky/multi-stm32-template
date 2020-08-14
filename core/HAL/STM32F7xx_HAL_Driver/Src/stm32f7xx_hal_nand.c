@@ -2009,6 +2009,7 @@ HAL_NAND_StateTypeDef HAL_NAND_GetState(NAND_HandleTypeDef *hnand)
   */
 uint32_t HAL_NAND_Read_Status(NAND_HandleTypeDef *hnand)
 {
+  UNUSED(hnand);
   uint32_t data = 0;
   uint32_t DeviceAddress = 0;
   

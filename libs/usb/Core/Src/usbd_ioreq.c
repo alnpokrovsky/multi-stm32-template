@@ -19,7 +19,9 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_ioreq.h"
-
+#include "usbd_core.h"
+#include "usb_ll.h"
+#include <stdlib.h>
 
 /**
 * @brief  USBD_CtlSendData
@@ -30,7 +32,7 @@
 * @retval status
 */
 USBD_StatusTypeDef USBD_CtlSendData(USBD_HandleTypeDef *pdev,
-                                    uint8_t *pbuf, uint32_t len)
+                                    const uint8_t *pbuf, uint32_t len)
 {
   /* Set EP0 State */
   pdev->ep0_state = USBD_EP0_DATA_IN;

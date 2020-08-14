@@ -120,7 +120,6 @@ static uint32_t           FLASH_OB_GetPCROP(void);
 static uint32_t           FLASH_OB_GetPCROPRDP(void);
 #endif /* FLASH_OPTCR2_PCROP */
 
-extern HAL_StatusTypeDef  FLASH_WaitForLastOperation(uint32_t Timeout);
 /**
   * @}
   */

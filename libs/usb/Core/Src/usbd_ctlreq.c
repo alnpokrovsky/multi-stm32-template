@@ -20,6 +20,13 @@
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_ctlreq.h"
 #include "usbd_ioreq.h"
+#include "usbd_def.h"
+#include "usbd_core.h"
+#include <stdlib.h>
+#include "word.h"
+#include "minmax.h"
+#include "UsbConfig.h"
+#include "usb_ll.h"
 
 
 static void USBD_GetDescriptor(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *req);
@@ -322,7 +329,7 @@ USBD_StatusTypeDef USBD_StdEPReq(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef 
 static void USBD_GetDescriptor(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *req)
 {
   uint16_t len = 0U;
-  uint8_t *pbuf = NULL;
+  const uint8_t *pbuf = NULL;
   uint8_t err = 0U;
 
   switch (req->wValue >> 8)
@@ -348,12 +355,10 @@ static void USBD_GetDescriptor(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *r
     if (pdev->dev_speed == USBD_SPEED_HIGH)
     {
       pbuf = pdev->pClass->GetHSConfigDescriptor(&len);
-      pbuf[1] = USB_DESC_TYPE_CONFIGURATION;
     }
     else
     {
       pbuf = pdev->pClass->GetFSConfigDescriptor(&len);
-      pbuf[1] = USB_DESC_TYPE_CONFIGURATION;
     }
     break;
 
@@ -363,67 +368,7 @@ static void USBD_GetDescriptor(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *r
     case USBD_IDX_LANGID_STR:
       if (pdev->pDesc->GetLangIDStrDescriptor != NULL)
       {
-        pbuf = pdev->pDesc->GetLangIDStrDescriptor(pdev->dev_speed, &len);
-      }
-      else
-      {
-        USBD_CtlError(pdev, req);
-        err++;
-      }
-      break;
-
-    case USBD_IDX_MFC_STR:
-      if (pdev->pDesc->GetManufacturerStrDescriptor != NULL)
-      {
-        pbuf = pdev->pDesc->GetManufacturerStrDescriptor(pdev->dev_speed, &len);
-      }
-      else
-      {
-        USBD_CtlError(pdev, req);
-        err++;
-      }
-      break;
-
-    case USBD_IDX_PRODUCT_STR:
-      if (pdev->pDesc->GetProductStrDescriptor != NULL)
-      {
-        pbuf = pdev->pDesc->GetProductStrDescriptor(pdev->dev_speed, &len);
-      }
-      else
-      {
-        USBD_CtlError(pdev, req);
-        err++;
-      }
-      break;
-
-    case USBD_IDX_SERIAL_STR:
-      if (pdev->pDesc->GetSerialStrDescriptor != NULL)
-      {
-        pbuf = pdev->pDesc->GetSerialStrDescriptor(pdev->dev_speed, &len);
-      }
-      else
-      {
-        USBD_CtlError(pdev, req);
-        err++;
-      }
-      break;
-
-    case USBD_IDX_CONFIG_STR:
-      if (pdev->pDesc->GetConfigurationStrDescriptor != NULL)
-      {
-        pbuf = pdev->pDesc->GetConfigurationStrDescriptor(pdev->dev_speed, &len);
-      }
-      else
-      {
-        USBD_CtlError(pdev, req);
-        err++;
-      }
-      break;
-
-    case USBD_IDX_INTERFACE_STR:
-      if (pdev->pDesc->GetInterfaceStrDescriptor != NULL)
-      {
-        pbuf = pdev->pDesc->GetInterfaceStrDescriptor(pdev->dev_speed, &len);
+        pbuf = (uint8_t *)pdev->pDesc->GetLangIDStrDescriptor(pdev->dev_speed, &len);
       }
       else
       {
@@ -433,31 +378,15 @@ static void USBD_GetDescriptor(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *r
       break;
 
     default:
-#if (USBD_SUPPORT_USER_STRING_DESC == 1U)
-      if (pdev->pClass->GetUsrStrDescriptor != NULL)
-      {
-        pbuf = pdev->pClass->GetUsrStrDescriptor(pdev, (req->wValue), &len);
-      }
-      else
-      {
-        USBD_CtlError(pdev, req);
-        err++;
-      }
-#elif (USBD_CLASS_USER_STRING_DESC == 1U)
       if (pdev->pDesc->GetUserStrDescriptor != NULL)
       {
-        pbuf = pdev->pDesc->GetUserStrDescriptor(pdev->dev_speed, (req->wValue), &len);
+        pbuf = (uint8_t *)pdev->pDesc->GetUserStrDescriptor(pdev->dev_speed, (req->wValue), &len);
       }
       else
       {
         USBD_CtlError(pdev, req);
         err++;
       }
-#else
-      USBD_CtlError(pdev, req);
-      err++;
-#endif
-      break;
     }
     break;
 
@@ -477,7 +406,6 @@ static void USBD_GetDescriptor(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *r
     if (pdev->dev_speed == USBD_SPEED_HIGH)
     {
       pbuf = pdev->pClass->GetOtherSpeedConfigDescriptor(&len);
-      pbuf[1] = USB_DESC_TYPE_OTHER_SPEED_CONFIGURATION;
     }
     else
     {
@@ -767,6 +695,19 @@ static void USBD_ClrFeature(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *req)
   }
 }
 
+static inline uint16_t SWAPBYTE(uint8_t *addr) {
+  uint16_t _SwapVal, _Byte1, _Byte2;
+  uint8_t *_pbuff = addr;
+
+  _Byte1 = *(uint8_t *)_pbuff;
+  _pbuff++;
+  _Byte2 = *(uint8_t *)_pbuff;
+
+  _SwapVal = (_Byte2 << 8) | _Byte1;
+
+  return _SwapVal;
+}
+
 /**
 * @brief  USBD_ParseSetupRequest
 *         Copy buffer into setup structure
@@ -774,15 +715,14 @@ static void USBD_ClrFeature(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *req)
 * @param  req: usb request
 * @retval None
 */
-
 void USBD_ParseSetupRequest(USBD_SetupReqTypedef *req, uint8_t *pdata)
 {
   uint8_t *pbuff = pdata;
 
-  req->bmRequest = *(uint8_t *)(pbuff);
+  req->bmRequest = *pbuff;
 
   pbuff++;
-  req->bRequest = *(uint8_t *)(pbuff);
+  req->bRequest = *pbuff;
 
   pbuff++;
   req->wValue = SWAPBYTE(pbuff);

@@ -6,7 +6,7 @@
 
 static void __attribute__ ((constructor)) premainInitCach(void) {
     SCB_EnableICache();
-    // SCB_EnableDCache();
+    SCB_EnableDCache();
 }
 
 #endif

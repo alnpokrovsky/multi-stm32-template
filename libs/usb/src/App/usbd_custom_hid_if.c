@@ -1,5 +1,5 @@
 #include "usbd_custom_hid_if.h"
-
+#include "alignment.h"
 
 /** Usb HID report descriptor. */
 __ALIGN_BEGIN static uint8_t CUSTOM_HID_ReportDesc_FS[USBD_CUSTOM_HID_REPORT_DESC_SIZE] __ALIGN_END =

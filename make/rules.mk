@@ -91,7 +91,7 @@ TGT_ASFLAGS += $(OPT) $(ARCH_FLAGS) $(DEBUG)
 # C & C++ preprocessor common flags
 
 WARNINGS := -Wall -Werror \
-			-Wno-unused-value -Wno-unused-parameter -Wno-redundant-decls
+			#-Wno-unused-value -Wno-unused-parameter -Wno-redundant-decls
 
 # TGT_CPPFLAGS	+= -mlong-calls
 TGT_CPPFLAGS	+= -MD

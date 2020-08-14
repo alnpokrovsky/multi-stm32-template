@@ -45,7 +45,11 @@ EndBSPDependencies */
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_customhid.h"
 #include "usbd_ctlreq.h"
-
+#include "usbd_core.h"
+#include <stdlib.h>
+#include "minmax.h"
+#include "alignment.h"
+#include "usb_ll.h"
 
 /** @addtogroup STM32_USB_DEVICE_LIBRARY
   * @{
@@ -92,10 +96,10 @@ static uint8_t USBD_CUSTOM_HID_DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum);
 static uint8_t USBD_CUSTOM_HID_DataOut(USBD_HandleTypeDef *pdev, uint8_t epnum);
 static uint8_t USBD_CUSTOM_HID_EP0_RxReady(USBD_HandleTypeDef  *pdev);
 
-static uint8_t *USBD_CUSTOM_HID_GetFSCfgDesc(uint16_t *length);
-static uint8_t *USBD_CUSTOM_HID_GetHSCfgDesc(uint16_t *length);
-static uint8_t *USBD_CUSTOM_HID_GetOtherSpeedCfgDesc(uint16_t *length);
-static uint8_t *USBD_CUSTOM_HID_GetDeviceQualifierDesc(uint16_t *length);
+static const uint8_t *USBD_CUSTOM_HID_GetFSCfgDesc(uint16_t *length);
+static const uint8_t *USBD_CUSTOM_HID_GetHSCfgDesc(uint16_t *length);
+static const uint8_t *USBD_CUSTOM_HID_GetOtherSpeedCfgDesc(uint16_t *length);
+static const uint8_t *USBD_CUSTOM_HID_GetDeviceQualifierDesc(uint16_t *length);
 
 /**
   * @}
@@ -124,7 +128,7 @@ USBD_ClassTypeDef  USBD_CUSTOM_HID =
 };
 
 /* USB CUSTOM_HID device FS Configuration Descriptor */
-__ALIGN_BEGIN static uint8_t USBD_CUSTOM_HID_CfgFSDesc[USB_CUSTOM_HID_CONFIG_DESC_SIZ] __ALIGN_END =
+__ALIGN_BEGIN static const uint8_t USBD_CUSTOM_HID_CfgFSDesc[USB_CUSTOM_HID_CONFIG_DESC_SIZ] __ALIGN_END =
 {
   0x09,                                               /* bLength: Configuration Descriptor size */
   USB_DESC_TYPE_CONFIGURATION,                        /* bDescriptorType: Configuration */
@@ -182,7 +186,7 @@ __ALIGN_BEGIN static uint8_t USBD_CUSTOM_HID_CfgFSDesc[USB_CUSTOM_HID_CONFIG_DES
 };
 
 /* USB CUSTOM_HID device HS Configuration Descriptor */
-__ALIGN_BEGIN static uint8_t USBD_CUSTOM_HID_CfgHSDesc[USB_CUSTOM_HID_CONFIG_DESC_SIZ] __ALIGN_END =
+__ALIGN_BEGIN static const uint8_t USBD_CUSTOM_HID_CfgHSDesc[USB_CUSTOM_HID_CONFIG_DESC_SIZ] __ALIGN_END =
 {
   0x09,                                               /* bLength: Configuration Descriptor size */
   USB_DESC_TYPE_CONFIGURATION,                        /* bDescriptorType: Configuration */
@@ -240,7 +244,7 @@ __ALIGN_BEGIN static uint8_t USBD_CUSTOM_HID_CfgHSDesc[USB_CUSTOM_HID_CONFIG_DES
 };
 
 /* USB CUSTOM_HID device Other Speed Configuration Descriptor */
-__ALIGN_BEGIN static uint8_t USBD_CUSTOM_HID_OtherSpeedCfgDesc[USB_CUSTOM_HID_CONFIG_DESC_SIZ] __ALIGN_END =
+__ALIGN_BEGIN static const uint8_t USBD_CUSTOM_HID_OtherSpeedCfgDesc[USB_CUSTOM_HID_CONFIG_DESC_SIZ] __ALIGN_END =
 {
   0x09,                                               /* bLength: Configuration Descriptor size */
   USB_DESC_TYPE_CONFIGURATION,                        /* bDescriptorType: Configuration */
@@ -298,7 +302,7 @@ __ALIGN_BEGIN static uint8_t USBD_CUSTOM_HID_OtherSpeedCfgDesc[USB_CUSTOM_HID_CO
 };
 
 /* USB CUSTOM_HID device Configuration Descriptor */
-__ALIGN_BEGIN static uint8_t USBD_CUSTOM_HID_Desc[USB_CUSTOM_HID_DESC_SIZ] __ALIGN_END =
+__ALIGN_BEGIN static const uint8_t USBD_CUSTOM_HID_Desc[USB_CUSTOM_HID_DESC_SIZ] __ALIGN_END =
 {
   /* 18 */
   0x09,                                               /* bLength: CUSTOM_HID Descriptor size */
@@ -313,7 +317,7 @@ __ALIGN_BEGIN static uint8_t USBD_CUSTOM_HID_Desc[USB_CUSTOM_HID_DESC_SIZ] __ALI
 };
 
 /* USB Standard Device Descriptor */
-__ALIGN_BEGIN static uint8_t USBD_CUSTOM_HID_DeviceQualifierDesc[USB_LEN_DEV_QUALIFIER_DESC] __ALIGN_END =
+__ALIGN_BEGIN static const uint8_t USBD_CUSTOM_HID_DeviceQualifierDesc[USB_LEN_DEV_QUALIFIER_DESC] __ALIGN_END =
 {
   USB_LEN_DEV_QUALIFIER_DESC,
   USB_DESC_TYPE_DEVICE_QUALIFIER,
@@ -435,7 +439,7 @@ static uint8_t USBD_CUSTOM_HID_Setup(USBD_HandleTypeDef *pdev,
 {
   USBD_CUSTOM_HID_HandleTypeDef *hhid = (USBD_CUSTOM_HID_HandleTypeDef *)pdev->pClassData;
   uint16_t len = 0U;
-  uint8_t  *pbuf = NULL;
+  const uint8_t *pbuf = NULL;
   uint16_t status_info = 0U;
   USBD_StatusTypeDef ret = USBD_OK;
 
@@ -588,7 +592,7 @@ uint8_t USBD_CUSTOM_HID_SendReport(USBD_HandleTypeDef *pdev,
   * @param  length : pointer data length
   * @retval pointer to descriptor buffer
   */
-static uint8_t *USBD_CUSTOM_HID_GetFSCfgDesc(uint16_t *length)
+static const uint8_t *USBD_CUSTOM_HID_GetFSCfgDesc(uint16_t *length)
 {
   *length = (uint16_t)sizeof(USBD_CUSTOM_HID_CfgFSDesc);
 
@@ -602,7 +606,7 @@ static uint8_t *USBD_CUSTOM_HID_GetFSCfgDesc(uint16_t *length)
   * @param  length : pointer data length
   * @retval pointer to descriptor buffer
   */
-static uint8_t *USBD_CUSTOM_HID_GetHSCfgDesc(uint16_t *length)
+static const uint8_t *USBD_CUSTOM_HID_GetHSCfgDesc(uint16_t *length)
 {
   *length = (uint16_t)sizeof(USBD_CUSTOM_HID_CfgHSDesc);
 
@@ -616,7 +620,7 @@ static uint8_t *USBD_CUSTOM_HID_GetHSCfgDesc(uint16_t *length)
   * @param  length : pointer data length
   * @retval pointer to descriptor buffer
   */
-static uint8_t *USBD_CUSTOM_HID_GetOtherSpeedCfgDesc(uint16_t *length)
+static const uint8_t *USBD_CUSTOM_HID_GetOtherSpeedCfgDesc(uint16_t *length)
 {
   *length = (uint16_t)sizeof(USBD_CUSTOM_HID_OtherSpeedCfgDesc);
 
@@ -720,43 +724,10 @@ static uint8_t USBD_CUSTOM_HID_EP0_RxReady(USBD_HandleTypeDef *pdev)
 * @param  length : pointer data length
 * @retval pointer to descriptor buffer
 */
-static uint8_t *USBD_CUSTOM_HID_GetDeviceQualifierDesc(uint16_t *length)
+static const uint8_t *USBD_CUSTOM_HID_GetDeviceQualifierDesc(uint16_t *length)
 {
   *length = (uint16_t)sizeof(USBD_CUSTOM_HID_DeviceQualifierDesc);
 
   return USBD_CUSTOM_HID_DeviceQualifierDesc;
 }
 
-/**
-* @brief  USBD_CUSTOM_HID_RegisterInterface
-  * @param  pdev: device instance
-  * @param  fops: CUSTOMHID Interface callback
-  * @retval status
-  */
-uint8_t USBD_CUSTOM_HID_RegisterInterface(USBD_HandleTypeDef *pdev,
-                                          USBD_CUSTOM_HID_ItfTypeDef *fops)
-{
-  if (fops == NULL)
-  {
-    return (uint8_t)USBD_FAIL;
-  }
-
-  pdev->pUserData = fops;
-
-  return (uint8_t)USBD_OK;
-}
-/**
-  * @}
-  */
-
-
-/**
-  * @}
-  */
-
-
-/**
-  * @}
-  */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

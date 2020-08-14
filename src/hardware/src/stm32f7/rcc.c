@@ -51,9 +51,4 @@ void rcc_init() {
 	SystemCoreClockUpdate();
 }
 
-#include "delay.h"
-void HAL_Delay(uint32_t Delay) {
-	delay_ms(Delay);
-}
-
 #endif

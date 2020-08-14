@@ -19,7 +19,12 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_core.h"
-
+#include "usbd_ioreq.h"
+#include "usbd_ctlreq.h"
+#include <stdlib.h>
+#include "UsbConfig.h"
+#include "minmax.h"
+#include "usb_ll.h"
 
 /**
 * @brief  USBD_Init
@@ -47,11 +52,6 @@ USBD_StatusTypeDef USBD_Init(USBD_HandleTypeDef *pdev,
   if (pdev->pClass != NULL)
   {
     pdev->pClass = NULL;
-  }
-
-  if (pdev->pConfDesc != NULL)
-  {
-    pdev->pConfDesc = NULL;
   }
 
   /* Assign USBD Descriptors */
@@ -89,11 +89,6 @@ USBD_StatusTypeDef USBD_DeInit(USBD_HandleTypeDef *pdev)
     pdev->pClass->DeInit(pdev, (uint8_t)pdev->dev_config);
   }
 
-  if (pdev->pConfDesc != NULL)
-  {
-    pdev->pConfDesc = NULL;
-  }
-
   /* Stop the low level driver  */
   ret = USBD_LL_Stop(pdev);
 
@@ -115,10 +110,8 @@ USBD_StatusTypeDef USBD_DeInit(USBD_HandleTypeDef *pdev)
   * @param  pclass: Class handle
   * @retval USBD Status
   */
-USBD_StatusTypeDef USBD_RegisterClass(USBD_HandleTypeDef *pdev, USBD_ClassTypeDef *pclass)
+USBD_StatusTypeDef USBD_RegisterClass(USBD_HandleTypeDef *pdev, const USBD_ClassTypeDef *pclass)
 {
-  uint16_t len = 0U;
-
   if (pclass == NULL)
   {
 #if (USBD_DEBUG_LEVEL > 1U)
@@ -129,14 +122,6 @@ USBD_StatusTypeDef USBD_RegisterClass(USBD_HandleTypeDef *pdev, USBD_ClassTypeDe
 
   /* link the class to the USB Device handle */
   pdev->pClass = pclass;
-
-  /* Get Device Configuration Descriptor */
-#ifdef USE_USB_FS
-  pdev->pConfDesc = (void *)pdev->pClass->GetFSConfigDescriptor(&len);
-#else /* USE_USB_HS */
-  pdev->pConfDesc = (void *)pdev->pClass->GetHSConfigDescriptor(&len);
-#endif /* USE_USB_FS */
-
 
   return USBD_OK;
 }
@@ -167,11 +152,6 @@ USBD_StatusTypeDef USBD_Stop(USBD_HandleTypeDef *pdev)
   if (pdev->pClass != NULL)
   {
     pdev->pClass->DeInit(pdev, (uint8_t)pdev->dev_config);
-  }
-
-  if (pdev->pConfDesc != NULL)
-  {
-    pdev->pConfDesc = NULL;
   }
 
   /* Stop the low level driver */
@@ -307,19 +287,6 @@ USBD_StatusTypeDef USBD_LL_DataOutStage(USBD_HandleTypeDef *pdev,
         (void)USBD_CtlSendStatus(pdev);
       }
     }
-    else
-    {
-#if 0
-      if (pdev->ep0_state == USBD_EP0_STATUS_OUT)
-      {
-        /*
-         * STATUS PHASE completed, update ep0_state to idle
-         */
-        pdev->ep0_state = USBD_EP0_IDLE;
-        (void)USBD_LL_StallEP(pdev, 0U);
-      }
-#endif
-    }
   }
   else if ((pdev->pClass->DataOut != NULL) &&
            (pdev->dev_state == USBD_STATE_CONFIGURED))
@@ -392,16 +359,6 @@ USBD_StatusTypeDef USBD_LL_DataInStage(USBD_HandleTypeDef *pdev,
           (void)USBD_CtlReceiveStatus(pdev);
         }
       }
-    }
-    else
-    {
-#if 0
-      if ((pdev->ep0_state == USBD_EP0_STATUS_IN) ||
-          (pdev->ep0_state == USBD_EP0_IDLE))
-      {
-        (void)USBD_LL_StallEP(pdev, 0x80U);
-      }
-#endif
     }
 
     if (pdev->dev_test_mode == 1U)

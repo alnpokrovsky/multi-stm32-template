@@ -795,6 +795,7 @@ HAL_StatusTypeDef HAL_NOR_Erase_Block(NOR_HandleTypeDef *hnor, uint32_t BlockAdd
   */
 HAL_StatusTypeDef HAL_NOR_Erase_Chip(NOR_HandleTypeDef *hnor, uint32_t Address)
 {
+  UNUSED(Address);
   uint32_t deviceaddress = 0;
   
   /* Process Locked */

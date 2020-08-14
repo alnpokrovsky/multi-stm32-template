@@ -2100,6 +2100,7 @@ static void ETH_MACDMAConfig(ETH_HandleTypeDef *heth, uint32_t err)
   */
 static void ETH_MACAddressConfig(ETH_HandleTypeDef *heth, uint32_t MacAddr, uint8_t *Addr)
 {
+  UNUSED(heth);
   uint32_t tmpreg;
   
   /* Check the parameters */

@@ -2,11 +2,15 @@
 
 INC += \
     core/CMSIS/Core/Include \
-    core/CMSIS/Core_A/Include
+    core/CMSIS/Core_A/Include \
+    core/CMSIS/Utils/Include
 
-SRC += $(shell find core/CMSIS/Core -name "*.c")
+SRC += $(shell find core/CMSIS/Core   -name "*.c")
 SRC += $(shell find core/CMSIS/Core_A -name "*.c")
+SRC += $(shell find core/CMSIS/Utils  -name "*.c")
 
+
+#### RTOS ####
 INC += core/CMSIS/RTOS2/Include
-
+# select FreeRTOS
 include core/CMSIS/RTOS2/freertos.include

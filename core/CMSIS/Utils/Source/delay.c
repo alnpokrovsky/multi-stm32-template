@@ -11,3 +11,9 @@ void delay_ms(int ms) {
 		}
 	}
 }
+
+/* redefine HAL function */
+void HAL_Delay(uint32_t Delay);
+void HAL_Delay(uint32_t Delay) {
+	delay_ms(Delay);
+}
