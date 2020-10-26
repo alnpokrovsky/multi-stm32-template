@@ -1,9 +1,9 @@
-#ifndef __USBD_CONF__H__
-#define __USBD_CONF__H__
+#ifndef __USBD_LL__H__
+#define __USBD_LL__H__
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#if defined(USB_LIB)
+
+#include <stdint.h>
 #include "usbd_def.h"
 
 
@@ -34,5 +34,5 @@ uint32_t USBD_LL_GetRxDataSize(USBD_HandleTypeDef *pdev, uint8_t  ep_addr);
 
 void  USBD_LL_Delay(uint32_t Delay);
 
-
+#endif
 #endif /* __USBD_CONF__H__ */

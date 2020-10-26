@@ -1,22 +1,38 @@
 /* this file is reworked usbd_conf.c */
 #if defined(STM32F7)
 
-/* Includes ------------------------------------------------------------------*/
 #include "usb_ll.h"
 #include <stm32f7xx.h>
 #include <stm32f7xx_hal.h>
 #include "usbd_def.h"
 #include "usbd_core.h"
+#include "usb_device/target/usbd_conf.h"
 
 
-PCD_HandleTypeDef hpcd_USB_OTG_FS;
-
-/* External functions --------------------------------------------------------*/
-void SystemClock_Config(void);
+static PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 
-/* Private function prototypes -----------------------------------------------*/
-USBD_StatusTypeDef USBD_Get_USB_Status(HAL_StatusTypeDef hal_status);
+/**
+  * @brief  Retuns the USB status depending on the HAL status:
+  * @param  hal_status: HAL status
+  * @retval USB status
+  */
+static USBD_StatusTypeDef USBD_Get_USB_Status(HAL_StatusTypeDef hal_status)
+{
+  switch (hal_status)
+  {
+    case HAL_OK :
+      return USBD_OK;
+    case HAL_ERROR :
+      return USBD_FAIL;
+    case HAL_BUSY :
+      return USBD_BUSY;
+    case HAL_TIMEOUT :
+      return USBD_FAIL;
+    default :
+      return USBD_FAIL;
+  }
+}
 
 
 /*******************************************************************************
@@ -580,46 +596,16 @@ void HAL_PCDEx_LPM_Callback(PCD_HandleTypeDef *hpcd, PCD_LPM_MsgTypeDef msg)
   }
 }
 
-#include "delay.h"
 /**
-  * @brief  Delays routine for the USB device library.
+  * @brief  Delays routine for the USB Device Library.
   * @param  Delay: Delay in ms
   * @retval None
   */
 void USBD_LL_Delay(uint32_t Delay)
 {
-  delay_ms(Delay);
+  HAL_Delay(Delay);
 }
 
-/**
-  * @brief  Retuns the USB status depending on the HAL status:
-  * @param  hal_status: HAL status
-  * @retval USB status
-  */
-USBD_StatusTypeDef USBD_Get_USB_Status(HAL_StatusTypeDef hal_status)
-{
-  USBD_StatusTypeDef usb_status = USBD_OK;
-
-  switch (hal_status)
-  {
-    case HAL_OK :
-      usb_status = USBD_OK;
-    break;
-    case HAL_ERROR :
-      usb_status = USBD_FAIL;
-    break;
-    case HAL_BUSY :
-      usb_status = USBD_BUSY;
-    break;
-    case HAL_TIMEOUT :
-      usb_status = USBD_FAIL;
-    break;
-    default :
-      usb_status = USBD_FAIL;
-    break;
-  }
-  return usb_status;
-}
 
 #include <stm32f7xx_it.h>
 void OTG_FS_IRQHandler(void)

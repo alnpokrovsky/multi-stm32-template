@@ -2,7 +2,16 @@
 
 DEFS += -DUSB_LIB
 
-INC += libs/usb/include
-INC += libs/usb/Core/Inc
-
-SRC += $(shell find libs/usb -name "*.c")
+### device #### 
+SRC += $(shell find libs/usb/STM32_USB_Device_Library -name "*.c")
+# core inc
+INC += libs/usb/STM32_USB_Device_Library/Core/Inc
+# devices inc
+INC += libs/usb/STM32_USB_Device_Library/Class/AUDIO/Inc
+INC += libs/usb/STM32_USB_Device_Library/Class/BillBoard/Inc
+INC += libs/usb/STM32_USB_Device_Library/Class/CDC/Inc
+INC += libs/usb/STM32_USB_Device_Library/Class/CDC_RNDIS/Inc
+INC += libs/usb/STM32_USB_Device_Library/Class/CustomHID/Inc
+INC += libs/usb/STM32_USB_Device_Library/Class/DFU/Inc
+INC += libs/usb/STM32_USB_Device_Library/Class/HID/Inc
+INC += libs/usb/STM32_USB_Device_Library/Class/MSC/Inc

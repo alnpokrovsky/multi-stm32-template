@@ -3,7 +3,7 @@
 #include "rcc.h"
 #include <stm32f7xx_hal.h>
 
-void rcc_init() {
+void rcc_init(void) {
 	HAL_Init();
 
 	RCC_OscInitTypeDef RCC_OscInitStruct = {0};
@@ -20,7 +20,7 @@ void rcc_init() {
 	RCC_OscInitStruct.HSEState = RCC_HSE_ON;
 	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
 	RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-	RCC_OscInitStruct.PLL.PLLM = 8;
+	RCC_OscInitStruct.PLL.PLLM = HSE_VALUE/1000000;
 	RCC_OscInitStruct.PLL.PLLN = 400;
 	RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
 	RCC_OscInitStruct.PLL.PLLQ = 8;
