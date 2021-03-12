@@ -1,2 +1,5 @@
-﻿Для запуска необходимо открыть в браузере файл "index.HTML".
+Для запуска необходимо открыть в браузере файл "index.HTML".
 Работа проверена в браузерах Opera, Mozilla FireFox
+
+Рабочая версия firefox
+https://ftp.mozilla.org/pub/firefox/releases/43.0.1/mac/en-US/
