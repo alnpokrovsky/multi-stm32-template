@@ -33,7 +33,7 @@ static bool memflash_write_page(uint32_t page_address, const uint8_t data[])
 
 static inline uint32_t memflash_end(void) {
     /* Only allow access to the chip's self-reported flash size */
-    return (FLASH_BASE + DESIG_FLASH_SIZE*FLASH_PAGE_SIZE);
+    return (FLASH_BASE + desig_get_flash_size()*FLASH_PAGE_SIZE);
 }
 
 /**

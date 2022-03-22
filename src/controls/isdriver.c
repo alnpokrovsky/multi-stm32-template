@@ -133,7 +133,7 @@ bool isdriver_setPos(ISDRIVER_Driver * driver, int32_t pos) {
 }
 
 int32_t isdriver_getPos(ISDRIVER_Driver * driver) {
-    int32_t tmp;
+    int32_t tmp = 0;
     isdriver_read(driver, GET_ABS_POS, &tmp);
     return tmp;
 }

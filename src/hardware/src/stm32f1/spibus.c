@@ -68,10 +68,5 @@ void spibus_dma_start_once(SPIBUS_PORT port, uint16_t len) {
     dma_start_once(SPIES[port].dma, len);
 }
 
-uint16_t spibus_xtfer(SPIBUS_PORT port, uint16_t b) {
-    while (!(SPI_SR(SPIES[port].spi_base) & SPI_SR_TXE)); // wait till tx ready
-    return spi_xfer(SPIES[port].spi_base, b);
-}
-
 
 #endif

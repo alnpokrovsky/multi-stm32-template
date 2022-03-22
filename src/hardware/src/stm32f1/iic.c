@@ -39,8 +39,7 @@ void iic_init(IIC_PORT port) {
 	i2c_reset(IICS[port].i2c_base);
 	i2c_peripheral_disable(IICS[port].i2c_base);
 
-	i2c_set_speed(IICS[port].i2c_base,
-		i2c_speed_fm_400k, I2C_CR2_FREQ_36MHZ);
+	i2c_set_speed(IICS[port].i2c_base, i2c_speed_fm_400k, 36);
 
 	/* This is our slave address - needed only if we want to receive from other masters. */
 	//i2c_set_own_7bit_slave_address(I2C1, 0x32);

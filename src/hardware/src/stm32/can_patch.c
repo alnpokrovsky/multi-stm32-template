@@ -1,4 +1,4 @@
-#if defined(STM32F1)||defined(STM32F3)||defined(STM32F4)
+#if defined(NOWHERE) && ( defined(STM32F1)||defined(STM32F3)||defined(STM32F4) )
 
 #include <libopencm3/stm32/can.h>
 #include "delay.h"
